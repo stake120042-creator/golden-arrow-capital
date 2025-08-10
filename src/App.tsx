@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import LandingPage from './pages/LandingPage';
 import Dashboard from './pages/Dashboard';
+import DepositPage from './pages/DepositPage';
 
 export function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -51,14 +52,9 @@ export function App() {
               <LandingPage onLogin={handleLogin} />
           } 
         />
-        <Route 
-          path="/dashboard/*" 
-          element={
-            isLoggedIn ? 
-              <Dashboard onLogout={handleLogout} /> : 
-              <Navigate to="/" />
-          } 
-        />
+        {/* Dashboard Routes */}
+        <Route path="/dashboard" element={<Dashboard onLogout={handleLogout} />} />
+        <Route path="/dashboard/deposit" element={<DepositPage onLogout={handleLogout} />} />
       </Routes>
     </Router>
   );

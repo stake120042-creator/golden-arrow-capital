@@ -168,9 +168,10 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
       
       if (result.success) {
         setSuccessMessage(result.message);
-        // Small delay to show success message
+        // Small delay to show success message then redirect to login
         setTimeout(() => {
-          onLogin();
+          setActiveTab('login');
+          setSuccessMessage('Account created successfully! Please log in.');
         }, 1500);
       } else {
         setErrorMessage(result.message);
@@ -234,7 +235,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900 relative overflow-hidden">
       {isLoading && (
         <div className="loader">
           <div className="spinner"></div>
@@ -243,13 +244,24 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
       
       {/* Enhanced animated background elements with golden theme */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0">
-        <div className="absolute w-96 h-96 rounded-full bg-gradient-to-br from-yellow-500/20 to-amber-600/10 blur-3xl -top-20 -left-20 animate-pulse"></div>
-        <div className="absolute w-96 h-96 rounded-full bg-gradient-to-tl from-yellow-400/15 to-amber-500/8 blur-3xl bottom-20 right-20 animate-pulse" style={{animationDelay: '2s'}}></div>
-        <div className="absolute w-64 h-64 rounded-full bg-gradient-to-r from-amber-400/12 to-yellow-500/6 blur-3xl top-1/2 left-1/3 animate-pulse" style={{animationDelay: '3s'}}></div>
+        {/* Large golden orbs */}
+        <div className="absolute w-[800px] h-[800px] rounded-full bg-gradient-to-br from-yellow-500/25 to-amber-600/15 blur-3xl -top-40 -left-40 animate-pulse"></div>
+        <div className="absolute w-[600px] h-[600px] rounded-full bg-gradient-to-tl from-yellow-400/20 to-amber-500/12 blur-3xl -bottom-40 -right-40 animate-pulse" style={{animationDelay: '2s'}}></div>
+        <div className="absolute w-[400px] h-[400px] rounded-full bg-gradient-to-r from-amber-400/15 to-yellow-500/8 blur-3xl top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 animate-pulse" style={{animationDelay: '3s'}}></div>
+        
+        {/* Floating particles */}
+        <div className="absolute w-4 h-4 rounded-full bg-yellow-400/40 top-20 left-1/4 animate-bounce" style={{animationDelay: '1s', animationDuration: '3s'}}></div>
+        <div className="absolute w-3 h-3 rounded-full bg-amber-300/30 top-40 right-1/4 animate-bounce" style={{animationDelay: '2s', animationDuration: '4s'}}></div>
+        <div className="absolute w-2 h-2 rounded-full bg-yellow-500/50 bottom-32 left-1/3 animate-bounce" style={{animationDelay: '3s', animationDuration: '5s'}}></div>
+        
+        {/* Gradient mesh overlay */}
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-amber-500/5 to-transparent"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-900/50 via-transparent to-slate-900/30"></div>
       </div>
       
-      <div className="container mx-auto px-6 py-20 relative z-1">
-        <div className="max-w-md mx-auto">
+      <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-20 relative z-1">
+        {/* Responsive container: rectangular on mobile, square on desktop */}
+        <div className="w-full max-w-sm sm:max-w-md lg:max-w-lg xl:max-w-xl mx-auto">
           {/* Logo and Brand */}
           <div className="text-center mb-8">
             <div className="flex justify-center items-center mb-6">
@@ -286,12 +298,31 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
             </div>
           )}
           
-          {/* Auth Form */}
-          <div className="auth-container shadow-2xl border border-yellow-400/20 backdrop-blur-xl bg-white/5 hover:bg-white/8 transition-all duration-300 rounded-2xl p-8">
+          {/* Auth Form - Responsive: rectangular on mobile, square-ish on desktop */}
+          <div className="
+            w-full 
+            min-h-fit
+            sm:w-[450px] sm:min-h-[580px] 
+            lg:w-[520px] lg:min-h-[620px] 
+            xl:w-[580px] xl:min-h-[680px]
+            mx-auto
+            shadow-2xl border border-yellow-400/20 backdrop-blur-xl 
+            bg-gradient-to-br from-white/8 to-white/4 
+            hover:from-white/12 hover:to-white/6
+            transition-all duration-500 rounded-2xl 
+            p-6 sm:p-8 
+            relative overflow-visible
+          ">
+            {/* Decorative elements inside form */}
+            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-yellow-400/10 to-transparent rounded-full blur-2xl"></div>
+            <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-amber-500/10 to-transparent rounded-full blur-2xl"></div>
+            
+            {/* Content wrapper with relative positioning */}
+            <div className="relative z-10 h-full flex flex-col">
             {activeTab === 'signup' && (
               <>
-                <h1 className="text-2xl font-bold mb-8 text-center bg-gradient-to-r from-yellow-400 to-amber-400 bg-clip-text text-transparent">Open Your FREE Account</h1>
-                <form className="space-y-6" onSubmit={handleSignup}>
+                <h1 className="text-xl sm:text-2xl font-bold mb-6 sm:mb-8 text-center bg-gradient-to-r from-yellow-400 to-amber-400 bg-clip-text text-transparent">Open Your FREE Account</h1>
+                <form className="space-y-4 sm:space-y-6 flex-1 flex flex-col" onSubmit={handleSignup}>
                   <div className="form-group">
                     <label htmlFor="sponsor" className="text-sm font-medium mb-2 block text-slate-300">Sponsor</label>
                     <input 
@@ -304,7 +335,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
                     />
                   </div>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                     <div className="form-group">
                       <label htmlFor="firstName" className="text-sm font-medium mb-2 block text-slate-300">First Name *</label>
                       <input 
@@ -312,7 +343,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
                         id="firstName" 
                         value={signupFormData.firstName}
                         onChange={(e) => handleSignupInputChange('firstName', e.target.value)}
-                        className="w-full p-4 rounded-xl bg-white/10 border border-white/20 text-white placeholder-slate-400 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 transition-all duration-300" 
+                        className="w-full p-3 sm:p-4 rounded-xl bg-white/10 border border-white/20 text-white placeholder-slate-400 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 transition-all duration-300 hover:bg-white/15" 
                         placeholder="Enter your first name" 
                         required 
                       />
@@ -325,7 +356,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
                         id="lastName" 
                         value={signupFormData.lastName}
                         onChange={(e) => handleSignupInputChange('lastName', e.target.value)}
-                        className="w-full p-4 rounded-xl bg-white/10 border border-white/20 text-white placeholder-slate-400 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 transition-all duration-300" 
+                        className="w-full p-3 sm:p-4 rounded-xl bg-white/10 border border-white/20 text-white placeholder-slate-400 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 transition-all duration-300 hover:bg-white/15" 
                         placeholder="Enter your last name" 
                         required 
                       />
@@ -421,7 +452,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
                   <button 
                     type="submit" 
                     disabled={isLoading}
-                    className="w-full p-4 rounded-xl bg-gradient-to-r from-yellow-400 to-amber-500 text-slate-900 font-semibold flex items-center justify-center hover:from-yellow-300 hover:to-amber-400 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                    className="w-full p-3 sm:p-4 rounded-xl bg-gradient-to-r from-yellow-400 to-amber-500 text-slate-900 font-semibold flex items-center justify-center hover:from-yellow-300 hover:to-amber-400 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none text-sm sm:text-base"
                   >
                     {isLoading ? 'Creating Account...' : 'Sign up'}
                     {!isLoading && <ArrowRight size={20} className="ml-2" />}
@@ -443,8 +474,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
             
             {activeTab === 'login' && (
               <>
-                <h1 className="text-2xl font-bold mb-8 text-center bg-gradient-to-r from-yellow-400 to-amber-400 bg-clip-text text-transparent">Login to Your Account</h1>
-                <form className="space-y-6" onSubmit={handleLogin}>
+                <h1 className="text-xl sm:text-2xl font-bold mb-6 sm:mb-8 text-center bg-gradient-to-r from-yellow-400 to-amber-400 bg-clip-text text-transparent">Login to Your Account</h1>
+                <form className="space-y-4 sm:space-y-6 flex-1 flex flex-col" onSubmit={handleLogin}>
                   <div className="form-group">
                     <label htmlFor="loginUsername" className="text-sm font-medium mb-2 block text-slate-300">Username or Email *</label>
                     <input 
@@ -502,7 +533,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
                   <button 
                     type="submit" 
                     disabled={isLoading}
-                    className="w-full p-4 rounded-xl bg-gradient-to-r from-yellow-400 to-amber-500 text-slate-900 font-semibold flex items-center justify-center hover:from-yellow-300 hover:to-amber-400 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                    className="w-full p-3 sm:p-4 rounded-xl bg-gradient-to-r from-yellow-400 to-amber-500 text-slate-900 font-semibold flex items-center justify-center hover:from-yellow-300 hover:to-amber-400 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none text-sm sm:text-base"
                   >
                     {isLoading ? 'Verifying...' : 'Login'}
                     {!isLoading && <ArrowRight size={20} className="ml-2" />}
@@ -524,8 +555,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
             
             {activeTab === 'otp' && (
               <>
-                <h1 className="text-2xl font-bold mb-8 text-center bg-gradient-to-r from-yellow-400 to-amber-400 bg-clip-text text-transparent">Verify Your Email</h1>
-                <form className="space-y-6" onSubmit={handleVerifyOtp}>
+                <h1 className="text-xl sm:text-2xl font-bold mb-6 sm:mb-8 text-center bg-gradient-to-r from-yellow-400 to-amber-400 bg-clip-text text-transparent">Verify Your Email</h1>
+                <form className="space-y-4 sm:space-y-6 flex-1 flex flex-col" onSubmit={handleVerifyOtp}>
                   <div className="text-center p-4 rounded-xl bg-white/5 border border-white/10">
                     <p className="text-slate-300 leading-relaxed">
                       We've sent a verification code to <span className="text-yellow-400 font-medium">{currentEmail}</span>.<br />
@@ -576,7 +607,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
                   <button 
                     type="submit" 
                     disabled={isLoading}
-                    className="w-full p-4 rounded-xl bg-gradient-to-r from-yellow-400 to-amber-500 text-slate-900 font-semibold flex items-center justify-center hover:from-yellow-300 hover:to-amber-400 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                    className="w-full p-3 sm:p-4 rounded-xl bg-gradient-to-r from-yellow-400 to-amber-500 text-slate-900 font-semibold flex items-center justify-center hover:from-yellow-300 hover:to-amber-400 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none text-sm sm:text-base"
                   >
                     {isLoading ? 'Verifying...' : 'Verify OTP'}
                     {!isLoading && <ArrowRight size={20} className="ml-2" />}
@@ -595,8 +626,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
 
             {activeTab === 'login-otp' && (
               <>
-                <h1 className="text-2xl font-bold mb-8 text-center bg-gradient-to-r from-yellow-400 to-amber-400 bg-clip-text text-transparent">Verify Login</h1>
-                <form className="space-y-6" onSubmit={handleVerifyLoginOtp}>
+                <h1 className="text-xl sm:text-2xl font-bold mb-6 sm:mb-8 text-center bg-gradient-to-r from-yellow-400 to-amber-400 bg-clip-text text-transparent">Verify Login</h1>
+                <form className="space-y-4 sm:space-y-6 flex-1 flex flex-col" onSubmit={handleVerifyLoginOtp}>
                   <div className="text-center p-4 rounded-xl bg-white/5 border border-white/10">
                     <p className="text-slate-300 leading-relaxed">
                       For your security, we've sent a verification code to <span className="text-yellow-400 font-medium">{currentEmail}</span>.<br />
@@ -647,7 +678,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
                   <button 
                     type="submit" 
                     disabled={isLoading}
-                    className="w-full p-4 rounded-xl bg-gradient-to-r from-yellow-400 to-amber-500 text-slate-900 font-semibold flex items-center justify-center hover:from-yellow-300 hover:to-amber-400 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                    className="w-full p-3 sm:p-4 rounded-xl bg-gradient-to-r from-yellow-400 to-amber-500 text-slate-900 font-semibold flex items-center justify-center hover:from-yellow-300 hover:to-amber-400 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none text-sm sm:text-base"
                   >
                     {isLoading ? 'Verifying...' : 'Verify & Login'}
                     {!isLoading && <ArrowRight size={20} className="ml-2" />}
@@ -666,6 +697,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
                 </form>
               </>
             )}
+            </div>
           </div>
         </div>
       </div>

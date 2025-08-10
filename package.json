@@ -7,28 +7,47 @@
     "dev": "npx vite",
     "build": "npx vite build",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
-    "preview": "npx vite preview"
+    "preview": "npx vite preview",
+    "db:setup": "node scripts/setupDatabase.js",
+    "server": "node run-server.mjs",
+    "server:dev": "nodemon --watch run-server.mjs --exec \"node run-server.mjs\"",
+    "start": "concurrently --kill-others \"npm run server\" \"npm run dev\""
   },
   "dependencies": {
+    "@types/bcrypt": "^6.0.0",
+    "@types/pg": "^8.15.5",
+    "bcrypt": "^6.0.0",
+    "body-parser": "^2.2.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "lucide-react": "^0.441.0",
+    "pg": "^8.16.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.26.2",
-    "lucide-react": "^0.441.0"
+    "vite-plugin-node-polyfills": "^0.24.0"
   },
   "devDependencies": {
+    "@types/body-parser": "^1.19.6",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
     "@types/node": "^20.11.18",
     "@types/react": "^18.3.1",
     "@types/react-dom": "^18.3.1",
     "@typescript-eslint/eslint-plugin": "^5.54.0",
     "@typescript-eslint/parser": "^5.54.0",
     "@vitejs/plugin-react": "^4.2.1",
+    "autoprefixer": "latest",
+    "concurrently": "^9.2.0",
     "eslint": "^8.50.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.1",
-    "typescript": "^5.5.4",
-    "vite": "^5.2.0",
+    "nodemon": "^3.1.10",
+    "postcss": "latest",
     "tailwindcss": "3.4.17",
-    "autoprefixer": "latest",
-    "postcss": "latest"
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.4",
+    "vite": "^5.2.0"
   }
 }

@@ -30,13 +30,13 @@ const TopBar: React.FC<TopBarProps> = ({ onLogout, toggleSidebar }) => {
   }, []);
 
   return (
-    <div className="bg-slate-800/50 backdrop-blur-xl border-b border-slate-700/50 px-6 py-4 lg:ml-64">
-      <div className="flex items-center justify-between">
+    <div className="fixed top-0 right-0 left-0 lg:left-64 z-10 bg-slate-800/90 backdrop-blur-xl border-b border-slate-700/50 px-6 py-4">
+      <div className="flex items-center justify-between max-w-7xl mx-auto">
         {/* Left Side */}
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-5">
           {/* Mobile Menu Button */}
           <button 
-            className="lg:hidden p-2 rounded-lg bg-slate-700/50 text-slate-400 hover:text-white hover:bg-slate-700 transition-all duration-200"
+            className="lg:hidden p-2.5 rounded-lg bg-slate-700/70 text-slate-300 hover:text-white hover:bg-slate-700 transition-all duration-200"
             onClick={toggleSidebar}
           >
             <Menu size={20} />
@@ -44,8 +44,8 @@ const TopBar: React.FC<TopBarProps> = ({ onLogout, toggleSidebar }) => {
           
           {/* Page Title */}
           <div>
-            <h1 className="text-2xl font-bold text-white">Portfolio Dashboard</h1>
-            <p className="text-sm text-slate-400">Welcome back, John Doe</p>
+            <h1 className="text-xl md:text-2xl font-bold text-white">Portfolio Dashboard</h1>
+            <p className="text-sm text-slate-400 mt-0.5">Welcome back, John Doe</p>
           </div>
         </div>
         
@@ -55,8 +55,8 @@ const TopBar: React.FC<TopBarProps> = ({ onLogout, toggleSidebar }) => {
           <div className="hidden md:flex relative">
             <input 
               type="text" 
-              placeholder="Search investments..." 
-              className="w-64 pl-10 pr-4 py-2 bg-slate-700/50 border border-slate-600/50 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:border-yellow-400/50 focus:ring-2 focus:ring-yellow-400/20 transition-all duration-200"
+              placeholder="Search..." 
+              className="w-56 pl-10 pr-4 py-2.5 bg-slate-700/70 border border-slate-600/50 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:border-yellow-400/50 focus:ring-1 focus:ring-yellow-400/20 transition-all duration-200"
             />
             <Search size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" />
           </div>
@@ -64,10 +64,10 @@ const TopBar: React.FC<TopBarProps> = ({ onLogout, toggleSidebar }) => {
           {/* User Dropdown */}
           <div className="relative" ref={dropdownRef}>
             <button 
-              className="flex items-center space-x-3 p-2 rounded-lg bg-slate-700/50 hover:bg-slate-700 transition-all duration-200"
+              className="flex items-center space-x-3 p-2 rounded-lg bg-slate-700/70 hover:bg-slate-700 transition-all duration-200"
               onClick={() => setShowDropdown(!showDropdown)}
             >
-              <div className="w-8 h-8 bg-gradient-to-br from-yellow-400 to-amber-500 rounded-lg flex items-center justify-center">
+              <div className="w-9 h-9 bg-gradient-to-br from-yellow-400 to-amber-500 rounded-lg flex items-center justify-center">
                 <span className="text-slate-900 font-bold text-sm">JD</span>
               </div>
               <div className="hidden md:block text-left">

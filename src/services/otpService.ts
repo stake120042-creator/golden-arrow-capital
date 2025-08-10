@@ -1,7 +1,9 @@
 import { OTPData, EmailOTPRequest } from '../types/user';
 import emailService from './emailService';
+import db from '../config/database';
 
 interface StoredOTP {
+  id: number;
   otp: string;
   email: string;
   type: 'signup' | 'login';
@@ -12,7 +14,6 @@ interface StoredOTP {
 
 class OTPService {
   private static instance: OTPService;
-  private otpStorage: Map<string, StoredOTP> = new Map();
   private readonly OTP_EXPIRY_MINUTES = 10;
   private readonly MAX_ATTEMPTS = 3;
 
@@ -35,29 +36,36 @@ class OTPService {
     return Math.floor(100000 + Math.random() * 900000).toString();
   }
 
-  private getStorageKey(email: string, type: 'signup' | 'login'): string {
-    return `${email.toLowerCase()}_${type}`;
-  }
-
-  private cleanupExpiredOTPs(): void {
-    const now = new Date();
-    for (const [key, storedOTP] of this.otpStorage.entries()) {
-      if (storedOTP.expiresAt < now) {
-        this.otpStorage.delete(key);
-        console.log(`🧹 Cleaned up expired OTP for ${storedOTP.email}`);
+  private async cleanupExpiredOTPs(): Promise<void> {
+    try {
+      const now = new Date();
+      const result = await db.query(
+        'DELETE FROM otps WHERE expires_at < $1 RETURNING email',
+        [now]
+      );
+      
+      const deletedCount = result.rowCount;
+      if (deletedCount > 0) {
+        console.log(`🧹 Cleaned up ${deletedCount} expired OTPs`);
       }
+    } catch (error) {
+      console.error('❌ Error cleaning up expired OTPs:', error);
     }
   }
 
   public async generateAndSendOTP(request: EmailOTPRequest): Promise<{ success: boolean; message: string }> {
     try {
       const email = request.email.toLowerCase();
-      const storageKey = this.getStorageKey(email, request.type);
-
+      
       // Check if there's already a recent OTP for this email and type
-      const existingOTP = this.otpStorage.get(storageKey);
-      if (existingOTP && existingOTP.expiresAt > new Date()) {
-        const remainingTime = Math.ceil((existingOTP.expiresAt.getTime() - Date.now()) / 60000);
+      const existingOTPResult = await db.query(
+        'SELECT expires_at FROM otps WHERE email = $1 AND type = $2 AND expires_at > $3',
+        [email, request.type, new Date()]
+      );
+      
+      if (existingOTPResult.rows.length > 0) {
+        const expiresAt = new Date(existingOTPResult.rows[0].expires_at);
+        const remainingTime = Math.ceil((expiresAt.getTime() - Date.now()) / 60000);
         return {
           success: false,
           message: `Please wait ${remainingTime} minutes before requesting a new OTP.`
@@ -68,21 +76,24 @@ class OTPService {
       const otp = this.generateOTP();
       const expiresAt = new Date(Date.now() + this.OTP_EXPIRY_MINUTES * 60000);
 
-      // Store OTP
-      this.otpStorage.set(storageKey, {
-        otp,
-        email,
-        type: request.type,
-        expiresAt,
-        attempts: 0,
-        isUsed: false
-      });
+      // Store OTP in database - use upsert (ON CONFLICT)
+      await db.query(
+        `INSERT INTO otps(email, otp, type, expires_at, attempts, is_used) 
+         VALUES($1, $2, $3, $4, $5, $6)
+         ON CONFLICT (email, type) 
+         DO UPDATE SET otp = $2, expires_at = $4, attempts = $5, is_used = $6`,
+        [email, otp, request.type, expiresAt, 0, false]
+      );
 
       // Send OTP via email
       const emailSent = await emailService.sendOTP(request, otp);
 
       if (!emailSent) {
-        this.otpStorage.delete(storageKey);
+        // Delete the OTP if email sending failed
+        await db.query(
+          'DELETE FROM otps WHERE email = $1 AND type = $2',
+          [email, request.type]
+        );
         return {
           success: false,
           message: 'Failed to send OTP email. Please try again.'
@@ -109,21 +120,31 @@ class OTPService {
   public async verifyOTP(otpData: OTPData): Promise<{ success: boolean; message: string }> {
     try {
       const email = otpData.email.toLowerCase();
-      const storageKey = this.getStorageKey(email, otpData.type);
       
-      const storedOTP = this.otpStorage.get(storageKey);
-
+      // Get OTP from database
+      const otpResult = await db.query(
+        'SELECT * FROM otps WHERE email = $1 AND type = $2',
+        [email, otpData.type]
+      );
+      
       // Check if OTP exists
-      if (!storedOTP) {
+      if (otpResult.rows.length === 0) {
         return {
           success: false,
           message: 'No OTP found for this email. Please request a new one.'
         };
       }
 
+      const storedOTP = otpResult.rows[0];
+      const expiresAt = new Date(storedOTP.expires_at);
+
       // Check if OTP is expired
-      if (storedOTP.expiresAt < new Date()) {
-        this.otpStorage.delete(storageKey);
+      if (expiresAt < new Date()) {
+        // Delete expired OTP
+        await db.query(
+          'DELETE FROM otps WHERE email = $1 AND type = $2',
+          [email, otpData.type]
+        );
         return {
           success: false,
           message: 'OTP has expired. Please request a new one.'
@@ -131,7 +152,7 @@ class OTPService {
       }
 
       // Check if OTP is already used
-      if (storedOTP.isUsed) {
+      if (storedOTP.is_used) {
         return {
           success: false,
           message: 'This OTP has already been used. Please request a new one.'
@@ -140,7 +161,11 @@ class OTPService {
 
       // Check maximum attempts
       if (storedOTP.attempts >= this.MAX_ATTEMPTS) {
-        this.otpStorage.delete(storageKey);
+        // Delete OTP that exceeded max attempts
+        await db.query(
+          'DELETE FROM otps WHERE email = $1 AND type = $2',
+          [email, otpData.type]
+        );
         return {
           success: false,
           message: 'Maximum verification attempts exceeded. Please request a new OTP.'
@@ -148,18 +173,28 @@ class OTPService {
       }
 
       // Increment attempts
-      storedOTP.attempts++;
+      const newAttempts = storedOTP.attempts + 1;
+      
+      // Update attempts in database
+      await db.query(
+        'UPDATE otps SET attempts = $1 WHERE email = $2 AND type = $3',
+        [newAttempts, email, otpData.type]
+      );
 
       // Verify OTP
       if (storedOTP.otp !== otpData.otp.trim()) {
-        const remainingAttempts = this.MAX_ATTEMPTS - storedOTP.attempts;
+        const remainingAttempts = this.MAX_ATTEMPTS - newAttempts;
         if (remainingAttempts > 0) {
           return {
             success: false,
             message: `Invalid OTP. ${remainingAttempts} attempts remaining.`
           };
         } else {
-          this.otpStorage.delete(storageKey);
+          // Delete OTP that exceeded max attempts
+          await db.query(
+            'DELETE FROM otps WHERE email = $1 AND type = $2',
+            [email, otpData.type]
+          );
           return {
             success: false,
             message: 'Invalid OTP. Maximum attempts exceeded. Please request a new OTP.'
@@ -168,12 +203,22 @@ class OTPService {
       }
 
       // Mark OTP as used
-      storedOTP.isUsed = true;
+      await db.query(
+        'UPDATE otps SET is_used = true WHERE email = $1 AND type = $2',
+        [email, otpData.type]
+      );
       
-      // Clean up the OTP after successful verification
-      setTimeout(() => {
-        this.otpStorage.delete(storageKey);
-      }, 5000); // Keep for 5 seconds for any race conditions
+      // Delete used OTP after a short delay to prevent race conditions
+      setTimeout(async () => {
+        try {
+          await db.query(
+            'DELETE FROM otps WHERE email = $1 AND type = $2 AND is_used = true',
+            [email, otpData.type]
+          );
+        } catch (error) {
+          console.error('Error deleting used OTP:', error);
+        }
+      }, 5000);
 
       console.log(`✅ OTP verified successfully for ${email} (${otpData.type})`);
 
@@ -194,10 +239,12 @@ class OTPService {
   public async resendOTP(email: string, type: 'signup' | 'login', firstName?: string): Promise<{ success: boolean; message: string }> {
     try {
       const normalizedEmail = email.toLowerCase();
-      const storageKey = this.getStorageKey(normalizedEmail, type);
-
-      // Remove existing OTP to allow resend
-      this.otpStorage.delete(storageKey);
+      
+      // Delete any existing OTP for this email and type
+      await db.query(
+        'DELETE FROM otps WHERE email = $1 AND type = $2',
+        [normalizedEmail, type]
+      );
 
       // Generate and send new OTP
       const result = await this.generateAndSendOTP({
@@ -222,25 +269,38 @@ class OTPService {
   }
 
   // Method to check if OTP exists and is valid (for debugging)
-  public getOTPStatus(email: string, type: 'signup' | 'login'): { exists: boolean; expired?: boolean; attempts?: number } {
-    const storageKey = this.getStorageKey(email.toLowerCase(), type);
-    const storedOTP = this.otpStorage.get(storageKey);
+  public async getOTPStatus(email: string, type: 'signup' | 'login'): Promise<{ exists: boolean; expired?: boolean; attempts?: number }> {
+    try {
+      const normalizedEmail = email.toLowerCase();
+      const result = await db.query(
+        'SELECT expires_at, attempts FROM otps WHERE email = $1 AND type = $2',
+        [normalizedEmail, type]
+      );
 
-    if (!storedOTP) {
+      if (result.rows.length === 0) {
+        return { exists: false };
+      }
+
+      const otp = result.rows[0];
+      return {
+        exists: true,
+        expired: new Date(otp.expires_at) < new Date(),
+        attempts: otp.attempts
+      };
+    } catch (error) {
+      console.error('Error getting OTP status:', error);
       return { exists: false };
     }
-
-    return {
-      exists: true,
-      expired: storedOTP.expiresAt < new Date(),
-      attempts: storedOTP.attempts
-    };
   }
 
   // Clear all OTPs (for testing purposes)
-  public clearAllOTPs(): void {
-    this.otpStorage.clear();
-    console.log('🧹 All OTPs cleared');
+  public async clearAllOTPs(): Promise<void> {
+    try {
+      await db.query('DELETE FROM otps');
+      console.log('🧹 All OTPs cleared');
+    } catch (error) {
+      console.error('Error clearing OTPs:', error);
+    }
   }
 }
 

@@ -1,6 +1,12 @@
 import { User, SignupData, LoginData, ApiResponse, OTPVerificationResponse } from '../types/user';
 import otpService from './otpService';
 import emailService from './emailService';
+import db from '../config/database';
+import cryptoUtils from '../utils/cryptoUtils';
+import apiClient from './apiClient';
+
+// Determine if we're in a browser environment
+const isBrowser = typeof window !== 'undefined';
 
 interface StoredUser {
   id: string;
@@ -17,10 +23,8 @@ interface StoredUser {
 
 class UserService {
   private static instance: UserService;
-  private users: Map<string, StoredUser> = new Map();
-  private usersByEmail: Map<string, string> = new Map(); // email -> userId mapping
-  private usersByUsername: Map<string, string> = new Map(); // username -> userId mapping
   private pendingSignups: Map<string, SignupData> = new Map(); // email -> signup data
+  private saltRounds = 10;
 
   private constructor() {}
 
@@ -35,19 +39,17 @@ class UserService {
     return 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
   }
 
-  private hashPassword(password: string): string {
-    // In production, use a proper hashing library like bcrypt
-    // This is a simple hash for demonstration
-    let hash = 0;
-    for (let i = 0; i < password.length; i++) {
-      const char = password.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
-      hash = hash & hash; // Convert to 32-bit integer
-    }
-    return Math.abs(hash).toString(16);
+  private async hashPassword(password: string): Promise<string> {
+    // Use cryptoUtils for secure password hashing
+    return await cryptoUtils.hash(password, this.saltRounds);
+  }
+  
+  private async comparePassword(password: string, hash: string): Promise<boolean> {
+    // Compare password with hash using cryptoUtils
+    return await cryptoUtils.compare(password, hash);
   }
 
-  private validateSignupData(data: SignupData): { isValid: boolean; errors: string[] } {
+  private async validateSignupData(data: SignupData): Promise<{ isValid: boolean; errors: string[] }> {
     const errors: string[] = [];
 
     // Required field validation
@@ -78,14 +80,28 @@ class UserService {
       errors.push('Passwords do not match');
     }
 
-    // Check if email already exists
-    if (data.email && this.usersByEmail.has(data.email.toLowerCase())) {
-      errors.push('An account with this email already exists');
+    // Check if email already exists in database
+    if (data.email) {
+      const emailResult = await db.query(
+        'SELECT email FROM users WHERE email = $1',
+        [data.email.toLowerCase()]
+      );
+      
+      if (emailResult.rows.length > 0) {
+        errors.push('An account with this email already exists');
+      }
     }
 
-    // Check if username already exists
-    if (data.username && this.usersByUsername.has(data.username.toLowerCase())) {
-      errors.push('This username is already taken');
+    // Check if username already exists in database
+    if (data.username) {
+      const usernameResult = await db.query(
+        'SELECT username FROM users WHERE username = $1',
+        [data.username.toLowerCase()]
+      );
+      
+      if (usernameResult.rows.length > 0) {
+        errors.push('This username is already taken');
+      }
     }
 
     return {
@@ -115,8 +131,14 @@ class UserService {
     try {
       console.log('🚀 Initiating signup process...');
 
+      // In browser environment, use API client
+      if (isBrowser) {
+        return await apiClient.auth.signup(signupData);
+      }
+
+      // Server-side code below
       // Validate signup data
-      const validation = this.validateSignupData(signupData);
+      const validation = await this.validateSignupData(signupData);
       if (!validation.isValid) {
         return {
           success: false,
@@ -165,6 +187,12 @@ class UserService {
     try {
       console.log('🔐 Verifying signup OTP...');
 
+      // In browser environment, use API client
+      if (isBrowser) {
+        return await apiClient.auth.verifySignupOTP(email, otp);
+      }
+
+      // Server-side code below
       const normalizedEmail = email.toLowerCase();
 
       // Verify OTP
@@ -192,25 +220,33 @@ class UserService {
 
       // Create user account
       const userId = this.generateUserId();
-      const passwordHash = this.hashPassword(signupData.password);
+      const passwordHash = await this.hashPassword(signupData.password);
 
-      const newUser: StoredUser = {
-        id: userId,
-        username: signupData.username,
-        email: normalizedEmail,
-        firstName: signupData.firstName,
-        lastName: signupData.lastName,
-        sponsor: signupData.sponsor,
-        passwordHash,
-        isVerified: true,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      };
+      // Insert user into database
+      const insertUserResult = await db.query(
+        `INSERT INTO users(
+          id, username, email, first_name, last_name, sponsor, password_hash, is_verified, created_at, updated_at
+        ) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *`,
+        [
+          userId,
+          signupData.username,
+          normalizedEmail,
+          signupData.firstName,
+          signupData.lastName,
+          signupData.sponsor || null,
+          passwordHash,
+          true,
+          new Date(),
+          new Date()
+        ]
+      );
 
-      // Store user
-      this.users.set(userId, newUser);
-      this.usersByEmail.set(normalizedEmail, userId);
-      this.usersByUsername.set(signupData.username.toLowerCase(), userId);
+      if (!insertUserResult.rows || insertUserResult.rows.length === 0) {
+        return {
+          success: false,
+          message: 'Failed to create user account. Please try again.'
+        };
+      }
 
       // Clean up pending signup
       this.pendingSignups.delete(normalizedEmail);
@@ -224,17 +260,18 @@ class UserService {
 
       console.log(`✅ User account created successfully: ${signupData.username} (${normalizedEmail})`);
 
-      // Return user without password hash
+      // Convert database row to User object
+      const dbUser = insertUserResult.rows[0];
       const userResponse: User = {
-        id: newUser.id,
-        username: newUser.username,
-        email: newUser.email,
-        firstName: newUser.firstName,
-        lastName: newUser.lastName,
-        sponsor: newUser.sponsor,
-        isVerified: newUser.isVerified,
-        createdAt: newUser.createdAt,
-        updatedAt: newUser.updatedAt
+        id: dbUser.id,
+        username: dbUser.username,
+        email: dbUser.email,
+        firstName: dbUser.first_name,
+        lastName: dbUser.last_name,
+        sponsor: dbUser.sponsor,
+        isVerified: dbUser.is_verified,
+        createdAt: dbUser.created_at,
+        updatedAt: dbUser.updated_at
       };
 
       return {
@@ -257,6 +294,12 @@ class UserService {
     try {
       console.log('🔑 Initiating login process...');
 
+      // In browser environment, use API client
+      if (isBrowser) {
+        return await apiClient.auth.login(loginData);
+      }
+
+      // Server-side code below
       // Validate login data
       const validation = this.validateLoginData(loginData);
       if (!validation.isValid) {
@@ -268,30 +311,24 @@ class UserService {
 
       const usernameOrEmail = loginData.usernameOrEmail.toLowerCase();
 
-      // Find user by email or username
-      let userId = this.usersByEmail.get(usernameOrEmail);
-      if (!userId) {
-        userId = this.usersByUsername.get(usernameOrEmail);
-      }
+      // Find user by email or username in database
+      const userQuery = await db.query(
+        'SELECT * FROM users WHERE email = $1 OR username = $1',
+        [usernameOrEmail]
+      );
 
-      if (!userId) {
+      if (userQuery.rows.length === 0) {
         return {
           success: false,
           message: 'Invalid username/email or password'
         };
       }
 
-      const user = this.users.get(userId);
-      if (!user) {
-        return {
-          success: false,
-          message: 'User not found'
-        };
-      }
+      const user = userQuery.rows[0];
 
-      // Verify password
-      const passwordHash = this.hashPassword(loginData.password);
-      if (passwordHash !== user.passwordHash) {
+      // Verify password with bcrypt
+      const isPasswordValid = await this.comparePassword(loginData.password, user.password_hash);
+      if (!isPasswordValid) {
         return {
           success: false,
           message: 'Invalid username/email or password'
@@ -299,7 +336,7 @@ class UserService {
       }
 
       // Check if user is verified
-      if (!user.isVerified) {
+      if (!user.is_verified) {
         return {
           success: false,
           message: 'Please verify your email address before logging in'
@@ -310,7 +347,7 @@ class UserService {
       const otpResult = await otpService.generateAndSendOTP({
         email: user.email,
         type: 'login',
-        firstName: user.firstName
+        firstName: user.first_name
       });
 
       if (!otpResult.success) {
@@ -341,6 +378,12 @@ class UserService {
     try {
       console.log('🔐 Verifying login OTP...');
 
+      // In browser environment, use API client
+      if (isBrowser) {
+        return await apiClient.auth.verifyLoginOTP(email, otp);
+      }
+
+      // Server-side code below
       const normalizedEmail = email.toLowerCase();
 
       // Verify OTP
@@ -357,43 +400,40 @@ class UserService {
         };
       }
 
-      // Get user
-      const userId = this.usersByEmail.get(normalizedEmail);
-      if (!userId) {
+      // Get user from database
+      const userResult = await db.query(
+        'SELECT * FROM users WHERE email = $1',
+        [normalizedEmail]
+      );
+
+      if (userResult.rows.length === 0) {
         return {
           success: false,
           message: 'User not found'
         };
       }
 
-      const user = this.users.get(userId);
-      if (!user) {
-        return {
-          success: false,
-          message: 'User not found'
-        };
-      }
+      const dbUser = userResult.rows[0];
+      console.log(`✅ User logged in successfully: ${dbUser.username} (${normalizedEmail})`);
 
-      console.log(`✅ User logged in successfully: ${user.username} (${normalizedEmail})`);
-
-      // Return user without password hash
+      // Convert database user to User object
       const userResponse: User = {
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        sponsor: user.sponsor,
-        isVerified: user.isVerified,
-        createdAt: user.createdAt,
-        updatedAt: user.updatedAt
+        id: dbUser.id,
+        username: dbUser.username,
+        email: dbUser.email,
+        firstName: dbUser.first_name,
+        lastName: dbUser.last_name,
+        sponsor: dbUser.sponsor,
+        isVerified: dbUser.is_verified,
+        createdAt: dbUser.created_at,
+        updatedAt: dbUser.updated_at
       };
 
       return {
         success: true,
         message: 'Login successful! Welcome back.',
         user: userResponse,
-        token: `token_${userId}_${Date.now()}` // Mock JWT token
+        token: `token_${dbUser.id}_${Date.now()}` // Mock JWT token
       };
 
     } catch (error) {
@@ -407,6 +447,12 @@ class UserService {
 
   public async resendOTP(email: string, type: 'signup' | 'login'): Promise<ApiResponse> {
     try {
+      // In browser environment, use API client
+      if (isBrowser) {
+        return await apiClient.auth.resendOTP(email, type);
+      }
+
+      // Server-side code below
       const normalizedEmail = email.toLowerCase();
 
       let firstName: string | undefined;
@@ -415,9 +461,15 @@ class UserService {
         const signupData = this.pendingSignups.get(normalizedEmail);
         firstName = signupData?.firstName;
       } else {
-        const userId = this.usersByEmail.get(normalizedEmail);
-        const user = userId ? this.users.get(userId) : undefined;
-        firstName = user?.firstName;
+        // Get user from database
+        const userResult = await db.query(
+          'SELECT first_name FROM users WHERE email = $1',
+          [normalizedEmail]
+        );
+        
+        if (userResult.rows.length > 0) {
+          firstName = userResult.rows[0].first_name;
+        }
       }
 
       const result = await otpService.resendOTP(normalizedEmail, type, firstName);
@@ -437,26 +489,36 @@ class UserService {
   }
 
   // Utility methods for debugging/testing
-  public getAllUsers(): User[] {
-    return Array.from(this.users.values()).map(user => ({
-      id: user.id,
-      username: user.username,
-      email: user.email,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      sponsor: user.sponsor,
-      isVerified: user.isVerified,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt
-    }));
+  public async getAllUsers(): Promise<User[]> {
+    try {
+      const result = await db.query('SELECT * FROM users');
+      
+      return result.rows.map(row => ({
+        id: row.id,
+        username: row.username,
+        email: row.email,
+        firstName: row.first_name,
+        lastName: row.last_name,
+        sponsor: row.sponsor,
+        isVerified: row.is_verified,
+        createdAt: row.created_at,
+        updatedAt: row.updated_at
+      }));
+    } catch (error) {
+      console.error('Error getting all users:', error);
+      return [];
+    }
   }
 
-  public clearAllData(): void {
-    this.users.clear();
-    this.usersByEmail.clear();
-    this.usersByUsername.clear();
-    this.pendingSignups.clear();
-    console.log('🧹 All user data cleared');
+  public async clearAllData(): Promise<void> {
+    try {
+      await db.query('DELETE FROM users');
+      await db.query('DELETE FROM otps');
+      this.pendingSignups.clear();
+      console.log('🧹 All user data cleared');
+    } catch (error) {
+      console.error('Error clearing data:', error);
+    }
   }
 }
 
