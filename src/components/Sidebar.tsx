@@ -54,11 +54,6 @@ const Sidebar: React.FC<SidebarProps> = ({ onLogout }) => {
       path: '/dashboard/referrals',
       icon: <Award size={20} />
     },
-    {
-      name: 'Support Center',
-      path: '/dashboard/support',
-      icon: <HelpCircle size={20} />
-    }
   ];
 
   return (
