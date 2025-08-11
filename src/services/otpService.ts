@@ -122,17 +122,15 @@ class OTPService {
       const emailSent = await emailService.sendOTP(request, otp);
 
       if (!emailSent) {
-        if (this.isEmailSendStrict) {
-          // Delete the OTP if email sending failed
-          await db.query(
-            'DELETE FROM otps WHERE email = $1 AND type = $2',
-            [email, request.type]
-          );
-          return {
-            success: false,
-            message: 'Failed to send OTP email. Please try again.'
-          };
-        }
+        // Always fail if email sending fails
+        await db.query(
+          'DELETE FROM otps WHERE email = $1 AND type = $2',
+          [email, request.type]
+        );
+        return {
+          success: false,
+          message: 'Failed to send OTP email. Please check email configuration and try again.'
+        };
       }
 
       console.log(`✅ OTP generated${emailSent ? ' and sent' : ''} to ${email} for ${request.type}`);

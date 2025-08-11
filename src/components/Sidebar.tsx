@@ -15,12 +15,15 @@ import {
   Award
 } from 'lucide-react';
 import logoImage from '../assets/logo.svg';
+import { useAuth } from '../contexts/AuthContext';
 
 interface SidebarProps {
   onLogout: () => void;
 }
 
+
 const Sidebar: React.FC<SidebarProps> = ({ onLogout }) => {
+  const { logout } = useAuth();
   const location = useLocation();
   
   const navItems = [
@@ -45,15 +48,10 @@ const Sidebar: React.FC<SidebarProps> = ({ onLogout }) => {
       icon: <ArrowDownToLine size={20} />
     },
     {
-      name: 'Transaction History',
-      path: '/dashboard/transactions',
-      icon: <ArrowLeftRight size={20} />
-    },
-    {
       name: 'My Teams',
       path: '/dashboard/referrals',
       icon: <Award size={20} />
-    },
+    }
   ];
 
   return (
@@ -111,7 +109,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onLogout }) => {
       <div className="p-3 border-t border-slate-700/50">
         {/* Logout Button */}
         <button 
-          onClick={onLogout} 
+          onClick={logout} 
           className="w-full flex items-center px-4 py-3 text-sm font-medium text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded-xl transition-all duration-200 group"
         >
           <LogOut size={20} className="mr-3 group-hover:text-red-400" />
