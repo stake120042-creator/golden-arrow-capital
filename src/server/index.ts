@@ -175,10 +175,12 @@ authRouter.post('/resend-otp', async (req, res) => {
 // Mount auth routes
 app.use('/api/auth', authRouter);
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`🔗 API available at http://localhost:${PORT}/api`);
-});
+// Start server (only in development or non-Vercel environments)
+if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running on port ${PORT}`);
+    console.log(`🔗 API available at http://localhost:${PORT}/api`);
+  });
+}
 
 export default app;

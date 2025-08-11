@@ -12,7 +12,8 @@
     "server": "node run-server.mjs",
     "server:dev": "nodemon --watch run-server.mjs --exec \"node run-server.mjs\"",
     "server:ts": "ts-node -P tsconfig.server.json src/server/index.ts",
-    "start": "concurrently --kill-others \"npm run server\" \"npm run dev\""
+    "start": "concurrently --kill-others \"npm run server\" \"npm run dev\"",
+    "vercel-build": "npm run build"
   },
   "dependencies": {
     "@types/bcrypt": "^6.0.0",
@@ -40,6 +41,7 @@
     "@types/react-dom": "^18.3.1",
     "@typescript-eslint/eslint-plugin": "^5.54.0",
     "@typescript-eslint/parser": "^5.54.0",
+    "@vercel/node": "^5.3.11",
     "@vitejs/plugin-react": "^4.2.1",
     "autoprefixer": "latest",
     "concurrently": "^9.2.0",
