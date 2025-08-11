@@ -1,7 +1,5 @@
 import { EmailOTPRequest } from '../types/user';
-
-// Mock email service for demonstration
-// In production, you would use a service like SendGrid, Mailgun, or AWS SES
+import nodemailer, { Transporter } from 'nodemailer';
 
 interface EmailTemplate {
   subject: string;
@@ -11,14 +9,72 @@ interface EmailTemplate {
 
 class EmailService {
   private static instance: EmailService;
+  private transporter: Transporter | null = null;
+  private fromAddress: string | null = null;
+  private initialized = false;
 
-  private constructor() {}
+  private constructor() {
+    // Constructor is empty - initialization happens lazily
+  }
 
   public static getInstance(): EmailService {
     if (!EmailService.instance) {
       EmailService.instance = new EmailService();
     }
     return EmailService.instance;
+  }
+
+  private initialize(): void {
+    if (this.initialized) return;
+
+    // Gmail SMTP configuration (for reliable email delivery)
+    const host = process.env.GMAIL_SMTP_HOST || 'smtp.gmail.com';
+    const port = Number(process.env.GMAIL_SMTP_PORT || 587);
+    const user = process.env.GMAIL_SMTP_USER || '';
+    const pass = process.env.GMAIL_SMTP_PASS || '';
+
+    // SES Configuration (commented out until credentials are fixed)
+    // const host = process.env.SES_SMTP_HOST || 'email-smtp.us-east-1.amazonaws.com';
+    // const port = Number(process.env.SES_SMTP_PORT || 587);
+    // const user = process.env.SES_SMTP_USER || '';
+    // const pass = process.env.SES_SMTP_PASS || '';
+
+    this.fromAddress = process.env.EMAIL_FROM || 'Golden Arrow Capital <goldenarrowcapital2023@gmail.com>';
+
+    // Debug logging
+    console.log('🔧 EmailService initialization - SMTP Configuration:');
+    console.log('  SMTP_HOST:', host);
+    console.log('  SMTP_PORT:', port);
+    console.log('  SMTP_USER:', user ? `${user.substring(0, 8)}...` : 'NOT SET');
+    console.log('  SMTP_PASS:', pass ? `${pass.substring(0, 8)}...` : 'NOT SET');
+    console.log('  EMAIL_FROM:', this.fromAddress);
+
+    if (!user || !pass) {
+      console.log('⚠️  Gmail SMTP credentials not set. Emails will not be sent.');
+      console.log('   Please set GMAIL_SMTP_USER and GMAIL_SMTP_PASS in .env file');
+      console.log('   Instructions:');
+      console.log('   1. Enable 2FA on your Gmail account');
+      console.log('   2. Generate an App Password');
+      console.log('   3. Set GMAIL_SMTP_USER=your-email@gmail.com');
+      console.log('   4. Set GMAIL_SMTP_PASS=your-16-digit-app-password');
+      this.initialized = true;
+      return;
+    }
+
+    this.transporter = nodemailer.createTransport({
+      host,
+      port,
+      secure: false, // true for 465, false for 587
+      auth: {
+        user,
+        pass,
+      },
+      tls: {
+        rejectUnauthorized: false,
+      },
+    });
+
+    this.initialized = true;
   }
 
   private getOTPEmailTemplate(otp: string, type: 'signup' | 'login', firstName?: string): EmailTemplate {
@@ -148,46 +204,39 @@ The Golden Arrow Capital Security Team
 
   public async sendOTP(request: EmailOTPRequest, otp: string): Promise<boolean> {
     try {
-      console.log('📧 Sending OTP Email...');
-      console.log('To:', request.email);
-      console.log('Type:', request.type);
-      console.log('OTP:', otp);
+      this.initialize();
+      
+      if (!this.transporter || !this.fromAddress) {
+        console.log('⚠️  Email service not properly configured. OTP will not be sent.');
+        return false;
+      }
 
       const template = this.getOTPEmailTemplate(otp, request.type, request.firstName);
 
-      // Simulate email sending delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      // Mock email service call
-      console.log('📧 Email sent successfully!');
-      console.log('Subject:', template.subject);
-      console.log('Content preview:', template.text.substring(0, 100) + '...');
-
-      // In production, you would use a real email service:
-      /*
-      const emailProvider = new SendGridAPI(); // or your chosen provider
-      await emailProvider.send({
+      await this.transporter.sendMail({
+        from: this.fromAddress,
         to: request.email,
-        from: 'noreply@goldenarrrowcapital.com',
         subject: template.subject,
         html: template.html,
-        text: template.text
+        text: template.text,
       });
-      */
 
+      console.log(`📧 OTP email sent via Gmail SMTP to ${request.email}`);
       return true;
     } catch (error) {
-      console.error('❌ Failed to send OTP email:', error);
+      console.error('❌ Failed to send OTP email via Gmail SMTP:', error);
       return false;
     }
   }
 
   public async sendWelcomeEmail(user: { email: string; firstName: string; lastName: string }): Promise<boolean> {
     try {
-      console.log('📧 Sending Welcome Email...');
-      console.log('To:', user.email);
+      this.initialize();
+      
+      if (!this.transporter || !this.fromAddress) {
+        throw new Error('EmailService not properly initialized');
+      }
 
-      // Mock welcome email
       const welcomeTemplate = {
         subject: 'Welcome to Golden Arrow Capital - Your Premium Investment Journey Begins',
         html: `
@@ -227,16 +276,22 @@ The Golden Arrow Capital Security Team
               </div>
             </div>
           </div>
-        `
+        `,
+        text: `Welcome to Golden Arrow Capital, ${user.firstName}!`
       };
 
-      // Simulate email sending
-      await new Promise(resolve => setTimeout(resolve, 500));
-      console.log('📧 Welcome email sent successfully!');
+      await this.transporter.sendMail({
+        from: this.fromAddress,
+        to: user.email,
+        subject: welcomeTemplate.subject,
+        html: welcomeTemplate.html,
+        text: welcomeTemplate.text,
+      });
 
+      console.log(`📧 Welcome email sent via SES to ${user.email}`);
       return true;
     } catch (error) {
-      console.error('❌ Failed to send welcome email:', error);
+      console.error('❌ Failed to send welcome email via SES:', error);
       return false;
     }
   }
