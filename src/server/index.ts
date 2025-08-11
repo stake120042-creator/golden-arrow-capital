@@ -2,22 +2,10 @@ import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
-
-// ES Module compatibility
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 
 // Load environment variables
 dotenv.config();
 
-// Import database connection
-import db from '../config/database';
-
-// Import services
-import userService from '../services/userService';
 import otpService from '../services/otpService';
 
 // Create Express app
@@ -36,17 +24,23 @@ app.use(cors({
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
+  void req;
   res.status(200).json({ status: 'ok', message: 'Server is running' });
 });
 
 // API Routes for Authentication
 const authRouter = express.Router();
 
-// Signup route
+// Signup route: generate and send OTP
 authRouter.post('/signup', async (req, res) => {
   try {
-    const result = await userService.initiateSignup(req.body);
-    res.status(result.success ? 200 : 400).json(result);
+    const { email, firstName } = req.body || {};
+    if (!email) {
+      return res.status(400).json({ success: false, message: 'Email is required' });
+    }
+
+    const result = await otpService.generateAndSendOTP({ email, type: 'signup', firstName });
+    res.status(result.success ? 200 : 400).json({ success: result.success, message: result.message, data: { email } });
   } catch (error) {
     console.error('Error in signup route:', error);
     res.status(500).json({ 
@@ -67,8 +61,8 @@ authRouter.post('/verify-signup', async (req, res) => {
       });
     }
 
-    const result = await userService.verifySignupOTP(email, otp);
-    res.status(result.success ? 200 : 400).json(result);
+    const verify = await otpService.verifyOTP({ email, otp, type: 'signup' });
+    res.status(verify.success ? 200 : 400).json(verify);
   } catch (error) {
     console.error('Error in verify signup route:', error);
     res.status(500).json({ 
@@ -78,11 +72,16 @@ authRouter.post('/verify-signup', async (req, res) => {
   }
 });
 
-// Login route
+// Login route: generate and send OTP
 authRouter.post('/login', async (req, res) => {
   try {
-    const result = await userService.initiateLogin(req.body);
-    res.status(result.success ? 200 : 400).json(result);
+    const { usernameOrEmail } = req.body || {};
+    if (!usernameOrEmail) {
+      return res.status(400).json({ success: false, message: 'Username/email is required' });
+    }
+
+    const result = await otpService.generateAndSendOTP({ email: usernameOrEmail, type: 'login' });
+    res.status(result.success ? 200 : 400).json({ success: result.success, message: result.message, data: { email: usernameOrEmail } });
   } catch (error) {
     console.error('Error in login route:', error);
     res.status(500).json({ 
@@ -103,8 +102,8 @@ authRouter.post('/verify-login', async (req, res) => {
       });
     }
 
-    const result = await userService.verifyLoginOTP(email, otp);
-    res.status(result.success ? 200 : 400).json(result);
+    const verify = await otpService.verifyOTP({ email, otp, type: 'login' });
+    res.status(verify.success ? 200 : 400).json(verify);
   } catch (error) {
     console.error('Error in verify login route:', error);
     res.status(500).json({ 
@@ -117,7 +116,7 @@ authRouter.post('/verify-login', async (req, res) => {
 // Resend OTP route
 authRouter.post('/resend-otp', async (req, res) => {
   try {
-    const { email, type } = req.body;
+    const { email, type, firstName } = req.body;
     if (!email || !type || !['signup', 'login'].includes(type)) {
       return res.status(400).json({
         success: false,
@@ -125,7 +124,7 @@ authRouter.post('/resend-otp', async (req, res) => {
       });
     }
 
-    const result = await userService.resendOTP(email, type as 'signup' | 'login');
+    const result = await otpService.resendOTP(email, type as 'signup' | 'login', firstName);
     res.status(result.success ? 200 : 400).json(result);
   } catch (error) {
     console.error('Error in resend OTP route:', error);
@@ -138,29 +137,6 @@ authRouter.post('/resend-otp', async (req, res) => {
 
 // Mount auth routes
 app.use('/api/auth', authRouter);
-
-// User routes (protected by auth middleware in a real app)
-const userRouter = express.Router();
-
-// Get user profile
-userRouter.get('/profile', async (req, res) => {
-  // This would normally use authentication middleware to get the user
-  // For now, just return a mock response
-  res.status(200).json({
-    success: true,
-    user: {
-      id: 'mock-user-id',
-      username: 'demouser',
-      email: 'demo@example.com',
-      firstName: 'Demo',
-      lastName: 'User',
-      isVerified: true
-    }
-  });
-});
-
-// Mount user routes
-app.use('/api/user', userRouter);
 
 // Start server
 app.listen(PORT, () => {

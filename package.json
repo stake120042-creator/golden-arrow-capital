@@ -11,6 +11,7 @@
     "db:setup": "node scripts/setupDatabase.js",
     "server": "node run-server.mjs",
     "server:dev": "nodemon --watch run-server.mjs --exec \"node run-server.mjs\"",
+    "server:ts": "ts-node -P tsconfig.server.json src/server/index.ts",
     "start": "concurrently --kill-others \"npm run server\" \"npm run dev\""
   },
   "dependencies": {
@@ -22,6 +23,7 @@
     "dotenv": "^17.2.1",
     "express": "^5.1.0",
     "lucide-react": "^0.441.0",
+    "nodemailer": "^6.9.14",
     "pg": "^8.16.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -33,6 +35,7 @@
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
     "@types/node": "^20.11.18",
+    "@types/nodemailer": "^6.4.15",
     "@types/react": "^18.3.1",
     "@types/react-dom": "^18.3.1",
     "@typescript-eslint/eslint-plugin": "^5.54.0",

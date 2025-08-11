@@ -5,7 +5,9 @@ const API_BASE_URL = (import.meta as any).env.VITE_API_URL || 'http://localhost:
 class UserService {
   private static instance: UserService;
 
-  private constructor() {}
+  private constructor() {
+    // Prevent direct instantiation; use getInstance()
+  }
 
   public static getInstance(): UserService {
     if (!UserService.instance) {

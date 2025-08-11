@@ -12,12 +12,12 @@ if (!isBrowser) {
 // Create a mock database interface for client-side
 const createMockDb = () => {
   return {
-    query: async (text: string, params?: any[]) => {
+    query: async (text: string, _params?: unknown[]) => {
       console.warn('🔶 Client-side DB query attempted but ignored:', text);
       // Return a mock result
-      return { rows: [], rowCount: 0 };
+      return { rows: [] as unknown[], rowCount: 0 };
     },
-    pool: null,
+    pool: null as unknown,
   };
 };
 
@@ -49,7 +49,7 @@ const createRealDb = () => {
   });
 
   return {
-    query: (text: string, params?: any[]) => pool.query(text, params),
+    query: (text: string, params?: unknown[]) => pool.query(text, params as any[] | undefined),
     pool,
   };
 };
