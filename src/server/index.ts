@@ -7,6 +7,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 import otpService from '../services/otpService';
+import authService from '../services/authService';
 
 // Create Express app
 const app = express();
@@ -62,7 +63,21 @@ authRouter.post('/verify-signup', async (req, res) => {
     }
 
     const verify = await otpService.verifyOTP({ email, otp, type: 'signup' });
-    res.status(verify.success ? 200 : 400).json(verify);
+    
+    if (verify.success) {
+      // Create user account after successful OTP verification
+      const user = await authService.createUserAfterSignup(email);
+      const token = authService.generateToken(user);
+      
+      res.status(200).json({
+        success: true,
+        message: 'Account created successfully! You can now log in.',
+        user,
+        token
+      });
+    } else {
+      res.status(400).json(verify);
+    }
   } catch (error) {
     console.error('Error in verify signup route:', error);
     res.status(500).json({ 
@@ -103,7 +118,29 @@ authRouter.post('/verify-login', async (req, res) => {
     }
 
     const verify = await otpService.verifyOTP({ email, otp, type: 'login' });
-    res.status(verify.success ? 200 : 400).json(verify);
+    
+    if (verify.success) {
+      // Get user and generate token for successful login
+      const user = await authService.getUserForLogin(email);
+      
+      if (user) {
+        const token = authService.generateToken(user);
+        
+        res.status(200).json({
+          success: true,
+          message: 'Login successful! Welcome back.',
+          user,
+          token
+        });
+      } else {
+        res.status(400).json({
+          success: false,
+          message: 'User not found. Please sign up first.'
+        });
+      }
+    } else {
+      res.status(400).json(verify);
+    }
   } catch (error) {
     console.error('Error in verify login route:', error);
     res.status(500).json({ 

@@ -2,13 +2,11 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import TopBar from '../components/TopBar';
+import { useAuth } from '../contexts/AuthContext';
 import { ArrowLeft, Copy, Check, Wallet } from 'lucide-react';
 
-interface DepositPageProps {
-  onLogout: () => void;
-}
-
-const DepositPage: React.FC<DepositPageProps> = ({ onLogout }) => {
+const DepositPage: React.FC = () => {
+  const { logout } = useAuth();
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const [copied, setCopied] = useState(false);
   const [selectedOption, setSelectedOption] = useState('bitcoin');
@@ -35,13 +33,13 @@ const DepositPage: React.FC<DepositPageProps> = ({ onLogout }) => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
       {/* Sidebar */}
-      <Sidebar onLogout={onLogout} />
+              <Sidebar onLogout={logout} />
       
       {/* Main Content */}
       <div className="ml-0 lg:ml-64 min-h-screen">
         {/* Header */}
         <TopBar 
-          onLogout={onLogout} 
+          onLogout={logout} 
           toggleSidebar={() => setShowMobileSidebar(!showMobileSidebar)} 
         />
         

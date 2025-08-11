@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import TopBar from '../components/TopBar';
+import { useAuth } from '../contexts/AuthContext';
 import { 
   ArrowUp,
   ArrowDown,
@@ -19,11 +20,8 @@ import {
   Trophy
 } from 'lucide-react';
 
-interface DashboardProps {
-  onLogout: () => void;
-}
-
-const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
+const Dashboard: React.FC = () => {
+  const { logout } = useAuth();
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -36,13 +34,13 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
       {/* Sidebar */}
-      <Sidebar onLogout={onLogout} />
+              <Sidebar onLogout={logout} />
       
       {/* Main Content */}
       <div className="ml-0 lg:ml-64 min-h-screen">
         {/* Header */}
         <TopBar 
-          onLogout={onLogout} 
+          onLogout={logout} 
           toggleSidebar={() => setShowMobileSidebar(!showMobileSidebar)} 
         />
         
