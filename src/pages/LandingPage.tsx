@@ -3,12 +3,10 @@ import logoImage from '../assets/logo.svg';
 import { Eye, EyeOff, ArrowRight, AlertCircle, CheckCircle } from 'lucide-react';
 import userService from '../services/userService';
 import { SignupData, LoginData } from '../types/user';
+import { useAuth } from '../contexts/AuthContext';
 
-interface LandingPageProps {
-  onLogin: () => void;
-}
-
-const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
+const LandingPage: React.FC = () => {
+  const { login } = useAuth();
   const [activeTab, setActiveTab] = useState<'signup' | 'login' | 'otp' | 'login-otp'>('signup');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -193,11 +191,11 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
       const otpString = otpValues.join('');
       const result = await userService.verifyLoginOTP(currentEmail, otpString);
       
-      if (result.success) {
+      if (result.success && result.user && result.token) {
         setSuccessMessage(result.message);
         // Small delay to show success message
         setTimeout(() => {
-          onLogin();
+          login(result.user!, result.token!);
         }, 1500);
       } else {
         setErrorMessage(result.message);

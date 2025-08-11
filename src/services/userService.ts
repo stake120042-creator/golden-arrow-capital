@@ -82,6 +82,26 @@ class UserService {
     }
   }
 
+  public async verifyLoginOTP(email: string, otp: string): Promise<OTPVerificationResponse> {
+    try {
+      console.log('🔐 Verifying login OTP...');
+      
+      const result = await this.apiCall<OTPVerificationResponse>('/auth/verify-login', {
+        method: 'POST',
+        body: JSON.stringify({ email, otp }),
+      });
+
+      console.log(`✅ User logged in successfully: ${email}`);
+      return result;
+    } catch (error) {
+      console.error('❌ Error verifying login OTP:', error);
+      return {
+        success: false,
+        message: error instanceof Error ? error.message : 'An error occurred during login verification. Please try again.'
+      };
+    }
+  }
+
   public async initiateLogin(loginData: LoginData): Promise<ApiResponse> {
     try {
       console.log('🔑 Initiating login process...');
@@ -98,26 +118,6 @@ class UserService {
       return {
         success: false,
         message: error instanceof Error ? error.message : 'An error occurred during login. Please try again.'
-      };
-    }
-  }
-
-  public async verifyLoginOTP(email: string, otp: string): Promise<OTPVerificationResponse> {
-    try {
-      console.log('🔐 Verifying login OTP...');
-      
-      const result = await this.apiCall<OTPVerificationResponse>('/auth/verify-login', {
-        method: 'POST',
-        body: JSON.stringify({ email, otp }),
-      });
-
-      console.log(`✅ User logged in successfully: ${email}`);
-      return result;
-    } catch (error) {
-      console.error('❌ Error verifying login OTP:', error);
-      return {
-        success: false,
-        message: error instanceof Error ? error.message : 'An error occurred during verification. Please try again.'
       };
     }
   }
