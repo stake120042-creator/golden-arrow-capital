@@ -48,7 +48,7 @@ async function ensureDatabase() {
 }
 
 async function applySchema() {
-  const schemaPath = path.join(__dirname, '..', 'src', 'config', 'schema.sql');
+  const schemaPath = path.join(__dirname, '..', 'config', 'schema.sql');
   if (!fs.existsSync(schemaPath)) {
     throw new Error(`Schema file not found at ${schemaPath}`);
   }
