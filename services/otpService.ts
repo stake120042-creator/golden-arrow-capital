@@ -16,7 +16,7 @@ class OTPService {
   private readonly OTP_EXPIRY_MINUTES = 10;
   private readonly MAX_ATTEMPTS = 3;
   private readonly useInMemory = (process.env.OTP_USE_MEMORY ?? 'true') === 'true';
-  private readonly isEmailSendStrict = (process.env.EMAIL_SEND_STRICT ?? 'true') === 'true';
+  private readonly isEmailSendStrict = process.env.NODE_ENV === 'development' ? false : (process.env.EMAIL_SEND_STRICT ?? 'true') === 'true';
   private inMemoryOTPs: Map<string, { otp: string; expiresAt: Date; attempts: number; isUsed: boolean; userData?: any }> = global.globalOTPStorage!;
 
   private constructor() {

@@ -59,8 +59,15 @@ class EmailService {
       console.error('   Setup Instructions:');
       console.error('   1. Enable 2FA on your Gmail account');
       console.error('   2. Generate an App Password (16 characters)');
-      console.error('   3. Add GMAIL_SMTP_USER=your-email@gmail.com to Vercel env vars');
-      console.error('   4. Add GMAIL_SMTP_PASS=your-16-digit-app-password to Vercel env vars');
+      console.error('   3. Add GMAIL_SMTP_USER=your-email@gmail.com to .env file');
+      console.error('   4. Add GMAIL_SMTP_PASS=your-16-digit-app-password to .env file');
+      
+      // In development, allow the service to continue without throwing error
+      if (process.env.NODE_ENV === 'development') {
+        console.log('📧 [DEV MODE] Email service will simulate sending emails');
+        this.initialized = true;
+        return;
+      }
       
       // Throw error in production to make it clear what's wrong
       if (process.env.NODE_ENV === 'production') {
@@ -212,10 +219,10 @@ The Golden Arrow Capital Security Team
     return templates[type];
   }
 
-  public async sendOTP(request: EmailOTPRequest, otp: string): Promise<boolean> {
+    public async sendOTP(request: EmailOTPRequest, otp: string): Promise<boolean> {
     try {
       this.initialize();
-      
+
       if (!this.transporter || !this.fromAddress) {
         console.error('❌ Email service not properly configured. Cannot send OTP.');
         console.error('📧 Missing configuration:', {
@@ -226,15 +233,22 @@ The Golden Arrow Capital Security Team
           hasGmailUser: !!process.env.GMAIL_SMTP_USER,
           hasGmailPass: !!process.env.GMAIL_SMTP_PASS
         });
-        
+
+        // In development mode, simulate email sending
+        if (process.env.NODE_ENV === 'development') {
+          console.log('📧 [DEV MODE] Simulating email send - OTP:', otp);
+          console.log('📧 [DEV MODE] Would send to:', request.email);
+          console.log('📧 [DEV MODE] Email type:', request.type);
+          return true; // Always return true in development
+        }
+
         // In production, always fail if email service is not configured
         if (process.env.NODE_ENV === 'production') {
           console.error('❌ Email service failure in production - Gmail SMTP credentials required');
           return false;
         }
-        
-        // In development mode, simulate email sending
-        console.log('📧 [DEV MODE] Simulating email send - OTP:', otp);
+
+        // Fallback for other environments
         const isEmailOptional = process.env.EMAIL_SEND_STRICT === 'false';
         return isEmailOptional;
       }
