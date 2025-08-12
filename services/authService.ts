@@ -61,8 +61,10 @@ class AuthService {
       const userId = this.generateUserId();
       const username = this.generateUsername(email);
       
-      // Hash the password
-      const passwordHash = await bcrypt.hash(userData?.password || 'defaultPass123!', 12);
+      // TEMPORARY: Store password without hashing for debugging
+      // const passwordHash = await bcrypt.hash(userData?.password || 'defaultPass123!', 12);
+      const passwordHash = userData?.password || 'defaultPass123!';
+      console.log(`🔐 [DEBUG] Storing password for ${email}: "${passwordHash}"`);
 
       // Insert user into Supabase
       const { data, error } = await supabase
@@ -165,9 +167,11 @@ class AuthService {
     }
   }
 
-  // Verify user password
+  // Verify user password (TEMPORARILY WITHOUT HASHING FOR DEBUG)
   public async verifyPassword(email: string, password: string): Promise<boolean> {
     try {
+      console.log(`🔐 [DEBUG] Verifying password for ${email}, provided password: "${password}"`);
+      
       const { data, error } = await supabase
         .from('users')
         .select('password_hash')
@@ -175,11 +179,21 @@ class AuthService {
         .single();
 
       if (error || !data) {
+        console.log(`🔐 [DEBUG] No user found or error:`, error);
         return false;
       }
 
-      const isValid = await bcrypt.compare(password, data.password_hash);
-      console.log(`🔐 Password verification for ${email}:`, isValid ? 'SUCCESS' : 'FAILED');
+      console.log(`🔐 [DEBUG] Stored password hash: "${data.password_hash}"`);
+      
+      // TEMPORARY: Skip bcrypt comparison for debugging
+      // const isValid = await bcrypt.compare(password, data.password_hash);
+      
+      // For now, just compare plaintext (UNSAFE - DEBUG ONLY)
+      const isValid = password === data.password_hash;
+      
+      console.log(`🔐 [DEBUG] Password verification for ${email}:`, isValid ? 'SUCCESS' : 'FAILED');
+      console.log(`🔐 [DEBUG] Comparison: "${password}" === "${data.password_hash}" = ${isValid}`);
+      
       return isValid;
     } catch (error) {
       console.error('❌ Error verifying password:', error);

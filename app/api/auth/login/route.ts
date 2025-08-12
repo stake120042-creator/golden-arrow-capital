@@ -19,8 +19,12 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user exists
+    console.log('🔍 Checking if user exists for:', usernameOrEmail);
     const user = await authService.getUserForLogin(usernameOrEmail);
+    console.log('👤 User found:', user ? `${user.email} (${user.username})` : 'NO USER FOUND');
+    
     if (!user) {
+      console.log('❌ Login failed: User not found');
       return NextResponse.json(
         { success: false, message: 'Invalid credentials' },
         { status: 401 }
@@ -28,8 +32,12 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify password
+    console.log('🔐 Verifying password for:', usernameOrEmail, 'password:', password);
     const isValidPassword = await authService.verifyPassword(usernameOrEmail, password);
+    console.log('🔐 Password verification result:', isValidPassword);
+    
     if (!isValidPassword) {
+      console.log('❌ Login failed: Invalid password');
       return NextResponse.json(
         { success: false, message: 'Invalid credentials' },
         { status: 401 }
