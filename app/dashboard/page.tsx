@@ -1,13 +1,12 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import Sidebar from '@/components/Sidebar';
 import TopBar from '@/components/TopBar';
 import { useAuth } from '@/contexts/AuthContext';
 import { 
   ArrowUp,
-  ArrowDown,
   DollarSign,
   Wallet,
   Users,

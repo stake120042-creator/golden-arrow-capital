@@ -7,8 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "db:setup": "node scripts/setupDatabase.js",
-    "postbuild": "node scripts/setupDatabase.js"
+    "db:setup": "node scripts/setupDatabase.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.55.0",
