@@ -42,6 +42,8 @@ export async function POST(request: NextRequest) {
       username,
       password
     };
+    
+    console.log('📝 [DEBUG] User data to store in OTP:', userData);
 
     console.log('🔄 Calling OTP service...');
     const result = await otpService.generateAndSendOTP({ 

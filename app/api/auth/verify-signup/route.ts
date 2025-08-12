@@ -21,7 +21,9 @@ export async function POST(request: NextRequest) {
     
     if (verify.success) {
       // Get stored user data from OTP
-      const userData = otpService.getUserDataFromOTP(email, 'signup');
+      console.log('🔍 Getting user data from OTP for:', email);
+      const userData = await otpService.getUserDataFromOTP(email, 'signup');
+      console.log('📝 Retrieved user data:', userData);
       
       // Create user account after successful OTP verification
       const user = await authService.createUserAfterSignup(email, userData);

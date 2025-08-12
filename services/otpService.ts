@@ -128,6 +128,8 @@ class OTPService {
       const expiresAt = new Date(Date.now() + this.OTP_EXPIRY_MINUTES * 60000);
 
       // Store OTP in Supabase - use upsert
+      console.log(`📝 [DEBUG] Storing OTP with userData for ${email}:`, request.userData);
+      
       const { error: upsertError } = await supabase
         .from('otps')
         .upsert({
@@ -422,14 +424,36 @@ class OTPService {
   }
 
   // Get stored user data from OTP
-  public getUserDataFromOTP(email: string, type: 'signup' | 'login'): any {
-    if (this.useInMemory) {
-      const key = this.keyFor(email.toLowerCase(), type);
-      const stored = this.inMemoryOTPs.get(key);
-      return stored?.userData || null;
+  public async getUserDataFromOTP(email: string, type: 'signup' | 'login'): Promise<any> {
+    try {
+      const normalizedEmail = email.toLowerCase();
+      
+      if (this.useInMemory) {
+        const key = this.keyFor(normalizedEmail, type);
+        const stored = this.inMemoryOTPs.get(key);
+        console.log(`🔍 [DEBUG] Getting user data from memory for ${email}:`, stored?.userData);
+        return stored?.userData || null;
+      }
+
+      // Database implementation: retrieve from OTP table
+      const { data, error } = await supabase
+        .from('otps')
+        .select('user_data')
+        .eq('email', normalizedEmail)
+        .eq('otp_type', type)
+        .single();
+
+      if (error || !data) {
+        console.log(`🔍 [DEBUG] No user data found in database for ${email}:`, error);
+        return null;
+      }
+
+      console.log(`🔍 [DEBUG] Getting user data from database for ${email}:`, data.user_data);
+      return data.user_data;
+    } catch (error) {
+      console.error('❌ Error getting user data from OTP:', error);
+      return null;
     }
-    // For database implementation, you'd retrieve from OTP table
-    return null;
   }
 
   // Clear all OTPs (for testing purposes)

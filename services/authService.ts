@@ -57,6 +57,8 @@ class AuthService {
   // Create user after successful signup verification
   public async createUserAfterSignup(email: string, userData?: any): Promise<User> {
     try {
+      console.log(`👤 [DEBUG] Creating user for ${email} with userData:`, userData);
+      
       // Generate unique user ID and username
       const userId = this.generateUserId();
       const username = this.generateUsername(email);
@@ -65,20 +67,26 @@ class AuthService {
       // const passwordHash = await bcrypt.hash(userData?.password || 'defaultPass123!', 12);
       const passwordHash = userData?.password || 'defaultPass123!';
       console.log(`🔐 [DEBUG] Storing password for ${email}: "${passwordHash}"`);
+      
+      // Debug: Show what data we're about to store
+      const userDataToStore = {
+        id: userId,
+        username: username,
+        email: email.toLowerCase(),
+        password_hash: passwordHash,
+        first_name: userData?.firstName || '',
+        last_name: userData?.lastName || '',
+        sponsor: userData?.sponsor || '',
+        is_verified: true,
+      };
+      console.log(`📝 [DEBUG] User data to store:`, userDataToStore);
 
       // Insert user into Supabase
       const { data, error } = await supabase
         .from('users')
         .insert([
           {
-            id: userId,
-            username: username,
-            email: email.toLowerCase(),
-            password_hash: passwordHash,
-            first_name: userData?.firstName || '',
-            last_name: userData?.lastName || '',
-            sponsor: userData?.sponsor || '',
-            is_verified: true,
+            ...userDataToStore,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
           }
