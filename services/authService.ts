@@ -1,6 +1,6 @@
 import { User } from '../types/user';
 import crypto from 'crypto';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import { supabase } from '../config/database';
 
 class AuthService {
