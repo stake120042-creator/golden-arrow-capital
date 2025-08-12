@@ -89,10 +89,17 @@ class OTPService {
         const expiresAt = new Date(Date.now() + this.OTP_EXPIRY_MINUTES * 60000);
         this.inMemoryOTPs.set(key, { otp, expiresAt, attempts: 0, isUsed: false, userData: request.userData });
 
+        console.log('📧 Attempting to send OTP email...');
         const emailSent = await emailService.sendOTP(request, otp);
+        console.log('📧 Email send result:', emailSent);
+        
         if (!emailSent && this.isEmailSendStrict) {
           this.inMemoryOTPs.delete(key);
-          return { success: false, message: 'Failed to send OTP email. Please try again.' };
+          console.error('❌ Failed to send OTP email in strict mode');
+          return { 
+            success: false, 
+            message: 'An error occurred while sending OTP. Please try again.'
+          };
         }
 
         console.log(`✅ OTP generated${emailSent ? ' and sent' : ''} to ${email} for ${request.type} (memory)`);
@@ -141,10 +148,13 @@ class OTPService {
       }
 
       // Send OTP via email
+      console.log('📧 Attempting to send OTP email...');
       const emailSent = await emailService.sendOTP(request, otp);
+      console.log('📧 Email send result:', emailSent);
 
-      if (!emailSent) {
-        // Always fail if email sending fails
+      if (!emailSent && this.isEmailSendStrict) {
+        // Always fail if email sending fails in strict mode
+        console.error('❌ Failed to send OTP email in strict mode');
         await supabase
           .from('otps')
           .delete()
@@ -152,7 +162,7 @@ class OTPService {
           .eq('otp_type', request.type);
         return {
           success: false,
-          message: 'Failed to send OTP email. Please check email configuration and try again.'
+          message: 'An error occurred while sending OTP. Please try again.'
         };
       }
 
