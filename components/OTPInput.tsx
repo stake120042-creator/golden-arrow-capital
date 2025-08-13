@@ -99,7 +99,7 @@ const OTPInput: React.FC<OTPInputProps> = ({
   };
 
   return (
-    <div className={`flex gap-3 justify-center ${className}`}>
+    <div className={`flex gap-1 sm:gap-2 md:gap-3 justify-center w-full ${className}`}>
       {otp.map((digit, index) => (
         <input
           key={index}
@@ -108,14 +108,14 @@ const OTPInput: React.FC<OTPInputProps> = ({
           }}
           type="text"
           inputMode="numeric"
-          pattern="\d*"
+          pattern="[0-9]*"
           maxLength={1}
           value={digit}
           onChange={(e) => handleChange(index, e.target.value)}
           onKeyDown={(e) => handleKeyDown(index, e)}
           onPaste={index === 0 ? handlePaste : undefined}
           disabled={disabled}
-          className="w-12 h-12 md:w-14 md:h-14 text-center text-lg font-bold border-2 rounded-xl 
+          className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 lg:w-14 lg:h-14 text-center text-sm sm:text-base md:text-lg font-bold border-2 rounded-lg sm:rounded-xl 
                      bg-slate-800/50 border-slate-600/50 text-white
                      focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 
                      focus:outline-none transition-all duration-200

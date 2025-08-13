@@ -26,6 +26,64 @@ export default function Dashboard() {
   const { logout, user } = useAuth();
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const [copied, setCopied] = useState(false);
+  const commissionData = [
+    {
+      key: 'L1',
+      title: 'Level 1',
+      members: '20',
+      commission: '20%',
+      status: 'active',
+      vip: 'active'
+    },
+    {
+      key: 'L2',
+      title: 'Level 2',
+      members: '34',
+      commission: '10%',
+      status: 'inactive',
+      vip: 'inactive'
+    },
+    {
+      key: 'L3',
+      title: 'Level 3',
+      members: '45',
+      commission: '5%',
+      status: 'locked',
+      vip: 'active'
+    },
+    {
+      key: '4-8',
+      title: 'Levels 4-8',
+      members: '-',
+      commission: '4%',
+      status: 'locked',
+      vip: 'locked'
+    },
+    {
+      key: '9-13',
+      title: 'Levels 9-13',
+      members: '-',
+      commission: '3%',
+      status: 'locked',
+      vip: 'locked'
+    },
+    {
+      key: '14-20',
+      title: 'Levels 14-20',
+      members: '-',
+      commission: '2%',
+      status: 'locked',
+      vip: 'locked'
+    },
+    {
+      key: '21-25',
+      title: 'Levels 21-25',
+      members: '-',
+      commission: '1%',
+      status: 'locked',
+      vip: 'locked'
+    }
+  ] as const;
 
   const handleToggleSidebar = () => {
     console.log('🔍 Toggle sidebar clicked, current state:', showMobileSidebar);
@@ -131,12 +189,9 @@ export default function Dashboard() {
                       </div>
                       <p className="text-3xl font-bold text-white mt-3 mb-2">$512.12</p>
                       <div className="mt-3 flex flex-wrap gap-3">
-                        <button className="px-5 py-2.5 bg-gradient-to-r from-purple-500 to-indigo-600 text-white font-medium rounded-lg hover:from-purple-400 hover:to-indigo-500 transition-all text-sm shadow-md">
+                        <Link href="/dashboard/withdraw" className="px-5 py-2.5 bg-gradient-to-r from-purple-500 to-indigo-600 text-white font-medium rounded-lg hover:from-purple-400 hover:to-indigo-500 transition-all text-sm shadow-md">
                           Withdraw
-                        </button>
-                        <button className="px-5 py-2.5 bg-purple-500/10 border border-purple-500/30 text-purple-400 font-medium rounded-lg hover:bg-purple-500/20 transition-all text-sm">
-                          Transfer Internally
-                        </button>
+                        </Link>
                       </div>
                     </div>
                     <div className="p-2 rounded-full bg-purple-400/10">
@@ -292,9 +347,6 @@ export default function Dashboard() {
 
           {/* Income Breakdowns */}
           <div className="relative">
-            <div className="absolute -top-12 left-0 right-0 text-center">
-              <h2 className="inline-block bg-gradient-to-r from-slate-800/90 to-slate-900/90 backdrop-blur-sm px-8 py-2 rounded-full border border-slate-700/50 text-white font-medium text-lg shadow-lg shadow-slate-900/20">Income Breakdown</h2>
-            </div>
             <div className="bg-gradient-to-br from-slate-800/70 to-slate-900/70 backdrop-blur-sm border border-slate-700/50 rounded-xl shadow-lg shadow-slate-900/20 p-6 mt-4">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {/* Referral Income */}
@@ -472,487 +524,90 @@ export default function Dashboard() {
                 </div>
               </div>
               
-              {/* Enhanced Table */}
-              <div className="relative overflow-hidden rounded-xl border border-slate-700/30 bg-gradient-to-br from-slate-900/50 to-slate-800/50 backdrop-blur-sm">
-                <div className="overflow-x-auto">
-                  <table className="w-full">
+              {/* Responsive Table (md+) and Cards (mobile) */}
+              <div className="relative rounded-xl border border-slate-700/30 bg-gradient-to-br from-slate-900/50 to-slate-800/50 backdrop-blur-sm">
+                <div className="p-2">
+                  <table className="hidden md:table w-full table-fixed">
                     <thead>
-                      <tr className="bg-gradient-to-r from-slate-800/80 to-slate-700/80 border-b border-slate-600/30">
-                        <th className="text-left py-5 px-6 text-slate-300 font-semibold text-sm uppercase tracking-wider">
+                      <tr className="bg-slate-800/70 border-b border-slate-600/30">
+                        <th className="text-left py-3 px-4 text-slate-300 font-semibold text-xs uppercase tracking-wider w-2/5">
                           <div className="flex items-center space-x-2">
-                            <Trophy size={16} className="text-yellow-400" />
+                            <Trophy size={14} className="text-yellow-400" />
                             <span>Level</span>
                           </div>
                         </th>
-                        <th className="text-center py-5 px-6 text-slate-300 font-semibold text-sm uppercase tracking-wider">
-                          <div className="flex items-center justify-center space-x-2">
-                            <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                            <span>Status</span>
-                          </div>
-                        </th>
-                        <th className="text-center py-5 px-6 text-slate-300 font-semibold text-sm uppercase tracking-wider">
-                          <div className="flex items-center justify-center space-x-2">
-                            <Users size={16} className="text-blue-400" />
-                            <span>Members</span>
-                          </div>
-                        </th>
-                        <th className="text-center py-5 px-6 text-slate-300 font-semibold text-sm uppercase tracking-wider">
-                          <div className="flex items-center justify-center space-x-2">
-                            <DollarSign size={16} className="text-green-400" />
-                            <span>Commission</span>
-                          </div>
-                        </th>
-                        <th className="text-center py-5 px-6 text-slate-300 font-semibold text-sm uppercase tracking-wider">
-                          <div className="flex items-center justify-center space-x-2">
-                            <Award size={16} className="text-purple-400" />
-                            <span>VIP Status</span>
-                          </div>
-                        </th>
+                        <th className="text-center py-3 px-4 text-slate-300 font-semibold text-xs uppercase tracking-wider w-1/5">Status</th>
+                        <th className="text-center py-3 px-4 text-slate-300 font-semibold text-xs uppercase tracking-wider w-1/5">Members</th>
+                        <th className="text-center py-3 px-4 text-slate-300 font-semibold text-xs uppercase tracking-wider w-1/5">Commission</th>
+                        <th className="text-center py-3 px-4 text-slate-300 font-semibold text-xs uppercase tracking-wider w-1/5">VIP</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-700/30">
-                      {/* Level 1 */}
-                      <tr className="group hover:bg-gradient-to-r hover:from-yellow-500/5 hover:to-amber-600/5 transition-all duration-300">
-                        <td className="py-6 px-6">
-                          <div className="flex items-center">
-                            <div className="relative">
-                              <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 to-amber-500 rounded-lg blur-sm opacity-50 group-hover:opacity-75 transition-opacity"></div>
-                              <div className="relative p-3 rounded-lg bg-gradient-to-br from-yellow-500/30 to-amber-600/20 border border-yellow-500/40 group-hover:border-yellow-400/60 transition-colors">
-                                <span className="text-yellow-400 font-bold text-sm">L1</span>
-                              </div>
-                            </div>
-                            <div className="ml-4">
-                              <span className="text-white font-semibold text-base">Level 1</span>
-                              <p className="text-slate-400 text-xs mt-0.5">Direct Referrals</p>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="py-6 px-6 text-center">
-                          <div className="flex justify-center">
-                            <div className="relative">
-                              <div className="absolute inset-0 bg-green-400 rounded-full blur-sm opacity-50"></div>
-                              <div className="relative p-2 rounded-full bg-gradient-to-br from-green-500/30 to-emerald-600/20 border border-green-500/40 shadow-lg">
-                                <Check size={16} className="text-green-400" />
-                              </div>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="py-6 px-6 text-center">
-                          <div className="flex justify-center items-center">
-                            <div className="relative">
-                              <div className="absolute inset-0 bg-slate-600 rounded-xl blur-sm opacity-30"></div>
-                              <div className="relative bg-gradient-to-br from-slate-700/70 to-slate-800/70 rounded-xl px-4 py-2 border border-slate-600/40 shadow-lg">
-                                <span className="text-white font-bold text-lg">20</span>
-                              </div>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="py-6 px-6 text-center">
-                          <div className="flex justify-center">
-                            <div className="relative">
-                              <div className="absolute inset-0 bg-green-400 rounded-xl blur-sm opacity-40"></div>
-                              <div className="relative px-4 py-2 bg-gradient-to-r from-green-500/30 to-emerald-600/20 text-green-400 rounded-xl font-bold text-lg border border-green-500/40 shadow-lg">
-                                20%
-                              </div>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="py-6 px-6 text-center">
-                          <div className="flex justify-center">
-                            <div className="relative">
-                              <div className="absolute inset-0 bg-green-400 rounded-full blur-sm opacity-50"></div>
-                              <div className="relative p-2 rounded-full bg-gradient-to-br from-green-500/30 to-emerald-600/20 border border-green-500/40 shadow-lg">
-                                <Check size={16} className="text-green-400" />
-                              </div>
-                            </div>
-                          </div>
-                        </td>
-                      </tr>
-
-                      {/* Level 2 */}
-                      <tr className="group hover:bg-gradient-to-r hover:from-blue-500/5 hover:to-indigo-600/5 transition-all duration-300">
-                        <td className="py-6 px-6">
-                          <div className="flex items-center">
-                            <div className="relative">
-                              <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-indigo-500 rounded-lg blur-sm opacity-50 group-hover:opacity-75 transition-opacity"></div>
-                              <div className="relative p-3 rounded-lg bg-gradient-to-br from-blue-500/30 to-indigo-600/20 border border-blue-500/40 group-hover:border-blue-400/60 transition-colors">
-                                <span className="text-blue-400 font-bold text-sm">L2</span>
-                              </div>
-                            </div>
-                            <div className="ml-4">
-                              <span className="text-white font-semibold text-base">Level 2</span>
-                              <p className="text-slate-400 text-xs mt-0.5">Second Tier</p>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="py-6 px-6 text-center">
-                          <div className="flex justify-center">
-                            <div className="relative">
-                              <div className="absolute inset-0 bg-red-400 rounded-full blur-sm opacity-50"></div>
-                              <div className="relative p-2 rounded-full bg-gradient-to-br from-red-500/30 to-rose-600/20 border border-red-500/40 shadow-lg">
-                                <X size={16} className="text-red-400" />
-                              </div>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="py-6 px-6 text-center">
-                          <div className="flex justify-center items-center">
-                            <div className="relative">
-                              <div className="absolute inset-0 bg-slate-600 rounded-xl blur-sm opacity-30"></div>
-                              <div className="relative bg-gradient-to-br from-slate-700/70 to-slate-800/70 rounded-xl px-4 py-2 border border-slate-600/40 shadow-lg">
-                                <span className="text-white font-bold text-lg">34</span>
-                              </div>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="py-6 px-6 text-center">
-                          <div className="flex justify-center">
-                            <div className="relative">
-                              <div className="absolute inset-0 bg-blue-400 rounded-xl blur-sm opacity-40"></div>
-                              <div className="relative px-4 py-2 bg-gradient-to-r from-blue-500/30 to-indigo-600/20 text-blue-400 rounded-xl font-bold text-lg border border-blue-500/40 shadow-lg">
-                                10%
-                              </div>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="py-6 px-6 text-center">
-                          <div className="flex justify-center">
-                            <div className="relative">
-                              <div className="absolute inset-0 bg-red-400 rounded-full blur-sm opacity-50"></div>
-                              <div className="relative p-2 rounded-full bg-gradient-to-br from-red-500/30 to-rose-600/20 border border-red-500/40 shadow-lg">
-                                <X size={16} className="text-red-400" />
-                              </div>
-                            </div>
-                          </div>
-                        </td>
-                      </tr>
-
-                      {/* Level 3 */}
-                      <tr className="group hover:bg-gradient-to-r hover:from-purple-500/5 hover:to-indigo-600/5 transition-all duration-300">
-                        <td className="py-6 px-6">
-                          <div className="flex items-center">
-                            <div className="relative">
-                              <div className="absolute inset-0 bg-gradient-to-r from-purple-400 to-indigo-500 rounded-lg blur-sm opacity-50 group-hover:opacity-75 transition-opacity"></div>
-                              <div className="relative p-3 rounded-lg bg-gradient-to-br from-purple-500/30 to-indigo-600/20 border border-purple-500/40 group-hover:border-purple-400/60 transition-colors">
-                                <span className="text-purple-400 font-bold text-sm">L3</span>
-                              </div>
-                            </div>
-                            <div className="ml-4">
-                              <span className="text-white font-semibold text-base">Level 3</span>
-                              <p className="text-slate-400 text-xs mt-0.5">Third Tier</p>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="py-6 px-6 text-center">
-                          <div className="flex justify-center">
-                            <div className="relative">
-                              <div className="absolute inset-0 bg-slate-500 rounded-lg blur-sm opacity-30"></div>
-                              <div className="relative w-8 h-8 border-2 border-slate-500/60 rounded-lg bg-gradient-to-br from-slate-700/50 to-slate-800/50 shadow-lg"></div>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="py-6 px-6 text-center">
-                          <div className="flex justify-center items-center">
-                            <div className="relative">
-                              <div className="absolute inset-0 bg-slate-600 rounded-xl blur-sm opacity-30"></div>
-                              <div className="relative bg-gradient-to-br from-slate-700/70 to-slate-800/70 rounded-xl px-4 py-2 border border-slate-600/40 shadow-lg">
-                                <span className="text-white font-bold text-lg">45</span>
-                              </div>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="py-6 px-6 text-center">
-                          <div className="flex justify-center">
-                            <div className="relative">
-                              <div className="absolute inset-0 bg-purple-400 rounded-xl blur-sm opacity-40"></div>
-                              <div className="relative px-4 py-2 bg-gradient-to-r from-purple-500/30 to-indigo-600/20 text-purple-400 rounded-xl font-bold text-lg border border-purple-500/40 shadow-lg">
-                                5%
-                              </div>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="py-6 px-6 text-center">
-                          <div className="flex justify-center">
-                            <div className="relative">
-                              <div className="absolute inset-0 bg-green-400 rounded-full blur-sm opacity-50"></div>
-                              <div className="relative p-2 rounded-full bg-gradient-to-br from-green-500/30 to-emerald-600/20 border border-green-500/40 shadow-lg">
-                                <Check size={16} className="text-green-400" />
-                              </div>
-                            </div>
-                          </div>
-                        </td>
-                      </tr>
-
-                      {/* Levels 4-8 */}
-                      <tr className="group hover:bg-gradient-to-r hover:from-amber-500/5 hover:to-orange-600/5 transition-all duration-300">
-                        <td className="py-6 px-6">
-                          <div className="flex items-center">
-                            <div className="relative">
-                              <div className="absolute inset-0 bg-gradient-to-r from-amber-400 to-orange-500 rounded-lg blur-sm opacity-50 group-hover:opacity-75 transition-opacity"></div>
-                              <div className="relative p-3 rounded-lg bg-gradient-to-br from-amber-500/30 to-orange-600/20 border border-amber-500/40 group-hover:border-amber-400/60 transition-colors">
-                                <span className="text-amber-400 font-bold text-xs">4-8</span>
-                              </div>
-                            </div>
-                            <div className="ml-4">
-                              <span className="text-white font-semibold text-base">Levels 4-8</span>
-                              <p className="text-slate-400 text-xs mt-0.5">Extended Network</p>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="py-6 px-6 text-center">
-                          <div className="flex justify-center">
-                            <div className="relative">
-                              <div className="absolute inset-0 bg-slate-500 rounded-lg blur-sm opacity-30"></div>
-                              <div className="relative w-8 h-8 border-2 border-slate-500/60 rounded-lg bg-gradient-to-br from-slate-700/50 to-slate-800/50 shadow-lg"></div>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="py-6 px-6 text-center">
-                          <div className="flex justify-center items-center">
-                            <div className="relative">
-                              <div className="absolute inset-0 bg-slate-600 rounded-xl blur-sm opacity-30"></div>
-                              <div className="relative bg-gradient-to-br from-slate-700/70 to-slate-800/70 rounded-xl px-4 py-2 border border-slate-600/40 shadow-lg">
-                                <span className="text-slate-400 font-bold text-lg">-</span>
-                              </div>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="py-6 px-6 text-center">
-                          <div className="flex justify-center">
-                            <div className="relative">
-                              <div className="absolute inset-0 bg-amber-400 rounded-xl blur-sm opacity-40"></div>
-                              <div className="relative px-4 py-2 bg-gradient-to-r from-amber-500/30 to-orange-600/20 text-amber-400 rounded-xl font-bold text-lg border border-amber-500/40 shadow-lg">
-                                4%
-                              </div>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="py-6 px-6 text-center">
-                          <div className="flex justify-center">
-                            <div className="relative">
-                              <div className="absolute inset-0 bg-slate-500 rounded-lg blur-sm opacity-30"></div>
-                              <div className="relative w-8 h-8 border-2 border-slate-500/60 rounded-lg bg-gradient-to-br from-slate-700/50 to-slate-800/50 shadow-lg"></div>
-                            </div>
-                          </div>
-                        </td>
-                      </tr>
-
-                      {/* Levels 9-13 */}
-                      <tr className="group hover:bg-gradient-to-r hover:from-emerald-500/5 hover:to-teal-600/5 transition-all duration-300">
-                        <td className="py-6 px-6">
-                          <div className="flex items-center">
-                            <div className="relative">
-                              <div className="absolute inset-0 bg-gradient-to-r from-emerald-400 to-teal-500 rounded-lg blur-sm opacity-50 group-hover:opacity-75 transition-opacity"></div>
-                              <div className="relative p-3 rounded-lg bg-gradient-to-br from-emerald-500/30 to-teal-600/20 border border-emerald-500/40 group-hover:border-emerald-400/60 transition-colors">
-                                <span className="text-emerald-400 font-bold text-xs">9-13</span>
-                              </div>
-                            </div>
-                            <div className="ml-4">
-                              <span className="text-white font-semibold text-base">Levels 9-13</span>
-                              <p className="text-slate-400 text-xs mt-0.5">Deep Network</p>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="py-6 px-6 text-center">
-                          <div className="flex justify-center">
-                            <div className="relative">
-                              <div className="absolute inset-0 bg-slate-500 rounded-lg blur-sm opacity-30"></div>
-                              <div className="relative w-8 h-8 border-2 border-slate-500/60 rounded-lg bg-gradient-to-br from-slate-700/50 to-slate-800/50 shadow-lg"></div>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="py-6 px-6 text-center">
-                          <div className="flex justify-center items-center">
-                            <div className="relative">
-                              <div className="absolute inset-0 bg-slate-600 rounded-xl blur-sm opacity-30"></div>
-                              <div className="relative bg-gradient-to-br from-slate-700/70 to-slate-800/70 rounded-xl px-4 py-2 border border-slate-600/40 shadow-lg">
-                                <span className="text-slate-400 font-bold text-lg">-</span>
-                              </div>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="py-6 px-6 text-center">
-                          <div className="flex justify-center">
-                            <div className="relative">
-                              <div className="absolute inset-0 bg-emerald-400 rounded-xl blur-sm opacity-40"></div>
-                              <div className="relative px-4 py-2 bg-gradient-to-r from-emerald-500/30 to-teal-600/20 text-emerald-400 rounded-xl font-bold text-lg border border-emerald-500/40 shadow-lg">
-                                3%
-                              </div>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="py-6 px-6 text-center">
-                          <div className="flex justify-center">
-                            <div className="relative">
-                              <div className="absolute inset-0 bg-slate-500 rounded-lg blur-sm opacity-30"></div>
-                              <div className="relative w-8 h-8 border-2 border-slate-500/60 rounded-lg bg-gradient-to-br from-slate-700/50 to-slate-800/50 shadow-lg"></div>
-                            </div>
-                          </div>
-                        </td>
-                      </tr>
-
-                      {/* Levels 14-20 */}
-                      <tr className="group hover:bg-gradient-to-r hover:from-cyan-500/5 hover:to-sky-600/5 transition-all duration-300">
-                        <td className="py-6 px-6">
-                          <div className="flex items-center">
-                            <div className="relative">
-                              <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-sky-500 rounded-lg blur-sm opacity-50 group-hover:opacity-75 transition-opacity"></div>
-                              <div className="relative p-3 rounded-lg bg-gradient-to-br from-cyan-500/30 to-sky-600/20 border border-cyan-500/40 group-hover:border-cyan-400/60 transition-colors">
-                                <span className="text-cyan-400 font-bold text-xs">14-20</span>
-                              </div>
-                            </div>
-                            <div className="ml-4">
-                              <span className="text-white font-semibold text-base">Levels 14-20</span>
-                              <p className="text-slate-400 text-xs mt-0.5">Advanced Tier</p>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="py-6 px-6 text-center">
-                          <div className="flex justify-center">
-                            <div className="relative">
-                              <div className="absolute inset-0 bg-slate-500 rounded-lg blur-sm opacity-30"></div>
-                              <div className="relative w-8 h-8 border-2 border-slate-500/60 rounded-lg bg-gradient-to-br from-slate-700/50 to-slate-800/50 shadow-lg"></div>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="py-6 px-6 text-center">
-                          <div className="flex justify-center items-center">
-                            <div className="relative">
-                              <div className="absolute inset-0 bg-slate-600 rounded-xl blur-sm opacity-30"></div>
-                              <div className="relative bg-gradient-to-br from-slate-700/70 to-slate-800/70 rounded-xl px-4 py-2 border border-slate-600/40 shadow-lg">
-                                <span className="text-slate-400 font-bold text-lg">-</span>
-                              </div>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="py-6 px-6 text-center">
-                          <div className="flex justify-center">
-                            <div className="relative">
-                              <div className="absolute inset-0 bg-cyan-400 rounded-xl blur-sm opacity-40"></div>
-                              <div className="relative px-4 py-2 bg-gradient-to-r from-cyan-500/30 to-sky-600/20 text-cyan-400 rounded-xl font-bold text-lg border border-cyan-500/40 shadow-lg">
-                                2%
-                              </div>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="py-6 px-6 text-center">
-                          <div className="flex justify-center">
-                            <div className="relative">
-                              <div className="absolute inset-0 bg-slate-500 rounded-lg blur-sm opacity-30"></div>
-                              <div className="relative w-8 h-8 border-2 border-slate-500/60 rounded-lg bg-gradient-to-br from-slate-700/50 to-slate-800/50 shadow-lg"></div>
-                            </div>
-                          </div>
-                        </td>
-                      </tr>
-
-                      {/* Levels 21-25 */}
-                      <tr className="group hover:bg-gradient-to-r hover:from-pink-500/5 hover:to-rose-600/5 transition-all duration-300">
-                        <td className="py-6 px-6">
-                          <div className="flex items-center">
-                            <div className="relative">
-                              <div className="absolute inset-0 bg-gradient-to-r from-pink-400 to-rose-500 rounded-lg blur-sm opacity-50 group-hover:opacity-75 transition-opacity"></div>
-                              <div className="relative p-3 rounded-lg bg-gradient-to-br from-pink-500/30 to-rose-600/20 border border-pink-500/40 group-hover:border-pink-400/60 transition-colors">
-                                <span className="text-pink-400 font-bold text-xs">21-25</span>
-                              </div>
-                            </div>
-                            <div className="ml-4">
-                              <span className="text-white font-semibold text-base">Levels 21-25</span>
-                              <p className="text-slate-400 text-xs mt-0.5">Ultimate Tier</p>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="py-6 px-6 text-center">
-                          <div className="flex justify-center">
-                            <div className="relative">
-                              <div className="absolute inset-0 bg-slate-500 rounded-lg blur-sm opacity-30"></div>
-                              <div className="relative w-8 h-8 border-2 border-slate-500/60 rounded-lg bg-gradient-to-br from-slate-700/50 to-slate-800/50 shadow-lg"></div>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="py-6 px-6 text-center">
-                          <div className="flex justify-center items-center">
-                            <div className="relative">
-                              <div className="absolute inset-0 bg-slate-600 rounded-xl blur-sm opacity-30"></div>
-                              <div className="relative bg-gradient-to-br from-slate-700/70 to-slate-800/70 rounded-xl px-4 py-2 border border-slate-600/40 shadow-lg">
-                                <span className="text-slate-400 font-bold text-lg">-</span>
-                              </div>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="py-6 px-6 text-center">
-                          <div className="flex justify-center">
-                            <div className="relative">
-                              <div className="absolute inset-0 bg-pink-400 rounded-xl blur-sm opacity-40"></div>
-                              <div className="relative px-4 py-2 bg-gradient-to-r from-pink-500/30 to-rose-600/20 text-pink-400 rounded-xl font-bold text-lg border border-pink-500/40 shadow-lg">
-                                1%
-                              </div>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="py-6 px-6 text-center">
-                          <div className="flex justify-center">
-                            <div className="relative">
-                              <div className="absolute inset-0 bg-slate-500 rounded-lg blur-sm opacity-30"></div>
-                              <div className="relative w-8 h-8 border-2 border-slate-500/60 rounded-lg bg-gradient-to-br from-slate-700/50 to-slate-800/50 shadow-lg"></div>
-                            </div>
-                          </div>
-                        </td>
-                      </tr>
+                    <tbody className="divide-y divide-slate-700/30 text-sm">
+                      {commissionData.map(row => (
+                        <tr key={row.key} className="hover:bg-slate-800/40">
+                          <td className="py-3 px-4 text-slate-200">
+                            {row.title}
+                          </td>
+                          <td className="py-3 px-4 text-center">
+                            {row.status === 'active' && (
+                              <Check size={16} className="inline text-green-400" />
+                            )}
+                            {row.status === 'inactive' && (
+                              <X size={16} className="inline text-red-400" />
+                            )}
+                            {row.status === 'locked' && (
+                              <span className="inline-block w-3 h-3 rounded bg-slate-500/70 align-middle"></span>
+                            )}
+                          </td>
+                          <td className="py-3 px-4 text-center text-slate-200">{row.members}</td>
+                          <td className="py-3 px-4 text-center font-semibold text-slate-200">{row.commission}</td>
+                          <td className="py-3 px-4 text-center">
+                            {row.vip === 'active' && (
+                              <Check size={16} className="inline text-green-400" />
+                            )}
+                            {row.vip === 'inactive' && (
+                              <X size={16} className="inline text-red-400" />
+                            )}
+                            {row.vip === 'locked' && (
+                              <span className="inline-block w-3 h-3 rounded bg-slate-500/70 align-middle"></span>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
                     </tbody>
                   </table>
-                </div>
-              </div>
 
-              {/* Enhanced Summary Cards */}
-              <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="relative group">
-                  <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 to-amber-500 rounded-xl blur-lg opacity-20 group-hover:opacity-30 transition-opacity"></div>
-                  <div className="relative bg-gradient-to-br from-yellow-500/15 to-amber-600/10 rounded-xl p-6 border border-yellow-500/30 shadow-xl backdrop-blur-sm">
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="p-2 rounded-lg bg-yellow-500/20 border border-yellow-500/30">
-                        <Trophy size={20} className="text-yellow-400" />
+                  <div className="md:hidden space-y-3">
+                    {commissionData.map(row => (
+                      <div key={row.key} className="rounded-lg border border-slate-700/40 bg-slate-800/40 p-3">
+                        <div className="flex items-center justify-between">
+                          <div className="text-slate-200 font-semibold text-sm">{row.title}</div>
+                          <div>
+                            {row.status === 'active' && <Check size={16} className="text-green-400" />}
+                            {row.status === 'inactive' && <X size={16} className="text-red-400" />}
+                            {row.status === 'locked' && <span className="inline-block w-3 h-3 rounded bg-slate-500/70"></span>}
+                          </div>
+                        </div>
+                        <div className="mt-2 grid grid-cols-2 gap-2 text-xs">
+                          <div className="bg-slate-900/40 border border-slate-700/40 rounded px-2 py-1">
+                            <div className="text-slate-400">Members</div>
+                            <div className="text-slate-200 font-medium">{row.members}</div>
+                          </div>
+                          <div className="bg-slate-900/40 border border-slate-700/40 rounded px-2 py-1">
+                            <div className="text-slate-400">Commission</div>
+                            <div className="text-slate-200 font-semibold">{row.commission}</div>
+                          </div>
+                          <div className="bg-slate-900/40 border border-slate-700/40 rounded px-2 py-1 col-span-2">
+                            <div className="text-slate-400">VIP</div>
+                            <div className="mt-1">
+                              {row.vip === 'active' && <Check size={16} className="text-green-400" />}
+                              {row.vip === 'inactive' && <X size={16} className="text-red-400" />}
+                              {row.vip === 'locked' && <span className="inline-block w-3 h-3 rounded bg-slate-500/70"></span>}
+                            </div>
+                          </div>
+                        </div>
                       </div>
-                      <span className="text-yellow-400 text-xs font-medium bg-yellow-500/10 px-2 py-1 rounded-full">Active</span>
-                    </div>
-                    <h3 className="text-slate-300 text-sm font-medium mb-2">Total Active Levels</h3>
-                    <p className="text-3xl font-bold text-yellow-400">3</p>
-                    <div className="mt-3 w-full bg-slate-700/50 rounded-full h-1.5">
-                      <div className="bg-gradient-to-r from-yellow-400 to-amber-500 h-1.5 rounded-full w-1/4"></div>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="relative group">
-                  <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-emerald-500 rounded-xl blur-lg opacity-20 group-hover:opacity-30 transition-opacity"></div>
-                  <div className="relative bg-gradient-to-br from-green-500/15 to-emerald-600/10 rounded-xl p-6 border border-green-500/30 shadow-xl backdrop-blur-sm">
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="p-2 rounded-lg bg-green-500/20 border border-green-500/30">
-                        <Users size={20} className="text-green-400" />
-                      </div>
-                      <span className="text-green-400 text-xs font-medium bg-green-500/10 px-2 py-1 rounded-full">Growing</span>
-                    </div>
-                    <h3 className="text-slate-300 text-sm font-medium mb-2">Total Members</h3>
-                    <p className="text-3xl font-bold text-green-400">99</p>
-                    <div className="mt-3 w-full bg-slate-700/50 rounded-full h-1.5">
-                      <div className="bg-gradient-to-r from-green-400 to-emerald-500 h-1.5 rounded-full w-3/4"></div>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="relative group">
-                  <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-indigo-500 rounded-xl blur-lg opacity-20 group-hover:opacity-30 transition-opacity"></div>
-                  <div className="relative bg-gradient-to-br from-blue-500/15 to-indigo-600/10 rounded-xl p-6 border border-blue-500/30 shadow-xl backdrop-blur-sm">
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="p-2 rounded-lg bg-blue-500/20 border border-blue-500/30">
-                        <DollarSign size={20} className="text-blue-400" />
-                      </div>
-                      <span className="text-blue-400 text-xs font-medium bg-blue-500/10 px-2 py-1 rounded-full">Average</span>
-                    </div>
-                    <h3 className="text-slate-300 text-sm font-medium mb-2">Average Commission</h3>
-                    <p className="text-3xl font-bold text-blue-400">8.5%</p>
-                    <div className="mt-3 w-full bg-slate-700/50 rounded-full h-1.5">
-                      <div className="bg-gradient-to-r from-blue-400 to-indigo-500 h-1.5 rounded-full w-1/2"></div>
-                    </div>
+                    ))}
                   </div>
                 </div>
               </div>

@@ -44,19 +44,9 @@ const Sidebar: React.FC<SidebarProps> = ({ onLogout, isOpen = false, onClose }) 
       icon: <Wallet size={20} />
     },
     {
-      name: 'Internal Transfers',
-      path: '/dashboard/internaltransfers',
-      icon: <PieChart size={20} />
-    },
-    {
       name: 'Withdraw Funds',
       path: '/dashboard/withdraw',
       icon: <ArrowDownToLine size={20} />
-    },
-    {
-      name: 'My Teams',
-      path: '/dashboard/referrals',
-      icon: <Award size={20} />
     }
   ];
 
