@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Sidebar from '@/components/Sidebar';
 import TopBar from '@/components/TopBar';
 import { useAuth } from '@/contexts/AuthContext';
+import OTPInput from '@/components/OTPInput';
 import { 
   ArrowLeft,
   Copy,
@@ -20,21 +21,31 @@ import {
   EyeOff,
   Clock,
   DollarSign,
-  TrendingDown
+  TrendingDown,
+  Mail,
+  RefreshCw
 } from 'lucide-react';
+
+// Withdrawal limits from environment variables
+const MIN_WITHDRAWAL = process.env.NEXT_PUBLIC_MINIMUM_WITHDRAWAL ? parseFloat(process.env.NEXT_PUBLIC_MINIMUM_WITHDRAWAL) : 50;
+const MAX_WITHDRAWAL = process.env.NEXT_PUBLIC_MAXIMUM_WITHDRAWAL ? parseFloat(process.env.NEXT_PUBLIC_MAXIMUM_WITHDRAWAL) : 1000;
 
 export default function WithdrawPage() {
   const { logout, user } = useAuth();
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const [copied, setCopied] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
+  const [isGeneratingOTP, setIsGeneratingOTP] = useState(false);
+  const [otpSent, setOtpSent] = useState(false);
+  const [otpVerified, setOtpVerified] = useState(false);
+  const [withdrawalOTP, setWithdrawalOTP] = useState('');
+  const [otpMessage, setOtpMessage] = useState('');
+  const [amountError, setAmountError] = useState('');
   
   // Form states
   const [withdrawAmount, setWithdrawAmount] = useState<string>('');
   const [withdrawAddress, setWithdrawAddress] = useState<string>('');
   const [withdrawMemo, setWithdrawMemo] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
   
   // Balance states
   const [availableBalance, setAvailableBalance] = useState<string>('512.12');
@@ -90,10 +101,140 @@ export default function WithdrawPage() {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const validateWithdrawalAmount = (amount: string): boolean => {
+    const numAmount = parseFloat(amount);
+    
+    if (isNaN(numAmount) || numAmount <= 0) {
+      setAmountError('Please enter a valid amount');
+      return false;
+    }
+    
+    if (numAmount < MIN_WITHDRAWAL) {
+      setAmountError(`Minimum withdrawal amount is $${MIN_WITHDRAWAL} USDT`);
+      return false;
+    }
+    
+    if (numAmount > MAX_WITHDRAWAL) {
+      setAmountError(`Maximum withdrawal amount is $${MAX_WITHDRAWAL} USDT`);
+      return false;
+    }
+    
+    const availableBalanceNum = parseFloat(availableBalance);
+    if (numAmount > availableBalanceNum) {
+      setAmountError(`Insufficient balance. Available: $${availableBalance} USDT`);
+      return false;
+    }
+    
+    setAmountError('');
+    return true;
+  };
+
+  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setWithdrawAmount(value);
+    
+    if (value) {
+      validateWithdrawalAmount(value);
+    } else {
+      setAmountError('');
+    }
+  };
+
+  const handleGenerateOTP = async () => {
+    if (!withdrawAmount || !withdrawAddress || !user?.email) {
+      setOtpMessage('Please fill in all required fields');
+      return;
+    }
+
+    if (!validateWithdrawalAmount(withdrawAmount)) {
+      setOtpMessage('Please fix the amount validation errors');
+      return;
+    }
+
+    setIsGeneratingOTP(true);
+    setOtpMessage('');
+    
+    try {
+      const response = await fetch('/api/auth/generate-withdrawal-otp', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: user.email,
+          firstName: user.firstName,
+          withdrawalData: {
+            amount: withdrawAmount,
+            address: withdrawAddress,
+            memo: withdrawMemo
+          }
+        }),
+      });
+
+      const result = await response.json();
+      
+      if (result.success) {
+        setOtpSent(true);
+        setOtpVerified(false);
+        setWithdrawalOTP('');
+        setOtpMessage(result.message);
+      } else {
+        setOtpMessage(result.message);
+      }
+    } catch (error) {
+      console.error('Failed to send OTP:', error);
+      setOtpMessage('An error occurred while sending OTP. Please try again.');
+    } finally {
+      setIsGeneratingOTP(false);
+    }
+  };
+
+  const handleOTPComplete = async (otp: string) => {
+    if (!user?.email) {
+      setOtpMessage('User email not found');
+      return;
+    }
+
+    setWithdrawalOTP(otp);
+    setOtpMessage('');
+    
+    try {
+      const response = await fetch('/api/auth/verify-withdrawal-otp', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: user.email,
+          otp: otp,
+          type: 'withdrawal'
+        }),
+      });
+
+      const result = await response.json();
+      
+      if (result.success) {
+        setOtpVerified(true);
+        setOtpMessage(result.message);
+      } else {
+        setOtpVerified(false);
+        setOtpMessage(result.message);
+      }
+    } catch (error) {
+      console.error('Failed to verify OTP:', error);
+      setOtpVerified(false);
+      setOtpMessage('An error occurred while verifying OTP. Please try again.');
+    }
+  };
+
   const handleWithdraw = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!withdrawAmount || !withdrawAddress || !password) {
+    if (!withdrawAmount || !withdrawAddress || !otpVerified) {
+      return;
+    }
+
+    if (!validateWithdrawalAmount(withdrawAmount)) {
       return;
     }
 
@@ -124,7 +265,11 @@ export default function WithdrawPage() {
       setWithdrawAmount('');
       setWithdrawAddress('');
       setWithdrawMemo('');
-      setPassword('');
+      setWithdrawalOTP('');
+      setOtpSent(false);
+      setOtpVerified(false);
+      setOtpMessage('');
+      setAmountError('');
       
       setIsLoading(false);
     }, 2000);
@@ -215,12 +360,12 @@ export default function WithdrawPage() {
                       </div>
                     </div>
                     
-                    <div className="grid grid-cols-2 gap-4 mb-4">
-                      <div className="text-center">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="text-center p-4 bg-slate-800/50 rounded-lg border border-slate-700/50">
                         <p className="text-slate-400 text-sm mb-1">Available</p>
                         <p className="text-2xl font-bold text-purple-400">${availableBalance}</p>
                       </div>
-                      <div className="text-center">
+                      <div className="text-center p-4 bg-slate-800/50 rounded-lg border border-slate-700/50">
                         <p className="text-slate-400 text-sm mb-1">Pending</p>
                         <p className="text-2xl font-bold text-yellow-400">${pendingWithdrawals}</p>
                       </div>
@@ -249,15 +394,23 @@ export default function WithdrawPage() {
                         <input 
                           type="number"
                           value={withdrawAmount}
-                          onChange={(e) => setWithdrawAmount(e.target.value)}
+                          onChange={handleAmountChange}
                           placeholder="0.0"
                           step="0.001"
-                          min="0.001"
-                          max={availableBalance}
+                          min={MIN_WITHDRAWAL}
+                          max={Math.min(MAX_WITHDRAWAL, parseFloat(availableBalance))}
                           required
-                          className="w-full p-4 bg-slate-800/50 border border-slate-700/50 rounded-lg text-white placeholder-slate-400 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 transition-all"
+                          className={`w-full p-4 bg-slate-800/50 border rounded-lg text-white placeholder-slate-400 focus:ring-2 focus:ring-yellow-400/20 transition-all ${
+                            amountError ? 'border-red-500 focus:border-red-500' : 'border-slate-700/50 focus:border-yellow-400'
+                          }`}
                         />
-                        <p className="text-xs text-slate-400 mt-1">Available: ${availableBalance} USDT</p>
+                        {amountError ? (
+                          <p className="text-red-400 text-xs mt-1">{amountError}</p>
+                        ) : (
+                          <p className="text-slate-400 text-xs mt-1">
+                            Available: ${availableBalance} USDT | Min: ${MIN_WITHDRAWAL} | Max: ${MAX_WITHDRAWAL}
+                          </p>
+                        )}
                       </div>
                       
                       <div>
@@ -284,30 +437,55 @@ export default function WithdrawPage() {
                         />
                       </div>
                       
-                      <div>
-                        <label className="block text-sm font-medium text-slate-300 mb-2">Security Password</label>
-                        <div className="relative">
-                          <input 
-                            type={showPassword ? "text" : "password"}
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            placeholder="Enter your password"
-                            required
-                            className="w-full p-4 pr-12 bg-slate-800/50 border border-slate-700/50 rounded-lg text-white placeholder-slate-400 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 transition-all"
-                          />
+                      {/* Withdrawal Code Section */}
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <label className="block text-sm font-medium text-slate-300">Withdrawal Code</label>
                           <button 
                             type="button"
-                            className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-yellow-400 transition-colors"
-                            onClick={() => setShowPassword(!showPassword)}
+                            onClick={handleGenerateOTP}
+                            disabled={isGeneratingOTP || !withdrawAmount || !withdrawAddress || !!amountError}
+                            className="px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white text-sm font-medium rounded-lg hover:from-blue-400 hover:to-indigo-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
                           >
-                            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                            {isGeneratingOTP ? (
+                              <>
+                                <RefreshCw className="w-4 h-4 animate-spin" />
+                                <span>Sending...</span>
+                              </>
+                            ) : (
+                              <>
+                                <Mail className="w-4 h-4" />
+                                <span>Generate OTP</span>
+                              </>
+                            )}
                           </button>
                         </div>
+                        
+                        {otpMessage && (
+                          <div className={`p-3 rounded-lg border ${
+                            otpMessage.includes('successfully') || otpMessage.includes('verified') 
+                              ? 'bg-green-500/10 border-green-500/30 text-green-400' 
+                              : 'bg-red-500/10 border-red-500/30 text-red-400'
+                          }`}>
+                            <span className="text-sm">{otpMessage}</span>
+                          </div>
+                        )}
+                        
+                        {otpSent && (
+                          <div className="space-y-2">
+                            <label className="block text-sm font-medium text-slate-300">Enter 6-digit code</label>
+                            <OTPInput 
+                              length={6}
+                              onComplete={handleOTPComplete}
+                              className="justify-start"
+                            />
+                          </div>
+                        )}
                       </div>
                       
                       <button 
                         type="submit" 
-                        disabled={isLoading || !withdrawAmount || !withdrawAddress || !password}
+                        disabled={isLoading || !withdrawAmount || !withdrawAddress || !otpVerified || !!amountError}
                         className="w-full px-5 py-3 bg-gradient-to-r from-yellow-400 to-amber-500 text-slate-900 font-medium rounded-lg hover:from-yellow-300 hover:to-amber-400 transition-all text-sm shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
                       >
                         {isLoading ? (
@@ -447,11 +625,12 @@ export default function WithdrawPage() {
                     <div>
                       <h4 className="text-lg font-semibold text-white mb-2">Withdrawal Security</h4>
                       <ul className="text-slate-300 text-sm space-y-1">
-                        <li>• Minimum withdrawal: 50 USDT</li>
-                        <li>• Maximum withdrawal: 10000 USDT per day</li>
+                        <li>• Minimum withdrawal: ${MIN_WITHDRAWAL} USDT</li>
+                        <li>• Maximum withdrawal: ${MAX_WITHDRAWAL} USDT per day</li>
                         <li>• Withdrawals are processed within 24 hours</li>
                         <li>• Double-check your wallet address before confirming</li>
                         <li>• Only BEP-20 addresses are supported</li>
+                        <li>• Withdrawal code is required for security verification</li>
                       </ul>
                     </div>
                   </div>

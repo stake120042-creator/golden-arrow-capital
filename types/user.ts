@@ -29,7 +29,7 @@ export interface LoginData {
 export interface OTPData {
   email: string;
   otp: string;
-  type: 'signup' | 'login';
+  type: 'signup' | 'login' | 'withdrawal';
 }
 
 export interface ApiResponse<T = any> {
@@ -48,8 +48,13 @@ export interface OTPVerificationResponse {
 
 export interface EmailOTPRequest {
   email: string;
-  type: 'signup' | 'login';
+  type: 'signup' | 'login' | 'withdrawal';
   firstName?: string;
   lastName?: string;
   userData?: any;
+  withdrawalData?: {
+    amount: string;
+    address: string;
+    memo?: string;
+  };
 } 

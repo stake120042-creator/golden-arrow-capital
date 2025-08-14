@@ -38,7 +38,7 @@ class OTPService {
     return Math.floor(100000 + Math.random() * 900000).toString();
   }
 
-  private keyFor(email: string, type: 'signup' | 'login'): string {
+  private keyFor(email: string, type: 'signup' | 'login' | 'withdrawal'): string {
     return `${email}|${type}`;
   }
 
@@ -350,7 +350,7 @@ class OTPService {
     }
   }
 
-  public async resendOTP(email: string, type: 'signup' | 'login', firstName?: string): Promise<{ success: boolean; message: string }> {
+  public async resendOTP(email: string, type: 'signup' | 'login' | 'withdrawal', firstName?: string): Promise<{ success: boolean; message: string }> {
     try {
       const normalizedEmail = email.toLowerCase();
       
@@ -390,7 +390,7 @@ class OTPService {
   }
 
   // Method to check if OTP exists and is valid (for debugging)
-  public async getOTPStatus(email: string, type: 'signup' | 'login'): Promise<{ exists: boolean; expired?: boolean; attempts?: number }> {
+  public async getOTPStatus(email: string, type: 'signup' | 'login' | 'withdrawal'): Promise<{ exists: boolean; expired?: boolean; attempts?: number }> {
     try {
       const normalizedEmail = email.toLowerCase();
 
@@ -424,7 +424,7 @@ class OTPService {
   }
 
   // Get stored user data from OTP
-  public async getUserDataFromOTP(email: string, type: 'signup' | 'login'): Promise<any> {
+  public async getUserDataFromOTP(email: string, type: 'signup' | 'login' | 'withdrawal'): Promise<any> {
     try {
       const normalizedEmail = email.toLowerCase();
       
@@ -472,7 +472,7 @@ class OTPService {
   }
 
   // DEVELOPMENT ONLY - Get current OTP for debugging
-  public getDebugOTP(email: string, type: 'signup' | 'login'): any {
+  public getDebugOTP(email: string, type: 'signup' | 'login' | 'withdrawal'): any {
     if (process.env.NODE_ENV !== 'development') {
       return null;
     }

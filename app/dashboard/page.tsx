@@ -547,7 +547,7 @@ export default function Dashboard() {
                         <tr key={row.key} className="hover:bg-slate-800/40">
                           <td className="py-3 px-4 text-slate-200">
                             {row.title}
-                          </td>
+                        </td>
                           <td className="py-3 px-4 text-center">
                             {row.status === 'active' && (
                               <Check size={16} className="inline text-green-400" />
@@ -558,7 +558,7 @@ export default function Dashboard() {
                             {row.status === 'locked' && (
                               <span className="inline-block w-3 h-3 rounded bg-slate-500/70 align-middle"></span>
                             )}
-                          </td>
+                        </td>
                           <td className="py-3 px-4 text-center text-slate-200">{row.members}</td>
                           <td className="py-3 px-4 text-center font-semibold text-slate-200">{row.commission}</td>
                           <td className="py-3 px-4 text-center">
@@ -571,8 +571,8 @@ export default function Dashboard() {
                             {row.vip === 'locked' && (
                               <span className="inline-block w-3 h-3 rounded bg-slate-500/70 align-middle"></span>
                             )}
-                          </td>
-                        </tr>
+                        </td>
+                      </tr>
                       ))}
                     </tbody>
                   </table>
@@ -587,7 +587,7 @@ export default function Dashboard() {
                             {row.status === 'inactive' && <X size={16} className="text-red-400" />}
                             {row.status === 'locked' && <span className="inline-block w-3 h-3 rounded bg-slate-500/70"></span>}
                           </div>
-                        </div>
+                              </div>
                         <div className="mt-2 grid grid-cols-2 gap-2 text-xs">
                           <div className="bg-slate-900/40 border border-slate-700/40 rounded px-2 py-1">
                             <div className="text-slate-400">Members</div>
@@ -604,8 +604,8 @@ export default function Dashboard() {
                               {row.vip === 'inactive' && <X size={16} className="text-red-400" />}
                               {row.vip === 'locked' && <span className="inline-block w-3 h-3 rounded bg-slate-500/70"></span>}
                             </div>
-                          </div>
-                        </div>
+                </div>
+              </div>
                       </div>
                     ))}
                   </div>
