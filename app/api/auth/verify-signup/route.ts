@@ -26,7 +26,18 @@ export async function POST(request: NextRequest) {
       console.log('📝 Retrieved user data:', userData);
       
       // Create user account after successful OTP verification
-      const user = await authService.createUserAfterSignup(email, userData);
+      let user;
+      try {
+        user = await authService.createUserAfterSignup(email, userData);
+      } catch (createErr: any) {
+        return NextResponse.json(
+          {
+            success: false,
+            message: createErr?.message || 'Failed to create user account',
+          },
+          { status: 500 }
+        );
+      }
       const token = authService.generateToken(user);
       
       return NextResponse.json({

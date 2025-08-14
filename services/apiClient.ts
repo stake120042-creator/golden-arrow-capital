@@ -58,6 +58,11 @@ const apiClient = {
     updateProfile: (data: any): Promise<ApiResponse> =>
       apiRequest('/user/profile', 'PUT', data),
   },
+
+  wallet: {
+    getOrCreate: (userId: string): Promise<any> =>
+      apiRequest('/wallet/get-or-create', 'POST', { userId }),
+  },
 };
 
 export default apiClient;

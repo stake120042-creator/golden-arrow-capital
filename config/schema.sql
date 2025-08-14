@@ -14,6 +14,20 @@ CREATE TABLE IF NOT EXISTS users (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Wallets table
+CREATE TABLE IF NOT EXISTS user_wallets (
+    id SERIAL PRIMARY KEY,
+    user_id VARCHAR(255) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    deposit_address VARCHAR(255) UNIQUE NOT NULL,
+    derivation_index INTEGER NOT NULL,
+    derivation_path VARCHAR(100) NOT NULL,
+    balance NUMERIC DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_user_wallets_user_id ON user_wallets(user_id);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_user_wallets_derivation_index ON user_wallets(derivation_index);
+
 -- OTPs table (already exists in otpService)
 CREATE TABLE IF NOT EXISTS otps (
     id SERIAL PRIMARY KEY,

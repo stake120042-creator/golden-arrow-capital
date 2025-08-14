@@ -6,6 +6,7 @@ import Sidebar from '@/components/Sidebar';
 import TopBar from '@/components/TopBar';
 import { useAuth } from '@/contexts/AuthContext';
 import QRCodeService from '@/services/qrCodeService';
+import apiClient from '@/services/apiClient';
 import { 
   ArrowLeft,
   Copy,
@@ -34,6 +35,7 @@ export default function DepositPage() {
   const [memo, setMemo] = useState<string>('');
   const [showAmountQR, setShowAmountQR] = useState(false);
   const [amountQRDataUrl, setAmountQRDataUrl] = useState<string>('');
+  const [errorMsg, setErrorMsg] = useState<string>('');
 
   useEffect(() => {
     initializeDeposit();
@@ -43,16 +45,24 @@ export default function DepositPage() {
     if (!user) return;
     
     setIsLoading(true);
+    setErrorMsg('');
     try {
-      // Generate unique address for user
-      const address = QRCodeService.generateUniqueAddress(user.id || user.username);
+      // Fetch or create on-chain deposit address for the user
+      const resp = await apiClient.wallet.getOrCreate(user.id);
+      const address = resp?.wallet?.deposit_address || '';
       setUserAddress(address);
-      
+      console.log('User Address:', address);
       // Generate QR code for the address
-      const qrCode = await QRCodeService.generateQRCode({ address });
-      setQrCodeDataUrl(qrCode);
+      if (address) {  
+        const qrCode = await QRCodeService.generateQRCode({ address });
+        console.log('QR Code:', qrCode);
+        setQrCodeDataUrl(qrCode);
+      } else {
+        setErrorMsg('No deposit address is available for your account.');
+      }
     } catch (error) {
       console.error('Error initializing deposit:', error);
+      setErrorMsg((error as any)?.message || 'Failed to load your deposit wallet.');
     } finally {
       setIsLoading(false);
     }
@@ -164,14 +174,20 @@ export default function DepositPage() {
                     <p className="text-slate-300">Scan to deposit USDT (BEP-20)</p>
                   </div>
                   
-                  <div className="flex justify-center mb-6">
+                   <div className="flex justify-center mb-6">
                     <div className="relative">
                       <div className="w-64 h-64 bg-white rounded-2xl p-4 shadow-2xl">
-                        <img 
-                          src={qrCodeDataUrl} 
-                          alt="Deposit QR Code" 
-                          className="w-full h-full"
-                        />
+                        {qrCodeDataUrl ? (
+                          <img 
+                            src={qrCodeDataUrl} 
+                            alt="Deposit QR Code" 
+                            className="w-full h-full"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-slate-500 text-sm">
+                            {errorMsg || 'No address yet'}
+                          </div>
+                        )}
                       </div>
                       <div className="absolute -top-2 -right-2 w-8 h-8 bg-gradient-to-r from-yellow-400 to-amber-500 rounded-full flex items-center justify-center">
                         <Shield className="w-4 h-4 text-slate-900" />

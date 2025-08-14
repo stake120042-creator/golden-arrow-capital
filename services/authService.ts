@@ -2,6 +2,7 @@ import { User } from '../types/user';
 import crypto from 'crypto';
 import bcrypt from 'bcryptjs';
 import { supabase } from '../config/database';
+import walletService from './walletService';
 
 class AuthService {
   private static instance: AuthService;
@@ -59,6 +60,11 @@ class AuthService {
     try {
       console.log(`👤 [DEBUG] Creating user for ${email} with userData:`, userData);
       
+      // Validate Supabase configuration early to surface actionable error
+      if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+        throw new Error('Supabase is not configured. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.');
+      }
+
       // Generate unique user ID and username
       const userId = this.generateUserId();
       const username = this.generateUsername(email);
@@ -128,6 +134,17 @@ class AuthService {
       };
 
       console.log(`👤 New user created in Supabase: ${user.email} (${user.username})`);
+
+      // Create a deposit wallet address for the new user
+      try {
+        const created = await walletService.createDepositAddress(user.id);
+        console.log(`💼 Wallet created for user ${user.email}: ${created.address} at ${created.derivationPath} (index ${created.derivationIndex})`);
+      } catch (walletErr: any) {
+        console.error('❌ Failed creating wallet address for new user:', walletErr?.message || walletErr);
+        // Decide whether to fail user creation or continue.
+        // For now, continue and let a background job repair wallets if needed.
+      }
+
       return user;
     } catch (error) {
       console.error('❌ Error creating user:', error);
