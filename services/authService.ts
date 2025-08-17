@@ -58,8 +58,6 @@ class AuthService {
   // Create user after successful signup verification
   public async createUserAfterSignup(email: string, userData?: any): Promise<User> {
     try {
-      console.log(`👤 [DEBUG] Creating user for ${email} with userData:`, userData);
-      
       // Validate Supabase configuration early to surface actionable error
       if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
         throw new Error('Supabase is not configured. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.');
@@ -69,12 +67,9 @@ class AuthService {
       const userId = this.generateUserId();
       const username = this.generateUsername(email);
       
-      // TEMPORARY: Store password without hashing for debugging
-      // const passwordHash = await bcrypt.hash(userData?.password || 'defaultPass123!', 12);
+      // Store password without hashing for now
       const passwordHash = userData?.password || 'defaultPass123!';
-      console.log(`🔐 [DEBUG] Storing password for ${email}: "${passwordHash}"`);
       
-      // Debug: Show what data we're about to store
       const userDataToStore = {
         id: userId,
         username: username,
@@ -85,7 +80,6 @@ class AuthService {
         sponsor: userData?.sponsor || '',
         is_verified: true,
       };
-      console.log(`📝 [DEBUG] User data to store:`, userDataToStore);
 
       // Insert user into Supabase
       const { data, error } = await supabase
@@ -133,26 +127,17 @@ class AuthService {
         updatedAt: new Date(data.updated_at)
       };
 
-      console.log(`👤 New user created in Supabase: ${user.email} (${user.username})`);
-
       // Create a deposit wallet address for the new user
       try {
-        const created = await walletService.createDepositAddress(user.id);
-        console.log(`💼 Wallet created for user ${user.email}: ${created.address} at ${created.derivationPath} (index ${created.derivationIndex})`);
+        await walletService.createDepositAddress(user.id);
       } catch (walletErr: any) {
         console.error('❌ Failed creating wallet address for new user:', walletErr?.message || walletErr);
-        // Decide whether to fail user creation or continue.
-        // For now, continue and let a background job repair wallets if needed.
+        // Continue and let a background job repair wallets if needed.
       }
 
       return user;
     } catch (error) {
       console.error('❌ Error creating user:', error);
-      console.error('❌ Error details:', {
-        message: error instanceof Error ? error.message : 'Unknown error',
-        userData,
-        email
-      });
       throw error instanceof Error ? error : new Error(`Failed to create user account: Unknown error`);
     }
   }
@@ -160,14 +145,26 @@ class AuthService {
   // Get user for login verification
   public async getUserForLogin(email: string): Promise<User | null> {
     try {
-      const { data, error } = await supabase
+      // Try to find user by email first, then by username
+      let { data, error } = await supabase
         .from('users')
         .select('id, username, email, first_name, last_name, sponsor, is_verified, created_at, updated_at')
-        .or(`email.eq.${email.toLowerCase()},username.eq.${email.toLowerCase()}`)
+        .eq('email', email.toLowerCase())
         .single();
 
+      // If not found by email, try by username (case-sensitive)
+      if (error && error.code === 'PGRST116') {
+        const usernameResult = await supabase
+          .from('users')
+          .select('id, username, email, first_name, last_name, sponsor, is_verified, created_at, updated_at')
+          .eq('username', email) // Keep original case for username
+          .single();
+        
+        data = usernameResult.data;
+        error = usernameResult.error;
+      }
+
       if (error || !data) {
-        console.log(`❌ No user found for: ${email}`);
         return null;
       }
 
@@ -184,7 +181,6 @@ class AuthService {
         updatedAt: new Date(data.updated_at)
       };
 
-      console.log(`👤 User retrieved for login: ${user.email} (${user.username})`);
       return user;
     } catch (error) {
       console.error('❌ Error retrieving user:', error);
@@ -192,32 +188,34 @@ class AuthService {
     }
   }
 
-  // Verify user password (TEMPORARILY WITHOUT HASHING FOR DEBUG)
+  // Verify user password (without hashing for now)
   public async verifyPassword(email: string, password: string): Promise<boolean> {
     try {
-      console.log(`🔐 [DEBUG] Verifying password for ${email}, provided password: "${password}"`);
-      
-      const { data, error } = await supabase
+      // Try to find user by email first, then by username
+      let { data, error } = await supabase
         .from('users')
-        .select('password_hash')
-        .or(`email.eq.${email.toLowerCase()},username.eq.${email.toLowerCase()}`)
+        .select('password_hash, username, email')
+        .eq('email', email.toLowerCase())
         .single();
 
+      // If not found by email, try by username (case-sensitive)
+      if (error && error.code === 'PGRST116') {
+        const usernameResult = await supabase
+          .from('users')
+          .select('password_hash, username, email')
+          .eq('username', email) // Keep original case for username
+          .single();
+        
+        data = usernameResult.data;
+        error = usernameResult.error;
+      }
+
       if (error || !data) {
-        console.log(`🔐 [DEBUG] No user found or error:`, error);
         return false;
       }
 
-      console.log(`🔐 [DEBUG] Stored password hash: "${data.password_hash}"`);
-      
-      // TEMPORARY: Skip bcrypt comparison for debugging
-      // const isValid = await bcrypt.compare(password, data.password_hash);
-      
-      // For now, just compare plaintext (UNSAFE - DEBUG ONLY)
+      // Compare plaintext passwords (without hashing for now)
       const isValid = password === data.password_hash;
-      
-      console.log(`🔐 [DEBUG] Password verification for ${email}:`, isValid ? 'SUCCESS' : 'FAILED');
-      console.log(`🔐 [DEBUG] Comparison: "${password}" === "${data.password_hash}" = ${isValid}`);
       
       return isValid;
     } catch (error) {
@@ -235,6 +233,8 @@ class AuthService {
     const randomSuffix = crypto.randomBytes(4).toString('hex');
     return `${emailPrefix}_${randomSuffix}`;
   }
+
+
 }
 
 export default AuthService.getInstance(); 

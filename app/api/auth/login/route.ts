@@ -4,12 +4,8 @@ import authService from '@/services/authService';
 
 export async function POST(request: NextRequest) {
   try {
-    console.log('🔑 Login API called');
-    
     const body = await request.json();
     const { usernameOrEmail, password } = body || {};
-    
-    console.log('📧 Login attempt for:', usernameOrEmail);
     
     if (!usernameOrEmail || !password) {
       return NextResponse.json(
@@ -19,12 +15,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user exists
-    console.log('🔍 Checking if user exists for:', usernameOrEmail);
     const user = await authService.getUserForLogin(usernameOrEmail);
-    console.log('👤 User found:', user ? `${user.email} (${user.username})` : 'NO USER FOUND');
     
     if (!user) {
-      console.log('❌ Login failed: User not found');
       return NextResponse.json(
         { success: false, message: 'Invalid credentials' },
         { status: 401 }
@@ -32,12 +25,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify password
-    console.log('🔐 Verifying password for:', usernameOrEmail, 'password:', password);
     const isValidPassword = await authService.verifyPassword(usernameOrEmail, password);
-    console.log('🔐 Password verification result:', isValidPassword);
     
     if (!isValidPassword) {
-      console.log('❌ Login failed: Invalid password');
       return NextResponse.json(
         { success: false, message: 'Invalid credentials' },
         { status: 401 }
@@ -60,21 +50,11 @@ export async function POST(request: NextRequest) {
     );
   } catch (error) {
     console.error('❌ Error in login route:', error);
-    console.error('❌ Error details:', {
-      message: error instanceof Error ? error.message : 'Unknown error',
-      stack: error instanceof Error ? error.stack : undefined,
-      env: {
-        NODE_ENV: process.env.NODE_ENV,
-        hasSupabaseUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
-        hasSupabaseKey: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-      }
-    });
     
     return NextResponse.json(
       { 
         success: false, 
-        message: 'Internal server error during login',
-        debug: process.env.NODE_ENV === 'development' ? error instanceof Error ? error.message : String(error) : undefined
+        message: 'Internal server error during login'
       },
       { status: 500 }
     );

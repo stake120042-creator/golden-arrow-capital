@@ -7,6 +7,7 @@ import TopBar from '@/components/TopBar';
 import { useAuth } from '@/contexts/AuthContext';
 import { 
   ArrowUp,
+  ArrowDownToLine,
   DollarSign,
   Wallet,
   Users,
@@ -108,7 +109,19 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
+      {/* Enhanced Background */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-full">
+          {/* Subtle gradient orbs */}
+          <div className="absolute w-[800px] h-[800px] rounded-full bg-gradient-to-br from-yellow-500/5 to-amber-600/3 blur-3xl -top-40 -left-40 animate-float"></div>
+          <div className="absolute w-[600px] h-[600px] rounded-full bg-gradient-to-tl from-purple-500/4 to-indigo-600/2 blur-3xl -bottom-40 -right-40 animate-float" style={{animationDelay: '2s'}}></div>
+          
+          {/* Grid pattern overlay */}
+          <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.01)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.01)_1px,transparent_1px)] bg-[size:50px_50px]"></div>
+        </div>
+      </div>
+
       {/* Sidebar */}
       <Sidebar 
         onLogout={handleLogout} 
@@ -117,7 +130,7 @@ export default function Dashboard() {
       />
       
       {/* Main Content */}
-      <div className="ml-0 lg:ml-64 min-h-screen">
+      <div className="ml-0 lg:ml-64 min-h-screen relative z-10">
         {/* Header */}
         <TopBar 
           onLogout={handleLogout} 
@@ -127,21 +140,35 @@ export default function Dashboard() {
         {/* Dashboard Content */}
         <div className="pt-24 px-4 md:px-6 pb-12 space-y-8 max-w-7xl mx-auto">
           {/* Welcome Section */}
-          <div className="bg-gradient-to-r from-yellow-500/20 to-amber-600/20 border border-yellow-500/30 rounded-2xl p-6 shadow-lg shadow-amber-900/10">
-            <div className="flex flex-col md:flex-row items-start md:items-center justify-between">
-              <div className="mb-4 md:mb-0">
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-yellow-300 to-amber-300 bg-clip-text text-transparent">
-                  Welcome back, {user?.firstName || 'User'}
-                </h1>
-                <p className="text-slate-300 mt-1">Here&apos;s your portfolio overview for today</p>
-              </div>
-              <div className="flex items-center space-x-4 bg-slate-800/50 backdrop-blur-sm px-5 py-3 rounded-xl border border-yellow-500/20">
-                <div className="text-right">
-                  <p className="text-sm text-slate-300">Portfolio Value</p>
-                  <p className="text-2xl font-bold text-yellow-400">$847,250</p>
-                  <div className="flex items-center text-green-400 text-sm">
-                    <ArrowUp size={14} className="mr-1" />
-                    +2.4% today
+          <div className="relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/10 to-amber-600/10 rounded-2xl"></div>
+            <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent rounded-2xl"></div>
+            <div className="relative bg-gradient-to-r from-yellow-500/20 to-amber-600/20 border border-yellow-500/30 rounded-2xl p-8 shadow-2xl shadow-amber-900/20 backdrop-blur-sm">
+              <div className="flex flex-col md:flex-row items-start md:items-center justify-between">
+                <div className="mb-6 md:mb-0">
+                  <div className="flex items-center space-x-3 mb-3">
+                    <div className="w-12 h-12 bg-gradient-to-br from-yellow-400/30 to-amber-500/20 rounded-xl flex items-center justify-center border border-yellow-400/30">
+                      <span className="text-yellow-400 font-bold text-lg">{user?.firstName?.[0] || 'U'}</span>
+                    </div>
+                    <div>
+                      <h1 className="text-3xl font-bold text-gradient">
+                        Welcome back, {user?.firstName || 'User'}
+                      </h1>
+                      <p className="text-slate-300 mt-1">Here&apos;s your portfolio overview for today</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="relative">
+                  <div className="absolute inset-0 bg-gradient-to-r from-slate-800/80 to-slate-900/80 backdrop-blur-xl rounded-xl border border-yellow-500/20"></div>
+                  <div className="relative px-6 py-4">
+                    <div className="text-right">
+                      <p className="text-sm text-slate-300 font-medium">Portfolio Value</p>
+                      <p className="text-3xl font-bold text-yellow-400 mb-1">$847,250</p>
+                      <div className="flex items-center justify-end text-green-400 text-sm font-medium">
+                        <ArrowUp size={16} className="mr-1" />
+                        +2.4% today
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -151,24 +178,31 @@ export default function Dashboard() {
           {/* Wallet Section */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Deposit Wallet */}
-            <div className="bg-gradient-to-br from-slate-800/70 to-slate-900/70 backdrop-blur-sm border border-slate-700/50 rounded-xl shadow-lg shadow-slate-900/20 overflow-hidden hover:border-yellow-500/30 transition-all duration-300">
+            <div className="group card card-hover">
               <div className="p-1">
-                <div className="bg-gradient-to-br from-yellow-500/10 to-amber-600/5 p-5 rounded-lg">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <div className="flex items-center">
-                        <div className="p-2 rounded-lg bg-gradient-to-br from-yellow-400/30 to-amber-500/20 border border-yellow-400/30 mr-3">
-                          <Wallet size={20} className="text-yellow-400" />
+                <div className="bg-gradient-to-br from-yellow-500/10 to-amber-600/5 p-6 rounded-lg relative overflow-hidden">
+                  {/* Animated background */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-yellow-400/5 to-amber-500/3 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                  
+                  <div className="relative flex justify-between items-start">
+                    <div className="flex-1">
+                      <div className="flex items-center mb-4">
+                        <div className="p-3 rounded-xl bg-gradient-to-br from-yellow-400/30 to-amber-500/20 border border-yellow-400/30 mr-4 group-hover:scale-110 transition-transform duration-300">
+                          <Wallet size={24} className="text-yellow-400" />
                         </div>
-                        <h3 className="text-slate-300 text-lg font-medium">Deposit Wallet</h3>
+                        <div>
+                          <h3 className="text-white text-xl font-semibold">Deposit Wallet</h3>
+                          <p className="text-slate-400 text-sm">Available for investments</p>
+                        </div>
                       </div>
-                      <p className="text-3xl font-bold text-white mt-3 mb-2">$452.19</p>
-                      <Link href="/dashboard/deposit" className="inline-block mt-3 px-5 py-2.5 bg-gradient-to-r from-yellow-400 to-amber-500 text-slate-900 font-medium rounded-lg hover:from-yellow-300 hover:to-amber-400 transition-all text-sm shadow-md">
+                      <p className="text-4xl font-bold text-white mb-4">$452.19</p>
+                      <Link href="/dashboard/deposit" className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-yellow-400 to-amber-500 text-slate-900 font-semibold rounded-xl hover:from-yellow-300 hover:to-amber-400 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
+                        <ArrowUp size={18} className="mr-2" />
                         Deposit now
                       </Link>
                     </div>
-                    <div className="p-2 rounded-full bg-yellow-400/10">
-                      <div className="w-2 h-2 rounded-full bg-yellow-400"></div>
+                    <div className="p-3 rounded-full bg-yellow-400/10 group-hover:bg-yellow-400/20 transition-colors duration-300">
+                      <div className="w-3 h-3 rounded-full bg-yellow-400 animate-pulse"></div>
                     </div>
                   </div>
                 </div>
@@ -176,26 +210,33 @@ export default function Dashboard() {
             </div>
 
             {/* Income Wallet */}
-            <div className="bg-gradient-to-br from-slate-800/70 to-slate-900/70 backdrop-blur-sm border border-slate-700/50 rounded-xl shadow-lg shadow-slate-900/20 overflow-hidden hover:border-purple-500/30 transition-all duration-300">
+            <div className="group card card-hover">
               <div className="p-1">
-                <div className="bg-gradient-to-br from-purple-500/10 to-indigo-600/5 p-5 rounded-lg">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <div className="flex items-center">
-                        <div className="p-2 rounded-lg bg-gradient-to-br from-purple-400/30 to-indigo-500/20 border border-purple-400/30 mr-3">
-                          <Wallet size={20} className="text-purple-400" />
+                <div className="bg-gradient-to-br from-purple-500/10 to-indigo-600/5 p-6 rounded-lg relative overflow-hidden">
+                  {/* Animated background */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-purple-400/5 to-indigo-500/3 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                  
+                  <div className="relative flex justify-between items-start">
+                    <div className="flex-1">
+                      <div className="flex items-center mb-4">
+                        <div className="p-3 rounded-xl bg-gradient-to-br from-purple-400/30 to-indigo-500/20 border border-purple-400/30 mr-4 group-hover:scale-110 transition-transform duration-300">
+                          <Wallet size={24} className="text-purple-400" />
                         </div>
-                        <h3 className="text-slate-300 text-lg font-medium">Income Wallet</h3>
+                        <div>
+                          <h3 className="text-white text-xl font-semibold">Income Wallet</h3>
+                          <p className="text-slate-400 text-sm">Earnings & rewards</p>
+                        </div>
                       </div>
-                      <p className="text-3xl font-bold text-white mt-3 mb-2">$512.12</p>
-                      <div className="mt-3 flex flex-wrap gap-3">
-                        <Link href="/dashboard/withdraw" className="px-5 py-2.5 bg-gradient-to-r from-purple-500 to-indigo-600 text-white font-medium rounded-lg hover:from-purple-400 hover:to-indigo-500 transition-all text-sm shadow-md">
+                      <p className="text-4xl font-bold text-white mb-4">$512.12</p>
+                      <div className="flex flex-wrap gap-3">
+                        <Link href="/dashboard/withdraw" className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-500 to-indigo-600 text-white font-semibold rounded-xl hover:from-purple-400 hover:to-indigo-500 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
+                          <ArrowDownToLine size={18} className="mr-2" />
                           Withdraw
                         </Link>
                       </div>
                     </div>
-                    <div className="p-2 rounded-full bg-purple-400/10">
-                      <div className="w-2 h-2 rounded-full bg-purple-400"></div>
+                    <div className="p-3 rounded-full bg-purple-400/10 group-hover:bg-purple-400/20 transition-colors duration-300">
+                      <div className="w-3 h-3 rounded-full bg-purple-400 animate-pulse"></div>
                     </div>
                   </div>
                 </div>
@@ -206,67 +247,82 @@ export default function Dashboard() {
           {/* Investment Statistics */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Total Invested */}
-            <div className="group bg-gradient-to-br from-slate-800/70 to-slate-900/70 backdrop-blur-sm border border-slate-700/50 rounded-xl shadow-lg shadow-slate-900/20 overflow-hidden hover:border-blue-500/30 transition-all duration-300">
-              <div className="p-6">
-                <div className="flex items-center mb-3">
-                  <div className="p-2.5 rounded-lg bg-gradient-to-br from-blue-500/30 to-indigo-600/20 border border-blue-400/30 mr-3 group-hover:scale-110 transition-transform duration-300">
-                    <DollarSign size={18} className="text-blue-400" />
+            <div className="group card card-hover">
+              <div className="p-6 relative overflow-hidden">
+                {/* Animated background */}
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-indigo-600/3 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                
+                <div className="relative">
+                  <div className="flex items-center mb-4">
+                    <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500/30 to-indigo-600/20 border border-blue-400/30 mr-4 group-hover:scale-110 transition-transform duration-300">
+                      <DollarSign size={20} className="text-blue-400" />
+                    </div>
+                    <h3 className="text-white text-lg font-semibold">Total Invested</h3>
                   </div>
-                  <h3 className="text-slate-300 text-lg font-medium">Total Invested</h3>
-                </div>
-                <div className="flex items-end justify-between">
-                  <p className="text-3xl font-bold text-white">$10,000.27</p>
-                  <div className="flex items-center text-blue-400 text-sm">
-                    <ArrowUp size={14} className="mr-1" />
-                    <span>+4.2%</span>
+                  <div className="flex items-end justify-between mb-4">
+                    <p className="text-4xl font-bold text-white">$10,000.27</p>
+                    <div className="flex items-center text-blue-400 text-sm font-medium bg-blue-400/10 px-3 py-1 rounded-full">
+                      <ArrowUp size={16} className="mr-1" />
+                      <span>+4.2%</span>
+                    </div>
                   </div>
-                </div>
-                <div className="w-full h-1 bg-slate-700/50 mt-4 rounded-full overflow-hidden">
-                  <div className="h-1 w-3/5 bg-gradient-to-r from-blue-500 to-indigo-600"></div>
+                  <div className="w-full h-2 bg-slate-700/50 rounded-full overflow-hidden">
+                    <div className="h-2 w-3/5 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full transition-all duration-500 group-hover:w-4/5"></div>
+                  </div>
                 </div>
               </div>
             </div>
 
             {/* Active Investment */}
-            <div className="group bg-gradient-to-br from-slate-800/70 to-slate-900/70 backdrop-blur-sm border border-slate-700/50 rounded-xl shadow-lg shadow-slate-900/20 overflow-hidden hover:border-green-500/30 transition-all duration-300">
-              <div className="p-6">
-                <div className="flex items-center mb-3">
-                  <div className="p-2.5 rounded-lg bg-gradient-to-br from-green-500/30 to-emerald-600/20 border border-green-400/30 mr-3 group-hover:scale-110 transition-transform duration-300">
-                    <TrendingUp size={18} className="text-green-400" />
+            <div className="group card card-hover">
+              <div className="p-6 relative overflow-hidden">
+                {/* Animated background */}
+                <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-emerald-600/3 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                
+                <div className="relative">
+                  <div className="flex items-center mb-4">
+                    <div className="p-3 rounded-xl bg-gradient-to-br from-green-500/30 to-emerald-600/20 border border-green-400/30 mr-4 group-hover:scale-110 transition-transform duration-300">
+                      <TrendingUp size={20} className="text-green-400" />
+                    </div>
+                    <h3 className="text-white text-lg font-semibold">Active Investment</h3>
                   </div>
-                  <h3 className="text-slate-300 text-lg font-medium">Active Investment</h3>
-                </div>
-                <div className="flex items-end justify-between">
-                  <p className="text-3xl font-bold text-white">$800.27</p>
-                  <div className="flex items-center text-green-400 text-sm">
-                    <ArrowUp size={14} className="mr-1" />
-                    <span>+2.8%</span>
+                  <div className="flex items-end justify-between mb-4">
+                    <p className="text-4xl font-bold text-white">$800.27</p>
+                    <div className="flex items-center text-green-400 text-sm font-medium bg-green-400/10 px-3 py-1 rounded-full">
+                      <ArrowUp size={16} className="mr-1" />
+                      <span>+2.8%</span>
+                    </div>
                   </div>
-                </div>
-                <div className="w-full h-1 bg-slate-700/50 mt-4 rounded-full overflow-hidden">
-                  <div className="h-1 w-2/5 bg-gradient-to-r from-green-500 to-emerald-600"></div>
+                  <div className="w-full h-2 bg-slate-700/50 rounded-full overflow-hidden">
+                    <div className="h-2 w-2/5 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full transition-all duration-500 group-hover:w-3/5"></div>
+                  </div>
                 </div>
               </div>
             </div>
 
             {/* Expired Investment */}
-            <div className="group bg-gradient-to-br from-slate-800/70 to-slate-900/70 backdrop-blur-sm border border-slate-700/50 rounded-xl shadow-lg shadow-slate-900/20 overflow-hidden hover:border-amber-500/30 transition-all duration-300">
-              <div className="p-6">
-                <div className="flex items-center mb-3">
-                  <div className="p-2.5 rounded-lg bg-gradient-to-br from-amber-500/30 to-orange-600/20 border border-amber-400/30 mr-3 group-hover:scale-110 transition-transform duration-300">
-                    <Clock size={18} className="text-amber-400" />
+            <div className="group card card-hover">
+              <div className="p-6 relative overflow-hidden">
+                {/* Animated background */}
+                <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-orange-600/3 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                
+                <div className="relative">
+                  <div className="flex items-center mb-4">
+                    <div className="p-3 rounded-xl bg-gradient-to-br from-amber-500/30 to-orange-600/20 border border-amber-400/30 mr-4 group-hover:scale-110 transition-transform duration-300">
+                      <Clock size={20} className="text-amber-400" />
+                    </div>
+                    <h3 className="text-white text-lg font-semibold">Expired Investment</h3>
                   </div>
-                  <h3 className="text-slate-300 text-lg font-medium">Expired Investment</h3>
-                </div>
-                <div className="flex items-end justify-between">
-                  <p className="text-3xl font-bold text-white">$13,727.00</p>
-                  <div className="flex items-center text-amber-400 text-sm">
-                    <Clock size={14} className="mr-1" />
-                    <span>Matured</span>
+                  <div className="flex items-end justify-between mb-4">
+                    <p className="text-4xl font-bold text-white">$13,727.00</p>
+                    <div className="flex items-center text-amber-400 text-sm font-medium bg-amber-400/10 px-3 py-1 rounded-full">
+                      <Clock size={16} className="mr-1" />
+                      <span>Matured</span>
+                    </div>
                   </div>
-                </div>
-                <div className="w-full h-1 bg-slate-700/50 mt-4 rounded-full overflow-hidden">
-                  <div className="h-1 w-full bg-gradient-to-r from-amber-500 to-orange-600"></div>
+                  <div className="w-full h-2 bg-slate-700/50 rounded-full overflow-hidden">
+                    <div className="h-2 w-full bg-gradient-to-r from-amber-500 to-orange-600 rounded-full"></div>
+                  </div>
                 </div>
               </div>
             </div>

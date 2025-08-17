@@ -99,29 +99,36 @@ const OTPInput: React.FC<OTPInputProps> = ({
   };
 
   return (
-    <div className={`flex gap-1 sm:gap-2 md:gap-3 justify-center w-full ${className}`}>
+    <div className={`flex gap-2 sm:gap-3 md:gap-4 justify-center w-full ${className}`}>
       {otp.map((digit, index) => (
-        <input
-          key={index}
-          ref={(el) => {
-            inputRefs.current[index] = el;
-          }}
-          type="text"
-          inputMode="numeric"
-          pattern="[0-9]*"
-          maxLength={1}
-          value={digit}
-          onChange={(e) => handleChange(index, e.target.value)}
-          onKeyDown={(e) => handleKeyDown(index, e)}
-          onPaste={index === 0 ? handlePaste : undefined}
-          disabled={disabled}
-          className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 lg:w-14 lg:h-14 text-center text-sm sm:text-base md:text-lg font-bold border-2 rounded-lg sm:rounded-xl 
-                     bg-slate-800/50 border-slate-600/50 text-white
-                     focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 
-                     focus:outline-none transition-all duration-200
-                     disabled:opacity-50 disabled:cursor-not-allowed"
-          aria-label={`OTP digit ${index + 1}`}
-        />
+        <div key={index} className="relative">
+          <input
+            ref={(el) => {
+              inputRefs.current[index] = el;
+            }}
+            type="text"
+            inputMode="numeric"
+            pattern="[0-9]*"
+            maxLength={1}
+            value={digit}
+            onChange={(e) => handleChange(index, e.target.value)}
+            onKeyDown={(e) => handleKeyDown(index, e)}
+            onPaste={index === 0 ? handlePaste : undefined}
+            disabled={disabled}
+            className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 text-center text-lg sm:text-xl md:text-2xl font-bold 
+                     bg-gradient-to-br from-slate-800/80 to-slate-900/80 backdrop-blur-sm
+                     border-2 border-slate-600/50 text-white
+                     focus:border-yellow-400 focus:ring-4 focus:ring-yellow-400/20 
+                     focus:outline-none transition-all duration-300
+                     disabled:opacity-50 disabled:cursor-not-allowed
+                     rounded-xl shadow-lg hover:shadow-xl
+                     placeholder:text-slate-500"
+            aria-label={`OTP digit ${index + 1}`}
+            placeholder="•"
+          />
+          {/* Animated border effect */}
+          <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-yellow-400/20 to-amber-500/20 opacity-0 hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+        </div>
       ))}
     </div>
   );
