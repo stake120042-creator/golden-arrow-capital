@@ -20,7 +20,8 @@ import {
   Check,
   Coins,
   Trophy,
-  X
+  X,
+  RotateCcw
 } from 'lucide-react';
 
 export default function Dashboard() {
@@ -232,6 +233,10 @@ export default function Dashboard() {
                         <Link href="/dashboard/withdraw" className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-500 to-indigo-600 text-white font-semibold rounded-xl hover:from-purple-400 hover:to-indigo-500 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
                           <ArrowDownToLine size={18} className="mr-2" />
                           Withdraw
+                        </Link>
+                        <Link href="/dashboard/refund" className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-orange-500 to-red-600 text-white font-semibold rounded-xl hover:from-orange-400 hover:to-red-500 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
+                          <RotateCcw size={18} className="mr-2" />
+                          Request Refund
                         </Link>
                       </div>
                     </div>

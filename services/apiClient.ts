@@ -65,4 +65,6 @@ const apiClient = {
   },
 };
 
+// Export both default and named export for flexibility
+export { apiClient };
 export default apiClient;

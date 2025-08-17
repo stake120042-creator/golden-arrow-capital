@@ -15,7 +15,8 @@ import {
   PieChart,
   BarChart3,
   FileText,
-  Award
+  Award,
+  RotateCcw
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -46,6 +47,11 @@ const Sidebar: React.FC<SidebarProps> = ({ onLogout, isOpen = false, onClose }) 
       name: 'Withdraw Funds',
       path: '/dashboard/withdraw',
       icon: <ArrowDownToLine size={20} />
+    },
+    {
+      name: 'Request Refund',
+      path: '/dashboard/refund',
+      icon: <RotateCcw size={20} />
     }
   ];
 
