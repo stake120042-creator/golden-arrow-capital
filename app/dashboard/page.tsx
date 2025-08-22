@@ -34,56 +34,49 @@ export default function Dashboard() {
       title: 'Level 1',
       members: '20',
       commission: '20%',
-      status: 'active',
-      vip: 'active'
+      status: 'active'
     },
     {
       key: 'L2',
       title: 'Level 2',
       members: '34',
       commission: '10%',
-      status: 'inactive',
-      vip: 'inactive'
+      status: 'inactive'
     },
     {
       key: 'L3',
       title: 'Level 3',
       members: '45',
       commission: '5%',
-      status: 'locked',
-      vip: 'active'
+      status: 'locked'
     },
     {
       key: '4-8',
       title: 'Levels 4-8',
       members: '-',
       commission: '4%',
-      status: 'locked',
-      vip: 'locked'
+      status: 'locked'
     },
     {
       key: '9-13',
       title: 'Levels 9-13',
       members: '-',
       commission: '3%',
-      status: 'locked',
-      vip: 'locked'
+      status: 'locked'
     },
     {
       key: '14-20',
       title: 'Levels 14-20',
       members: '-',
       commission: '2%',
-      status: 'locked',
-      vip: 'locked'
+      status: 'locked'
     },
     {
       key: '21-25',
       title: 'Levels 21-25',
       members: '-',
       commission: '1%',
-      status: 'locked',
-      vip: 'locked'
+      status: 'locked'
     }
   ] as const;
 
@@ -140,67 +133,67 @@ export default function Dashboard() {
         />
         
         {/* Dashboard Content */}
-        <div className="pt-24 px-4 md:px-6 pb-12 space-y-8 max-w-7xl mx-auto">
+        <div className="pt-20 sm:pt-24 px-3 sm:px-4 md:px-6 lg:px-8 pb-8 sm:pb-12 space-y-6 sm:space-y-8 max-w-7xl mx-auto">
           {/* Referral Link */}
           <div className="bg-gradient-to-br from-[#141922]/80 to-[#11151C]/80 backdrop-blur-sm border border-[#232B3A] rounded-xl shadow-lg shadow-black/30 overflow-hidden hover:border-[#2E6BFF]/30 transition-all duration-300">
             <div className="p-1">
-              <div className="bg-gradient-to-br from-[#0EC7FF]/10 to-[#2E6BFF]/5 p-6 rounded-lg">
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
-                  <div className="mb-6 md:mb-0">
-                    <div className="flex items-center">
-                        <div className="p-2.5 rounded-lg bg-gradient-to-br from-[#0EC7FF]/30 to-[#2E6BFF]/20 border border-[#0EC7FF]/30 mr-3">
-                        <Award size={20} className="text-[#0EC7FF]" />
+                              <div className="bg-gradient-to-br from-[#0EC7FF]/10 to-[#2E6BFF]/5 p-4 sm:p-6 rounded-lg">
+                  <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center space-y-4 lg:space-y-0">
+                    <div className="w-full lg:w-auto">
+                      <div className="flex items-center">
+                          <div className="p-2 sm:p-2.5 rounded-lg bg-gradient-to-br from-[#0EC7FF]/30 to-[#2E6BFF]/20 border border-[#0EC7FF]/30 mr-3">
+                          <Award size={18} className="sm:w-5 sm:h-5 text-[#0EC7FF]" />
+                        </div>
+                        <h2 className="text-white text-base sm:text-lg font-bold">Referral Link</h2>
                       </div>
-                      <h2 className="text-white text-lg font-bold">Referral Link</h2>
                     </div>
-                  </div>
-                  
-                  <div className="flex flex-wrap md:flex-nowrap gap-3 items-center w-full md:w-auto">
-                    <div className="flex-grow bg-gradient-to-r from-[#171C26] to-[#11151C] rounded-lg px-4 py-3 border border-[#232B3A] overflow-hidden overflow-x-auto">
-                      <span className="text-slate-300 font-mono">goldenarrowcapital.com/ref/{user?.username || 'user'}</span>
+                    
+                    <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center w-full lg:w-auto">
+                      <div className="flex-grow bg-gradient-to-r from-[#171C26] to-[#11151C] rounded-lg px-3 sm:px-4 py-2.5 sm:py-3 border border-[#232B3A] overflow-hidden">
+                        <span className="text-slate-300 font-mono text-sm sm:text-base break-all">goldenarrowcapital.com/ref/{user?.username || 'user'}</span>
+                      </div>
+                      <button 
+                        className="px-3 sm:px-4 py-2.5 text-slate-900 font-medium rounded-lg transition-colors flex items-center justify-center whitespace-nowrap shadow-md text-sm sm:text-base"
+                        style={{background:'linear-gradient(90deg,#0EC7FF,#2E6BFF)'}}
+                        onClick={handleCopyReferralLink}
+                      >
+                        {copied ? <Check size={14} className="sm:w-4 sm:h-4 mr-1.5 sm:mr-2" /> : <Copy size={14} className="sm:w-4 sm:h-4 mr-1.5 sm:mr-2" />}
+                        {copied ? "Copied!" : "Copy Link"}
+                      </button>
                     </div>
-                    <button 
-                      className="px-4 py-2.5 text-slate-900 font-medium rounded-lg transition-colors flex items-center whitespace-nowrap shadow-md"
-                      style={{background:'linear-gradient(90deg,#0EC7FF,#2E6BFF)'}}
-                      onClick={handleCopyReferralLink}
-                    >
-                      {copied ? <Check size={16} className="mr-2" /> : <Copy size={16} className="mr-2" />}
-                      {copied ? "Copied!" : "Copy Link"}
-                    </button>
                   </div>
                 </div>
-              </div>
             </div>
           </div>
 
           {/* Wallet Section */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
             {/* Deposit Wallet */}
             <div className="group card card-hover">
               <div className="p-1">
-                <div className="bg-gradient-to-br from-[#7C4DFF]/10 to-[#6C63FF]/5 p-6 rounded-lg relative overflow-hidden">
+                <div className="bg-gradient-to-br from-[#7C4DFF]/10 to-[#6C63FF]/5 p-4 sm:p-6 rounded-lg relative overflow-hidden">
                   {/* Animated background */}
                   <div className="absolute inset-0 bg-gradient-to-br from-[#7C4DFF]/5 to-[#6C63FF]/3 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                   
-                  <div className="relative flex justify-between items-start">
-                    <div className="flex-1">
-                      <div className="flex items-center mb-4">
-                        <div className="p-3 rounded-xl bg-gradient-to-br from-[#7C4DFF]/30 to-[#6C63FF]/20 border border-[#7C4DFF]/30 mr-4 group-hover:scale-110 transition-transform duration-300">
-                          <Wallet size={24} className="text-[#9C6CFF]" />
+                  <div className="relative flex flex-col sm:flex-row justify-between items-start space-y-4 sm:space-y-0">
+                    <div className="flex-1 w-full">
+                      <div className="flex items-center mb-3 sm:mb-4">
+                        <div className="p-2 sm:p-3 rounded-xl bg-gradient-to-br from-[#7C4DFF]/30 to-[#6C63FF]/20 border border-[#7C4DFF]/30 mr-3 sm:mr-4 group-hover:scale-110 transition-transform duration-300">
+                          <Wallet size={20} className="sm:w-6 sm:h-6 text-[#9C6CFF]" />
                         </div>
                         <div>
-                          <h3 className="text-white text-xl font-semibold">Deposit Wallet</h3>
-                          <p className="text-slate-400 text-sm">Available for investments</p>
+                          <h3 className="text-white text-lg sm:text-xl font-semibold">Deposit Wallet</h3>
+                          <p className="text-slate-400 text-xs sm:text-sm">Available for investments</p>
                         </div>
                       </div>
-                      <p className="text-4xl font-bold text-white mb-4">$452.19</p>
-                      <Link href="/dashboard/deposit" className="inline-flex items-center px-6 py-3 text-slate-900 font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105" style={{background: 'linear-gradient(90deg,#7C4DFF,#6C63FF)'}}>
-                        <ArrowUp size={18} className="mr-2" />
+                      <p className="text-3xl sm:text-4xl font-bold text-white mb-3 sm:mb-4">$452.19</p>
+                      <Link href="/dashboard/deposit" className="inline-flex items-center px-4 sm:px-6 py-2.5 sm:py-3 text-slate-900 font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 text-sm sm:text-base" style={{background: 'linear-gradient(90deg,#7C4DFF,#6C63FF)'}}>
+                        <ArrowUp size={16} className="sm:w-[18px] sm:h-[18px] mr-1.5 sm:mr-2" />
                         Deposit now
                       </Link>
                     </div>
-                    <div className="p-3 rounded-full bg-[#7C4DFF]/10 group-hover:bg-[#7C4DFF]/20 transition-colors duration-300">
-                      <div className="w-3 h-3 rounded-full bg-[#7C4DFF] animate-pulse"></div>
+                    <div className="p-2 sm:p-3 rounded-full bg-[#7C4DFF]/10 group-hover:bg-[#7C4DFF]/20 transition-colors duration-300 self-start">
+                      <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#7C4DFF] animate-pulse"></div>
                     </div>
                   </div>
                 </div>
@@ -210,35 +203,35 @@ export default function Dashboard() {
             {/* Income Wallet */}
             <div className="group card card-hover">
               <div className="p-1">
-                <div className="bg-gradient-to-br from-[#7C4DFF]/8 to-[#6C63FF]/8 p-6 rounded-lg relative overflow-hidden">
+                <div className="bg-gradient-to-br from-[#7C4DFF]/8 to-[#6C63FF]/8 p-4 sm:p-6 rounded-lg relative overflow-hidden">
                   {/* Animated background */}
                   <div className="absolute inset-0 bg-gradient-to-br from-[#7C4DFF]/5 to-[#6C63FF]/3 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                   
-                  <div className="relative flex justify-between items-start">
-                    <div className="flex-1">
-                      <div className="flex items-center mb-4">
-                        <div className="p-3 rounded-xl bg-gradient-to-br from-[#7C4DFF]/30 to-[#6C63FF]/20 border border-[#7C4DFF]/30 mr-4 group-hover:scale-110 transition-transform duration-300">
-                          <Wallet size={24} className="text-[#9C6CFF]" />
+                  <div className="relative flex flex-col sm:flex-row justify-between items-start space-y-4 sm:space-y-0">
+                    <div className="flex-1 w-full">
+                      <div className="flex items-center mb-3 sm:mb-4">
+                        <div className="p-2 sm:p-3 rounded-xl bg-gradient-to-br from-[#7C4DFF]/30 to-[#6C63FF]/20 border border-[#7C4DFF]/30 mr-3 sm:mr-4 group-hover:scale-110 transition-transform duration-300">
+                          <Wallet size={20} className="sm:w-6 sm:h-6 text-[#9C6CFF]" />
                         </div>
                         <div>
-                          <h3 className="text-white text-xl font-semibold">Income Wallet</h3>
-                          <p className="text-slate-400 text-sm">Earnings & rewards</p>
+                          <h3 className="text-white text-lg sm:text-xl font-semibold">Income Wallet</h3>
+                          <p className="text-slate-400 text-xs sm:text-sm">Earnings & rewards</p>
                         </div>
                       </div>
-                      <p className="text-4xl font-bold text-white mb-4">$512.12</p>
-                      <div className="flex flex-wrap gap-3">
-                        <Link href="/dashboard/withdraw" className="inline-flex items-center px-6 py-3 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105" style={{background:'linear-gradient(90deg,#6C63FF,#9C6CFF)'}}>
-                          <ArrowDownToLine size={18} className="mr-2" />
+                      <p className="text-3xl sm:text-4xl font-bold text-white mb-3 sm:mb-4">$512.12</p>
+                      <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+                        <Link href="/dashboard/withdraw" className="inline-flex items-center justify-center px-4 sm:px-6 py-2.5 sm:py-3 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 text-sm sm:text-base" style={{background:'linear-gradient(90deg,#6C63FF,#9C6CFF)'}}>
+                          <ArrowDownToLine size={16} className="sm:w-[18px] sm:h-[18px] mr-1.5 sm:mr-2" />
                           Withdraw
                         </Link>
-                        <Link href="/dashboard/refund" className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-500 to-indigo-600 text-white font-semibold rounded-xl hover:from-purple-400 hover:to-indigo-500 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
-                          <RotateCcw size={18} className="mr-2" />
+                        <Link href="/dashboard/refund" className="inline-flex items-center justify-center px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-purple-500 to-indigo-600 text-white font-semibold rounded-xl hover:from-purple-400 hover:to-indigo-500 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 text-sm sm:text-base">
+                          <RotateCcw size={16} className="sm:w-[18px] sm:h-[18px] mr-1.5 sm:mr-2" />
                           Request Refund
                         </Link>
                       </div>
                     </div>
-                    <div className="p-3 rounded-full bg-[#6C63FF]/10 group-hover:bg-[#6C63FF]/20 transition-colors duration-300">
-                      <div className="w-3 h-3 rounded-full bg-[#6C63FF] animate-pulse"></div>
+                    <div className="p-2 sm:p-3 rounded-full bg-[#6C63FF]/10 group-hover:bg-[#6C63FF]/20 transition-colors duration-300 self-start">
+                      <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#6C63FF] animate-pulse"></div>
                     </div>
                   </div>
                 </div>
@@ -247,24 +240,24 @@ export default function Dashboard() {
           </div>
           
           {/* Investment Statistics */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {/* Total Invested */}
             <div className="group card card-hover">
-              <div className="p-6 relative overflow-hidden">
+              <div className="p-4 sm:p-6 relative overflow-hidden">
                 {/* Animated background */}
                 <div className="absolute inset-0 bg-gradient-to-br from-[#7C4DFF]/8 to-[#6C63FF]/6 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                 
                 <div className="relative">
-                  <div className="flex items-center mb-4">
-                    <div className="p-3 rounded-xl bg-gradient-to-br from-[#7C4DFF]/30 to-[#6C63FF]/20 border border-[#7C4DFF]/30 mr-4 group-hover:scale-110 transition-transform duration-300">
-                      <DollarSign size={20} className="text-[#9C6CFF]" />
+                  <div className="flex items-center mb-3 sm:mb-4">
+                    <div className="p-2 sm:p-3 rounded-xl bg-gradient-to-br from-[#7C4DFF]/30 to-[#6C63FF]/20 border border-[#7C4DFF]/30 mr-3 sm:mr-4 group-hover:scale-110 transition-transform duration-300">
+                      <DollarSign size={18} className="sm:w-5 sm:h-5 text-[#9C6CFF]" />
                     </div>
-                    <h3 className="text-white text-lg font-semibold">Total Invested</h3>
+                    <h3 className="text-white text-base sm:text-lg font-semibold">Total Invested</h3>
                   </div>
-                  <div className="flex items-end justify-between mb-4">
-                    <p className="text-4xl font-bold text-white">$10,000.27</p>
-                    <div className="flex items-center text-[#9C6CFF] text-sm font-medium bg-[#7C4DFF]/10 px-3 py-1 rounded-full">
-                      <ArrowUp size={16} className="mr-1" />
+                  <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between space-y-2 sm:space-y-0 mb-3 sm:mb-4">
+                    <p className="text-2xl sm:text-4xl font-bold text-white">$10,000.27</p>
+                    <div className="flex items-center text-[#9C6CFF] text-xs sm:text-sm font-medium bg-[#7C4DFF]/10 px-2 sm:px-3 py-1 rounded-full w-fit">
+                      <ArrowUp size={14} className="sm:w-4 sm:h-4 mr-1" />
                       <span>+4.2%</span>
                     </div>
                   </div>
@@ -275,21 +268,21 @@ export default function Dashboard() {
 
             {/* Active Investment */}
             <div className="group card card-hover">
-              <div className="p-6 relative overflow-hidden">
+              <div className="p-4 sm:p-6 relative overflow-hidden">
                 {/* Animated background */}
                 <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-emerald-600/3 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                 
                 <div className="relative">
-                  <div className="flex items-center mb-4">
-                    <div className="p-3 rounded-xl bg-gradient-to-br from-green-500/30 to-emerald-600/20 border border-green-400/30 mr-4 group-hover:scale-110 transition-transform duration-300">
-                      <TrendingUp size={20} className="text-green-400" />
+                  <div className="flex items-center mb-3 sm:mb-4">
+                    <div className="p-2 sm:p-3 rounded-xl bg-gradient-to-br from-green-500/30 to-emerald-600/20 border border-green-400/30 mr-3 sm:mr-4 group-hover:scale-110 transition-transform duration-300">
+                      <TrendingUp size={18} className="sm:w-5 sm:h-5 text-green-400" />
                     </div>
-                    <h3 className="text-white text-lg font-semibold">Active Investment</h3>
+                    <h3 className="text-white text-base sm:text-lg font-semibold">Active Investment</h3>
                   </div>
-                  <div className="flex items-end justify-between mb-4">
-                    <p className="text-4xl font-bold text-white">$800.27</p>
-                    <div className="flex items-center text-green-400 text-sm font-medium bg-green-400/10 px-3 py-1 rounded-full">
-                      <ArrowUp size={16} className="mr-1" />
+                  <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between space-y-2 sm:space-y-0 mb-3 sm:mb-4">
+                    <p className="text-2xl sm:text-4xl font-bold text-white">$800.27</p>
+                    <div className="flex items-center text-green-400 text-xs sm:text-sm font-medium bg-green-400/10 px-2 sm:px-3 py-1 rounded-full w-fit">
+                      <ArrowUp size={14} className="sm:w-4 sm:h-4 mr-1" />
                       <span>+2.8%</span>
                     </div>
                   </div>
@@ -300,21 +293,21 @@ export default function Dashboard() {
 
             {/* Expired Investment */}
             <div className="group card card-hover">
-              <div className="p-6 relative overflow-hidden">
+              <div className="p-4 sm:p-6 relative overflow-hidden">
                 {/* Animated background */}
                 <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-orange-600/3 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                 
                 <div className="relative">
-                  <div className="flex items-center mb-4">
-                    <div className="p-3 rounded-xl bg-gradient-to-br from-amber-500/30 to-orange-600/20 border border-amber-400/30 mr-4 group-hover:scale-110 transition-transform duration-300">
-                      <Clock size={20} className="text-amber-400" />
+                  <div className="flex items-center mb-3 sm:mb-4">
+                    <div className="p-2 sm:p-3 rounded-xl bg-gradient-to-br from-amber-500/30 to-orange-600/20 border border-amber-400/30 mr-3 sm:mr-4 group-hover:scale-110 transition-transform duration-300">
+                      <Clock size={18} className="sm:w-5 sm:h-5 text-amber-400" />
                     </div>
-                    <h3 className="text-white text-lg font-semibold">Expired Investment</h3>
+                    <h3 className="text-white text-base sm:text-lg font-semibold">Expired Investment</h3>
                   </div>
-                  <div className="flex items-end justify-between mb-4">
-                    <p className="text-4xl font-bold text-white">$13,727.00</p>
-                    <div className="flex items-center text-amber-400 text-sm font-medium bg-amber-400/10 px-3 py-1 rounded-full">
-                      <Clock size={16} className="mr-1" />
+                  <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between space-y-2 sm:space-y-0 mb-3 sm:mb-4">
+                    <p className="text-2xl sm:text-4xl font-bold text-white">$13,727.00</p>
+                    <div className="flex items-center text-amber-400 text-xs sm:text-sm font-medium bg-amber-400/10 px-2 sm:px-3 py-1 rounded-full w-fit">
+                      <Clock size={14} className="sm:w-4 sm:h-4 mr-1" />
                       <span>Matured</span>
                     </div>
                   </div>
@@ -325,32 +318,32 @@ export default function Dashboard() {
           </div>
 
           {/* Business Statistics */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
             {/* Direct Business */}
             <div className="group bg-gradient-to-br from-[#141922]/80 to-[#11151C]/80 backdrop-blur-sm border border-[#232B3A] rounded-xl shadow-lg shadow-black/30 overflow-hidden hover:border-[#2E6BFF]/40 transition-all duration-300">
-              <div className="px-6 pt-6 pb-4">
-                <div className="flex items-center justify-between mb-4">
+              <div className="px-4 sm:px-6 pt-4 sm:pt-6 pb-4">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 space-y-2 sm:space-y-0">
                   <div className="flex items-center">
-                    <div className="p-2.5 rounded-lg bg-gradient-to-br from-[#0EC7FF]/30 to-[#2E6BFF]/20 border border-[#0EC7FF]/30 mr-3 group-hover:scale-110 transition-transform duration-300">
-                      <Users size={18} className="text-[#0EC7FF]" />
+                    <div className="p-2 sm:p-2.5 rounded-lg bg-gradient-to-br from-[#0EC7FF]/30 to-[#2E6BFF]/20 border border-[#0EC7FF]/30 mr-3 group-hover:scale-110 transition-transform duration-300">
+                      <Users size={16} className="sm:w-[18px] sm:h-[18px] text-[#0EC7FF]" />
                     </div>
-                    <h3 className="text-slate-300 text-lg font-medium">Direct Business</h3>
+                    <h3 className="text-slate-300 text-base sm:text-lg font-medium">Direct Business</h3>
                   </div>
-                  <span className="bg-[#0EC7FF]/10 text-[#37D7FF] text-xs px-3 py-1 rounded-full border border-[#0EC7FF]/20">Personal</span>
+                  <span className="bg-[#0EC7FF]/10 text-[#37D7FF] text-xs px-2 sm:px-3 py-1 rounded-full border border-[#0EC7FF]/20 w-fit">Personal</span>
                 </div>
                 <div>
-                  <p className="text-3xl font-bold text-white mb-3">$10,000.27</p>
-                  <div className="flex flex-wrap gap-3 mb-3">
-                    <span className="inline-flex items-center bg-[#171C26] border border-[#232B3A] rounded-full px-3 py-1 text-sm text-slate-300">
-                      <span className="w-2 h-2 bg-blue-400 rounded-full mr-2"></span>
+                  <p className="text-2xl sm:text-3xl font-bold text-white mb-3">$10,000.27</p>
+                  <div className="flex flex-wrap gap-2 sm:gap-3 mb-3">
+                    <span className="inline-flex items-center bg-[#171C26] border border-[#232B3A] rounded-full px-2 sm:px-3 py-1 text-xs sm:text-sm text-slate-300">
+                      <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-blue-400 rounded-full mr-1.5 sm:mr-2"></span>
                       34 Members
                     </span>
-                    <span className="inline-flex items-center bg-green-500/10 border border-green-500/20 rounded-full px-3 py-1 text-sm text-green-400">
-                      <span className="w-2 h-2 bg-green-400 rounded-full mr-2"></span>
+                    <span className="inline-flex items-center bg-green-500/10 border border-green-500/20 rounded-full px-2 sm:px-3 py-1 text-xs sm:text-sm text-green-400">
+                      <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-green-400 rounded-full mr-1.5 sm:mr-2"></span>
                       28 Active
                     </span>
-                    <span className="inline-flex items-center bg-red-500/10 border border-red-500/20 rounded-full px-3 py-1 text-sm text-red-400">
-                      <span className="w-2 h-2 bg-red-400 rounded-full mr-2"></span>
+                    <span className="inline-flex items-center bg-red-500/10 border border-red-500/20 rounded-full px-2 sm:px-3 py-1 text-xs sm:text-sm text-red-400">
+                      <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-red-400 rounded-full mr-1.5 sm:mr-2"></span>
                       6 De-active
                     </span>
                   </div>
@@ -361,29 +354,29 @@ export default function Dashboard() {
 
             {/* Team Business */}
             <div className="group bg-gradient-to-br from-[#141922]/80 to-[#11151C]/80 backdrop-blur-sm border border-[#232B3A] rounded-xl shadow-lg shadow-black/30 overflow-hidden hover:border-[#2E6BFF]/30 transition-all duration-300">
-              <div className="px-6 pt-6 pb-4">
-                <div className="flex items-center justify-between mb-4">
+              <div className="px-4 sm:px-6 pt-4 sm:pt-6 pb-4">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 space-y-2 sm:space-y-0">
                   <div className="flex items-center">
-                    <div className="p-2.5 rounded-lg bg-gradient-to-br from-[#0EC7FF]/30 to-[#2E6BFF]/20 border border-[#0EC7FF]/30 mr-3 group-hover:scale-110 transition-transform duration-300">
-                      <Users size={18} className="text-[#37D7FF]" />
+                    <div className="p-2 sm:p-2.5 rounded-lg bg-gradient-to-br from-[#0EC7FF]/30 to-[#2E6BFF]/20 border border-[#0EC7FF]/30 mr-3 group-hover:scale-110 transition-transform duration-300">
+                      <Users size={16} className="sm:w-[18px] sm:h-[18px] text-[#37D7FF]" />
                     </div>
-                    <h3 className="text-slate-300 text-lg font-medium">Team Business</h3>
+                    <h3 className="text-slate-300 text-base sm:text-lg font-medium">Team Business</h3>
                   </div>
-                  <span className="bg-[#2E6BFF]/10 text-[#4C82FF] text-xs px-3 py-1 rounded-full border border-[#2E6BFF]/20">Network</span>
+                  <span className="bg-[#2E6BFF]/10 text-[#4C82FF] text-xs px-2 sm:px-3 py-1 rounded-full border border-[#2E6BFF]/20 w-fit">Network</span>
                 </div>
                 <div>
-                  <p className="text-3xl font-bold text-white mb-3">$1,000,000.27</p>
-                  <div className="flex flex-wrap gap-3 mb-3">
-                    <span className="inline-flex items-center bg-[#171C26] border border-[#232B3A] rounded-full px-3 py-1 text-sm text-slate-300">
-                      <span className="w-2 h-2 bg-purple-400 rounded-full mr-2"></span>
+                  <p className="text-2xl sm:text-3xl font-bold text-white mb-3">$1,000,000.27</p>
+                  <div className="flex flex-wrap gap-2 sm:gap-3 mb-3">
+                    <span className="inline-flex items-center bg-[#171C26] border border-[#232B3A] rounded-full px-2 sm:px-3 py-1 text-xs sm:text-sm text-slate-300">
+                      <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-purple-400 rounded-full mr-1.5 sm:mr-2"></span>
                       201 Members
                     </span>
-                    <span className="inline-flex items-center bg-green-500/10 border border-green-500/20 rounded-full px-3 py-1 text-sm text-green-400">
-                      <span className="w-2 h-2 bg-green-400 rounded-full mr-2"></span>
+                    <span className="inline-flex items-center bg-green-500/10 border border-green-500/20 rounded-full px-2 sm:px-3 py-1 text-xs sm:text-sm text-green-400">
+                      <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-green-400 rounded-full mr-1.5 sm:mr-2"></span>
                       28 Active
                     </span>
-                    <span className="inline-flex items-center bg-red-500/10 border border-red-500/20 rounded-full px-3 py-1 text-sm text-red-400">
-                      <span className="w-2 h-2 bg-red-400 rounded-full mr-2"></span>
+                    <span className="inline-flex items-center bg-red-500/10 border border-red-500/20 rounded-full px-2 sm:px-3 py-1 text-xs sm:text-sm text-red-400">
+                      <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-red-400 rounded-full mr-1.5 sm:mr-2"></span>
                       6 De-active
                     </span>
                   </div>
@@ -395,49 +388,49 @@ export default function Dashboard() {
 
           {/* Income Breakdowns */}
           <div className="relative">
-            <div className="bg-gradient-to-br from-[#141922]/80 to-[#11151C]/80 backdrop-blur-sm border border-[#232B3A] rounded-xl shadow-lg shadow-black/30 p-6 mt-4">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-gradient-to-br from-[#141922]/80 to-[#11151C]/80 backdrop-blur-sm border border-[#232B3A] rounded-xl shadow-lg shadow-black/30 p-4 sm:p-6 mt-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 {/* Referral Income */}
-                <div className="group p-5 bg-gradient-to-br from-[#0EC7FF]/5 to-[#2E6BFF]/10 rounded-xl border border-[#0EC7FF]/20 hover:border-[#0EC7FF]/40 transition-all duration-300">
+                <div className="group p-4 sm:p-5 bg-gradient-to-br from-[#0EC7FF]/5 to-[#2E6BFF]/10 rounded-xl border border-[#0EC7FF]/20 hover:border-[#0EC7FF]/40 transition-all duration-300">
                   <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-slate-300 text-lg font-medium">Referral Income</h3>
-                    <div className="p-2 rounded-full bg-[#0EC7FF]/10 group-hover:bg-[#0EC7FF]/20 transition-colors duration-300">
-                      <Share size={18} className="text-[#0EC7FF]" />
+                    <h3 className="text-slate-300 text-base sm:text-lg font-medium">Referral Income</h3>
+                    <div className="p-1.5 sm:p-2 rounded-full bg-[#0EC7FF]/10 group-hover:bg-[#0EC7FF]/20 transition-colors duration-300">
+                      <Share size={16} className="sm:w-[18px] sm:h-[18px] text-[#0EC7FF]" />
                     </div>
                   </div>
-                  <p className="text-2xl md:text-3xl font-bold text-white mb-2">$10,000.27</p>
-                  <div className="flex items-center text-[#37D7FF] text-sm mt-2 bg-[#0EC7FF]/10 w-fit px-3 py-1 rounded-full">
-                    <ArrowUp size={14} className="mr-1" />
+                  <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-white mb-2">$10,000.27</p>
+                  <div className="flex items-center text-[#37D7FF] text-xs sm:text-sm mt-2 bg-[#0EC7FF]/10 w-fit px-2 sm:px-3 py-1 rounded-full">
+                    <ArrowUp size={12} className="sm:w-[14px] sm:h-[14px] mr-1" />
                     <span>+12% this month</span>
                   </div>
                 </div>
 
                 {/* Rank Income */}
-                <div className="group p-5 bg-gradient-to-br from-green-500/5 to-emerald-600/10 rounded-xl border border-green-500/20 hover:border-green-500/40 transition-all duration-300">
+                <div className="group p-4 sm:p-5 bg-gradient-to-br from-green-500/5 to-emerald-600/10 rounded-xl border border-green-500/20 hover:border-green-500/40 transition-all duration-300">
                   <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-slate-300 text-lg font-medium">Rank Income</h3>
-                    <div className="p-2 rounded-full bg-green-400/10 group-hover:bg-green-400/20 transition-colors duration-300">
-                      <Trophy size={18} className="text-green-400" />
+                    <h3 className="text-slate-300 text-base sm:text-lg font-medium">Rank Income</h3>
+                    <div className="p-1.5 sm:p-2 rounded-full bg-green-400/10 group-hover:bg-green-400/20 transition-colors duration-300">
+                      <Trophy size={16} className="sm:w-[18px] sm:h-[18px] text-green-400" />
                     </div>
                   </div>
-                  <p className="text-2xl md:text-3xl font-bold text-white mb-2">$10,000.27</p>
-                  <div className="flex items-center text-green-400 text-sm mt-2 bg-green-400/10 w-fit px-3 py-1 rounded-full">
-                    <ArrowUp size={14} className="mr-1" />
+                  <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-white mb-2">$10,000.27</p>
+                  <div className="flex items-center text-green-400 text-xs sm:text-sm mt-2 bg-green-400/10 w-fit px-2 sm:px-3 py-1 rounded-full">
+                    <ArrowUp size={12} className="sm:w-[14px] sm:h-[14px] mr-1" />
                     <span>+8% this month</span>
                   </div>
                 </div>
 
                 {/* Daily Staking Income */}
-                <div className="group p-5 bg-gradient-to-br from-[#0EC7FF]/5 to-[#2E6BFF]/10 rounded-xl border border-[#0EC7FF]/20 hover:border-[#0EC7FF]/40 transition-all duration-300">
+                <div className="group p-4 sm:p-5 bg-gradient-to-br from-[#0EC7FF]/5 to-[#2E6BFF]/10 rounded-xl border border-[#0EC7FF]/20 hover:border-[#0EC7FF]/40 transition-all duration-300">
                   <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-slate-300 text-lg font-medium">Daily Staking</h3>
-                    <div className="p-2 rounded-full bg-[#0EC7FF]/10 group-hover:bg-[#0EC7FF]/20 transition-colors duration-300">
-                      <Coins size={18} className="text-[#0EC7FF]" />
+                    <h3 className="text-slate-300 text-base sm:text-lg font-medium">Daily Staking</h3>
+                    <div className="p-1.5 sm:p-2 rounded-full bg-[#0EC7FF]/10 group-hover:bg-[#0EC7FF]/20 transition-colors duration-300">
+                      <Coins size={16} className="sm:w-[18px] sm:h-[18px] text-[#0EC7FF]" />
                     </div>
                   </div>
-                  <p className="text-2xl md:text-3xl font-bold text-white mb-2">$820.27</p>
-                  <div className="flex items-center text-blue-400 text-sm mt-2 bg-blue-400/10 w-fit px-3 py-1 rounded-full">
-                    <ArrowUp size={14} className="mr-1" />
+                  <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-white mb-2">$820.27</p>
+                  <div className="flex items-center text-blue-400 text-xs sm:text-sm mt-2 bg-blue-400/10 w-fit px-2 sm:px-3 py-1 rounded-full">
+                    <ArrowUp size={12} className="sm:w-[14px] sm:h-[14px] mr-1" />
                     <span>Daily reward</span>
                   </div>
                 </div>
@@ -449,47 +442,47 @@ export default function Dashboard() {
           <div className="grid grid-cols-1 gap-6">
             <div className="bg-gradient-to-br from-[#141922]/80 to-[#11151C]/80 backdrop-blur-sm border border-[#232B3A] rounded-xl shadow-lg shadow-black/30 overflow-hidden hover:border-[#2E6BFF]/30 transition-all duration-300">
               <div className="p-1">
-                <div className="p-6 bg-gradient-to-br from-[#0EC7FF]/10 to-[#2E6BFF]/5 rounded-lg">
-                  <div className="flex items-center justify-between mb-6">
+                <div className="p-4 sm:p-6 bg-gradient-to-br from-[#0EC7FF]/10 to-[#2E6BFF]/5 rounded-lg">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 space-y-2 sm:space-y-0">
                     <div className="flex items-center">
-                      <div className="p-2.5 rounded-lg bg-gradient-to-br from-[#0EC7FF]/30 to-[#2E6BFF]/20 border border-[#0EC7FF]/30 mr-3">
-                        <Trophy size={18} className="text-[#0EC7FF]" />
+                      <div className="p-2 sm:p-2.5 rounded-lg bg-gradient-to-br from-[#0EC7FF]/30 to-[#2E6BFF]/20 border border-[#0EC7FF]/30 mr-3">
+                        <Trophy size={16} className="sm:w-[18px] sm:h-[18px] text-[#0EC7FF]" />
                       </div>
-                      <h3 className="text-white text-lg font-medium">Rank Information</h3>
+                      <h3 className="text-white text-base sm:text-lg font-medium">Rank Information</h3>
                     </div>
-                    <div className="bg-[#0EC7FF]/10 text-[#37D7FF] text-xs px-3 py-1 rounded-full border border-[#0EC7FF]/20">
+                    <div className="bg-[#0EC7FF]/10 text-[#37D7FF] text-xs px-2 sm:px-3 py-1 rounded-full border border-[#0EC7FF]/20 w-fit">
                       Member Status
                     </div>
                   </div>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="bg-gradient-to-br from-[#141922]/60 to-[#11151C]/60 rounded-lg p-4 border border-[#0EC7FF]/10">
-                      <h3 className="text-slate-400 text-sm mb-2">Current Rank</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                    <div className="bg-gradient-to-br from-[#141922]/60 to-[#11151C]/60 rounded-lg p-3 sm:p-4 border border-[#0EC7FF]/10">
+                      <h3 className="text-slate-400 text-xs sm:text-sm mb-2">Current Rank</h3>
                       <div className="flex items-center">
-                        <div className="h-10 w-10 flex items-center justify-center rounded-lg bg-[#0EC7FF]/20 mr-3">
-                          <span className="text-[#0EC7FF] font-bold text-xl">**</span>
+                        <div className="h-8 w-8 sm:h-10 sm:w-10 flex items-center justify-center rounded-lg bg-[#0EC7FF]/20 mr-2 sm:mr-3">
+                          <span className="text-[#0EC7FF] font-bold text-lg sm:text-xl">**</span>
                         </div>
-                        <p className="text-lg font-bold text-[#37D7FF]">Gold</p>
+                        <p className="text-base sm:text-lg font-bold text-[#37D7FF]">Gold</p>
                       </div>
                     </div>
                     
-                    <div className="bg-gradient-to-br from-[#141922]/60 to-[#11151C]/60 rounded-lg p-4 border border-[#2E6BFF]/10">
-                      <h3 className="text-slate-400 text-sm mb-2">Next Rank</h3>
+                    <div className="bg-gradient-to-br from-[#141922]/60 to-[#11151C]/60 rounded-lg p-3 sm:p-4 border border-[#2E6BFF]/10">
+                      <h3 className="text-slate-400 text-xs sm:text-sm mb-2">Next Rank</h3>
                       <div className="flex items-center">
-                        <div className="h-10 w-10 flex items-center justify-center rounded-lg bg-[#2E6BFF]/20 mr-3">
-                          <span className="text-[#4C82FF] font-bold text-xl">***</span>
+                        <div className="h-8 w-8 sm:h-10 sm:w-10 flex items-center justify-center rounded-lg bg-[#2E6BFF]/20 mr-2 sm:mr-3">
+                          <span className="text-[#4C82FF] font-bold text-lg sm:text-xl">***</span>
                         </div>
-                        <p className="text-lg font-bold text-[#4C82FF]">Platinum</p>
+                        <p className="text-base sm:text-lg font-bold text-[#4C82FF]">Platinum</p>
                       </div>
                     </div>
                     
-                    <div className="bg-gradient-to-br from-[#141922]/60 to-[#11151C]/60 rounded-lg p-4 border border-[#232B3A]/80">
-                      <h3 className="text-slate-400 text-sm mb-2">User ID</h3>
+                    <div className="bg-gradient-to-br from-[#141922]/60 to-[#11151C]/60 rounded-lg p-3 sm:p-4 border border-[#232B3A]/80">
+                      <h3 className="text-slate-400 text-xs sm:text-sm mb-2">User ID</h3>
                       <div className="flex items-center">
-                        <div className="h-10 w-10 flex items-center justify-center rounded-lg bg-[#171C26] mr-3">
-                          <User size={18} className="text-slate-300" />
+                        <div className="h-8 w-8 sm:h-10 sm:w-10 flex items-center justify-center rounded-lg bg-[#171C26] mr-2 sm:mr-3">
+                          <User size={16} className="sm:w-[18px] sm:h-[18px] text-slate-300" />
                         </div>
-                        <p className="text-lg font-bold text-slate-300">{user?.username || 'N/A'}</p>
+                        <p className="text-base sm:text-lg font-bold text-slate-300">{user?.username || 'N/A'}</p>
                       </div>
                     </div>
                   </div>
@@ -502,26 +495,26 @@ export default function Dashboard() {
 
           {/* Referral Commission Structure */}
           <div className="bg-gradient-to-br from-[#141922]/85 to-[#11151C]/85 backdrop-blur-xl border border-[#232B3A] rounded-2xl shadow-2xl shadow-black/50 overflow-hidden">
-            <div className="p-8">
+            <div className="p-4 sm:p-6 lg:p-8">
               {/* Header Section */}
-              <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
-                <div className="flex items-center mb-4 md:mb-0">
+              <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 sm:mb-8">
+                <div className="flex items-center mb-4 lg:mb-0">
                   <div className="relative">
                     <div className="absolute inset-0 bg-gradient-to-r from-[#0EC7FF] to-[#2E6BFF] rounded-xl blur-sm opacity-75"></div>
-                    <div className="relative p-3 rounded-xl bg-gradient-to-br from-[#0EC7FF]/30 to-[#2E6BFF]/20 border border-[#0EC7FF]/40">
-                      <Users size={20} className="text-[#0EC7FF]" />
+                    <div className="relative p-2 sm:p-3 rounded-xl bg-gradient-to-br from-[#0EC7FF]/30 to-[#2E6BFF]/20 border border-[#0EC7FF]/40">
+                      <Users size={18} className="sm:w-5 sm:h-5 text-[#0EC7FF]" />
                     </div>
                   </div>
-                  <div className="ml-4">
-                    <h2 className="text-white text-xl font-bold bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">
+                  <div className="ml-3 sm:ml-4">
+                    <h2 className="text-white text-lg sm:text-xl font-bold bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">
                       Referral Commission Structure
                     </h2>
-                    <p className="text-slate-400 text-sm mt-1">Multi-tier earning opportunities</p>
+                    <p className="text-slate-400 text-xs sm:text-sm mt-1">Multi-tier earning opportunities</p>
                   </div>
                 </div>
-                <div className="flex items-center space-x-3">
-                  <span className="px-4 py-2 bg-gradient-to-r from-[#0EC7FF]/20 to-[#2E6BFF]/20 text-[#37D7FF] rounded-full text-sm font-medium border border-[#0EC7FF]/30 shadow-lg">
-                    <span className="inline-block w-2 h-2 bg-[#0EC7FF] rounded-full mr-2 animate-pulse"></span>
+                <div className="flex items-center space-x-2 sm:space-x-3">
+                  <span className="px-3 sm:px-4 py-1.5 sm:py-2 bg-gradient-to-r from-[#0EC7FF]/20 to-[#2E6BFF]/20 text-[#37D7FF] rounded-full text-xs sm:text-sm font-medium border border-[#0EC7FF]/30 shadow-lg">
+                    <span className="inline-block w-1.5 h-1.5 sm:w-2 sm:h-2 bg-[#0EC7FF] rounded-full mr-1.5 sm:mr-2 animate-pulse"></span>
                     Active Program
                   </span>
                 </div>
@@ -530,19 +523,18 @@ export default function Dashboard() {
               {/* Responsive Table (md+) and Cards (mobile) */}
               <div className="relative rounded-xl border border-[#232B3A] bg-gradient-to-br from-[#0E1116]/60 to-[#11151C]/60 backdrop-blur-sm">
                 <div className="p-2">
-                  <table className="hidden md:table w-full table-fixed">
+                  <table className="hidden lg:table w-full table-fixed">
                     <thead>
                       <tr className="bg-[#11151C] border-b border-[#232B3A]">
-                        <th className="text-left py-3 px-4 text-slate-300 font-semibold text-xs uppercase tracking-wider w-2/5">
+                        <th className="text-left py-3 px-4 text-slate-300 font-semibold text-xs uppercase tracking-wider w-1/3">
                           <div className="flex items-center space-x-2">
                             <Trophy size={14} className="text-[#0EC7FF]" />
                             <span>Level</span>
                           </div>
                         </th>
-                        <th className="text-center py-3 px-4 text-slate-300 font-semibold text-xs uppercase tracking-wider w-1/5">Status</th>
-                        <th className="text-center py-3 px-4 text-slate-300 font-semibold text-xs uppercase tracking-wider w-1/5">Members</th>
-                        <th className="text-center py-3 px-4 text-slate-300 font-semibold text-xs uppercase tracking-wider w-1/5">Commission</th>
-                        <th className="text-center py-3 px-4 text-slate-300 font-semibold text-xs uppercase tracking-wider w-1/5">VIP</th>
+                        <th className="text-center py-3 px-4 text-slate-300 font-semibold text-xs uppercase tracking-wider w-1/6">Status</th>
+                        <th className="text-center py-3 px-4 text-slate-300 font-semibold text-xs uppercase tracking-wider w-1/6">Members</th>
+                        <th className="text-center py-3 px-4 text-slate-300 font-semibold text-xs uppercase tracking-wider w-1/6">Commission</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-[#232B3A] text-sm">
@@ -564,23 +556,12 @@ export default function Dashboard() {
                         </td>
                           <td className="py-3 px-4 text-center text-slate-200">{row.members}</td>
                           <td className="py-3 px-4 text-center font-semibold text-slate-200">{row.commission}</td>
-                          <td className="py-3 px-4 text-center">
-                            {row.vip === 'active' && (
-                              <Check size={16} className="inline text-green-400" />
-                            )}
-                            {row.vip === 'inactive' && (
-                              <X size={16} className="inline text-red-400" />
-                            )}
-                            {row.vip === 'locked' && (
-                              <span className="inline-block w-3 h-3 rounded bg-slate-500/70 align-middle"></span>
-                            )}
-                        </td>
                       </tr>
                       ))}
                     </tbody>
                   </table>
 
-                  <div className="md:hidden space-y-3">
+                  <div className="lg:hidden space-y-3">
                     {commissionData.map(row => (
                       <div key={row.key} className="rounded-lg border border-[#232B3A] bg-[#141922]/60 p-3">
                         <div className="flex items-center justify-between">
@@ -590,7 +571,7 @@ export default function Dashboard() {
                             {row.status === 'inactive' && <X size={16} className="text-red-400" />}
                             {row.status === 'locked' && <span className="inline-block w-3 h-3 rounded bg-slate-500/70"></span>}
                           </div>
-                              </div>
+                        </div>
                         <div className="mt-2 grid grid-cols-2 gap-2 text-xs">
                           <div className="bg-[#0E1116]/60 border border-[#232B3A] rounded px-2 py-1">
                             <div className="text-slate-400">Members</div>
@@ -600,15 +581,7 @@ export default function Dashboard() {
                             <div className="text-slate-400">Commission</div>
                             <div className="text-slate-200 font-semibold">{row.commission}</div>
                           </div>
-                          <div className="bg-[#0E1116]/60 border border-[#232B3A] rounded px-2 py-1 col-span-2">
-                            <div className="text-slate-400">VIP</div>
-                            <div className="mt-1">
-                              {row.vip === 'active' && <Check size={16} className="text-green-400" />}
-                              {row.vip === 'inactive' && <X size={16} className="text-red-400" />}
-                              {row.vip === 'locked' && <span className="inline-block w-3 h-3 rounded bg-slate-500/70"></span>}
-                            </div>
                         </div>
-              </div>
                       </div>
                     ))}
                   </div>

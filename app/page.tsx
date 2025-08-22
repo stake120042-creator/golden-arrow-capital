@@ -445,41 +445,41 @@ export default function LandingPage() {
       
       <div className="relative z-10 min-h-screen flex flex-col">
         {/* Header Section */}
-        <header className="relative z-20 pt-8 pb-12">
-          <div className="container mx-auto px-6">
+        <header className="relative z-20 pt-6 sm:pt-8 pb-8 sm:pb-12">
+          <div className="container mx-auto px-4 sm:px-6">
             <div className="flex justify-between items-center">
               {/* Logo */}
-              <div className="flex items-center space-x-3">
+              <div className="flex items-center space-x-2 sm:space-x-3">
                 <div className="relative">
                   <div className="absolute inset-0 bg-gradient-to-r from-yellow-400/40 to-amber-500/30 rounded-xl blur-lg opacity-75 animate-pulse-glow"></div>
-                  <div className="relative w-12 h-12 bg-gradient-to-br from-yellow-400 to-amber-500 rounded-xl flex items-center justify-center text-slate-900 font-bold text-xl shadow-2xl">
+                  <div className="relative w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-yellow-400 to-amber-500 rounded-xl flex items-center justify-center text-slate-900 font-bold text-lg sm:text-xl shadow-2xl">
                     GA
                   </div>
                 </div>
                 <div>
-                  <h1 className="text-2xl font-bold text-gradient">Golden Arrow Capital</h1>
-                  <p className="text-slate-400 text-sm font-medium">Premium Investment Platform</p>
+                  <h1 className="text-xl sm:text-2xl font-bold text-gradient">Golden Arrow Capital</h1>
+                  <p className="text-slate-400 text-xs sm:text-sm font-medium">Premium Investment Platform</p>
                 </div>
               </div>
               
               {/* Navigation */}
-              <nav className="hidden md:flex items-center space-x-8">
-                <a href="#features" className="text-slate-300 hover:text-yellow-400 transition-colors duration-300 font-medium">Features</a>
-                <a href="#about" className="text-slate-300 hover:text-yellow-400 transition-colors duration-300 font-medium">About</a>
-                <a href="#contact" className="text-slate-300 hover:text-yellow-400 transition-colors duration-300 font-medium">Contact</a>
+              <nav className="hidden md:flex items-center space-x-6 lg:space-x-8">
+                <a href="#features" className="text-slate-300 hover:text-yellow-400 transition-colors duration-300 font-medium text-sm lg:text-base">Features</a>
+                <a href="#about" className="text-slate-300 hover:text-yellow-400 transition-colors duration-300 font-medium text-sm lg:text-base">About</a>
+                <a href="#contact" className="text-slate-300 hover:text-yellow-400 transition-colors duration-300 font-medium text-sm lg:text-base">Contact</a>
               </nav>
             </div>
           </div>
         </header>
 
         {/* Main Content */}
-        <main className="flex-1 flex items-center justify-center px-6 py-12">
-          <div className="w-full max-w-md mx-auto">
+        <main className="flex-1 flex items-center justify-center px-4 sm:px-6 py-8 sm:py-12">
+          <div className="w-full max-w-sm sm:max-w-md lg:max-w-lg xl:max-w-xl mx-auto">
             {/* Auth Form */}
             <div className={`${animateIn ? 'animate-fade-in-up' : 'opacity-0'}`}>
               <div className="relative">
                 {/* Form Container */}
-                <div className="relative w-full max-w-md mx-auto">
+                <div className="relative w-full mx-auto">
                   {/* Glass morphism container */}
                   <div className="relative overflow-hidden rounded-2xl">
                     {/* Background blur effect */}
@@ -491,7 +491,7 @@ export default function LandingPage() {
                     </div>
                     
                     {/* Content */}
-                    <div className="relative z-10 p-8">
+                    <div className="relative z-10 p-6 sm:p-8 lg:p-10">
                         {/* Error/Success Messages */}
                         {errorMessage && (
                           <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-xl flex items-start space-x-3 animate-scale-in">
@@ -759,20 +759,20 @@ export default function LandingPage() {
                           )}
                           
                           {activeTab === 'otp' && (
-                            <form onSubmit={handleVerifyOtp} className="space-y-6">
+                            <form onSubmit={handleVerifyOtp} className="space-y-6 sm:space-y-8">
                               <div className="text-center">
-                                <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-yellow-400/20 to-amber-500/20 rounded-full flex items-center justify-center">
-                                  <Award size={24} className="text-yellow-400" />
+                                <div className="w-14 h-14 sm:w-16 sm:h-16 mx-auto mb-4 bg-gradient-to-br from-yellow-400/20 to-amber-500/20 rounded-full flex items-center justify-center">
+                                  <Award size={20} className="sm:w-6 sm:h-6 text-yellow-400" />
                                 </div>
-                                <h2 className="text-xl font-bold text-white mb-2">Verify Your Email</h2>
-                                <p className="text-slate-300">
+                                <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-white mb-2">Verify Your Email</h2>
+                                <p className="text-slate-300 text-sm sm:text-base">
                                   We've sent a verification code to{' '}
                                   <span className="text-yellow-400 font-medium">{currentEmail}</span>
                                 </p>
                               </div>
                               
                               <div>
-                                <label className="block text-sm font-medium text-slate-300 mb-4 text-center">Enter Verification Code</label>
+                                <label className="block text-sm sm:text-base font-medium text-slate-300 mb-4 text-center">Enter Verification Code</label>
                                 <OTPInput
                                   length={6}
                                   value={otpValue}
@@ -806,15 +806,15 @@ export default function LandingPage() {
                               <button 
                                 type="submit" 
                                 disabled={isLoading}
-                                className="btn-primary w-full flex items-center justify-center"
+                                className="btn-primary w-full flex items-center justify-center text-sm sm:text-base py-3 sm:py-4"
                               >
                                 {isLoading ? 'Verifying...' : 'Verify & Continue'}
-                                {!isLoading && <ArrowRight size={20} className="ml-2" />}
+                                {!isLoading && <ArrowRight size={18} className="sm:w-5 sm:h-5 ml-2" />}
                               </button>
                               
                               <button 
                                 type="button" 
-                                className="w-full text-center text-slate-400 hover:text-white transition-colors duration-300 p-2 rounded-lg hover:bg-white/5"
+                                className="w-full text-center text-slate-400 hover:text-white transition-colors duration-300 p-2 sm:p-3 rounded-lg hover:bg-white/5 text-sm sm:text-base"
                                 onClick={() => setActiveTab('signup')}
                               >
                                 ← Back to Sign Up
@@ -823,20 +823,20 @@ export default function LandingPage() {
                           )}
 
                           {activeTab === 'login-otp' && (
-                            <form onSubmit={handleVerifyLoginOtp} className="space-y-6">
+                            <form onSubmit={handleVerifyLoginOtp} className="space-y-6 sm:space-y-8">
                               <div className="text-center">
-                                <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-yellow-400/20 to-amber-500/20 rounded-full flex items-center justify-center">
-                                  <Shield size={24} className="text-yellow-400" />
+                                <div className="w-14 h-14 sm:w-16 sm:h-16 mx-auto mb-4 bg-gradient-to-br from-yellow-400/20 to-amber-500/20 rounded-full flex items-center justify-center">
+                                  <Shield size={20} className="sm:w-6 sm:h-6 text-yellow-400" />
                                 </div>
-                                <h2 className="text-xl font-bold text-white mb-2">Secure Login</h2>
-                                <p className="text-slate-300">
+                                <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-white mb-2">Secure Login</h2>
+                                <p className="text-slate-300 text-sm sm:text-base">
                                   For your security, we've sent a code to{' '}
                                   <span className="text-yellow-400 font-medium">{currentEmail}</span>
                                 </p>
                               </div>
                               
                               <div>
-                                <label className="block text-sm font-medium text-slate-300 mb-4 text-center">Enter Security Code</label>
+                                <label className="block text-sm sm:text-base font-medium text-slate-300 mb-4 text-center">Enter Security Code</label>
                                 <OTPInput
                                   length={6}
                                   value={otpValue}
@@ -870,15 +870,15 @@ export default function LandingPage() {
                               <button 
                                 type="submit" 
                                 disabled={isLoading}
-                                className="btn-primary w-full flex items-center justify-center"
+                                className="btn-primary w-full flex items-center justify-center text-sm sm:text-base py-3 sm:py-4"
                               >
                                 {isLoading ? 'Verifying...' : 'Complete Login'}
-                                {!isLoading && <ArrowRight size={20} className="ml-2" />}
+                                {!isLoading && <ArrowRight size={18} className="sm:w-5 sm:h-5 ml-2" />}
                               </button>
                               
                               <button 
                                 type="button" 
-                                className="w-full text-center text-slate-400 hover:text-white transition-colors duration-300 p-2 rounded-lg hover:bg-white/5"
+                                className="w-full text-center text-slate-400 hover:text-white transition-colors duration-300 p-2 sm:p-3 rounded-lg hover:bg-white/5 text-sm sm:text-base"
                                 onClick={() => {
                                   setActiveTab('login');
                                   setOtpValue('');
