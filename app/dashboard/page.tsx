@@ -104,7 +104,8 @@ export default function Dashboard() {
   };
 
   const handleCopyReferralLink = () => {
-    navigator.clipboard.writeText('goldenarrrow.capital/ref/johndoe');
+    const referralLink = `goldenarrowcapital.com/ref/${user?.username || 'user'}`;
+    navigator.clipboard.writeText(referralLink);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -140,36 +141,32 @@ export default function Dashboard() {
         
         {/* Dashboard Content */}
         <div className="pt-24 px-4 md:px-6 pb-12 space-y-8 max-w-7xl mx-auto">
-          {/* Welcome Section */}
-          <div className="relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-r from-[#7C4DFF]/10 to-[#6C63FF]/10 rounded-2xl"></div>
-            <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent rounded-2xl"></div>
-            <div className="relative bg-gradient-to-r from-[#7C4DFF]/15 to-[#6C63FF]/10 border border-[#7C4DFF]/30 rounded-2xl p-8 shadow-2xl shadow-black/40 backdrop-blur-sm">
-              <div className="flex flex-col md:flex-row items-start md:items-center justify-between">
-                <div className="mb-6 md:mb-0">
-                  <div className="flex items-center space-x-3 mb-3">
-                    <div className="w-12 h-12 bg-gradient-to-br from-[#7C4DFF]/30 to-[#6C63FF]/20 rounded-xl flex items-center justify-center border border-[#7C4DFF]/30">
-                      <span className="text-[#9C6CFF] font-bold text-lg">{user?.firstName?.[0] || 'U'}</span>
-                    </div>
-                    <div>
-                      <h1 className="text-3xl font-bold text-gradient">
-                        Welcome back, {user?.firstName || 'User'}
-                      </h1>
-                      <p className="text-slate-300 mt-1">Here&apos;s your portfolio overview for today</p>
+          {/* Referral Link */}
+          <div className="bg-gradient-to-br from-[#141922]/80 to-[#11151C]/80 backdrop-blur-sm border border-[#232B3A] rounded-xl shadow-lg shadow-black/30 overflow-hidden hover:border-[#2E6BFF]/30 transition-all duration-300">
+            <div className="p-1">
+              <div className="bg-gradient-to-br from-[#0EC7FF]/10 to-[#2E6BFF]/5 p-6 rounded-lg">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
+                  <div className="mb-6 md:mb-0">
+                    <div className="flex items-center">
+                        <div className="p-2.5 rounded-lg bg-gradient-to-br from-[#0EC7FF]/30 to-[#2E6BFF]/20 border border-[#0EC7FF]/30 mr-3">
+                        <Award size={20} className="text-[#0EC7FF]" />
+                      </div>
+                      <h2 className="text-white text-lg font-bold">Referral Link</h2>
                     </div>
                   </div>
-                </div>
-                <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-r from-[#141922]/85 to-[#11151C]/85 backdrop-blur-xl rounded-xl border border-[#7C4DFF]/20"></div>
-                  <div className="relative px-6 py-4">
-                    <div className="text-right">
-                      <p className="text-sm text-slate-300 font-medium">Portfolio Value</p>
-                      <p className="text-3xl font-bold text-[#9C6CFF] mb-1">$847,250</p>
-                      <div className="flex items-center justify-end text-green-400 text-sm font-medium">
-                        <ArrowUp size={16} className="mr-1" />
-                        +2.4% today
-                      </div>
+                  
+                  <div className="flex flex-wrap md:flex-nowrap gap-3 items-center w-full md:w-auto">
+                    <div className="flex-grow bg-gradient-to-r from-[#171C26] to-[#11151C] rounded-lg px-4 py-3 border border-[#232B3A] overflow-hidden overflow-x-auto">
+                      <span className="text-slate-300 font-mono">goldenarrowcapital.com/ref/{user?.username || 'user'}</span>
                     </div>
+                    <button 
+                      className="px-4 py-2.5 text-slate-900 font-medium rounded-lg transition-colors flex items-center whitespace-nowrap shadow-md"
+                      style={{background:'linear-gradient(90deg,#0EC7FF,#2E6BFF)'}}
+                      onClick={handleCopyReferralLink}
+                    >
+                      {copied ? <Check size={16} className="mr-2" /> : <Copy size={16} className="mr-2" />}
+                      {copied ? "Copied!" : "Copy Link"}
+                    </button>
                   </div>
                 </div>
               </div>
@@ -511,53 +508,7 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Referral Link */}
-          <div className="bg-gradient-to-br from-[#141922]/80 to-[#11151C]/80 backdrop-blur-sm border border-[#232B3A] rounded-xl shadow-lg shadow-black/30 overflow-hidden hover:border-[#2E6BFF]/30 transition-all duration-300">
-            <div className="p-1">
-              <div className="bg-gradient-to-br from-[#0EC7FF]/10 to-[#2E6BFF]/5 p-6 rounded-lg">
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
-                  <div className="mb-6 md:mb-0">
-                    <div className="flex items-center">
-                        <div className="p-2.5 rounded-lg bg-gradient-to-br from-[#0EC7FF]/30 to-[#2E6BFF]/20 border border-[#0EC7FF]/30 mr-3">
-                        <Award size={20} className="text-[#0EC7FF]" />
-                      </div>
-                      <h2 className="text-white text-lg font-bold">Elite Referral Program</h2>
-                    </div>
-                    <p className="text-slate-300 mt-3 ml-11">Earn exclusive rewards for introducing qualified investors</p>
-                  </div>
-                  
-                  <div className="flex flex-wrap md:flex-nowrap gap-3 items-center w-full md:w-auto">
-                    <div className="flex-grow bg-gradient-to-r from-[#171C26] to-[#11151C] rounded-lg px-4 py-3 border border-[#232B3A] overflow-hidden overflow-x-auto">
-                      <span className="text-slate-300 font-mono">goldenarrrow.capital/ref/johndoe</span>
-                    </div>
-                    <button 
-                      className="px-4 py-2.5 text-slate-900 font-medium rounded-lg transition-colors flex items-center whitespace-nowrap shadow-md"
-                      style={{background:'linear-gradient(90deg,#0EC7FF,#2E6BFF)'}}
-                      onClick={handleCopyReferralLink}
-                    >
-                      {copied ? <Check size={16} className="mr-2" /> : <Copy size={16} className="mr-2" />}
-                      {copied ? "Copied!" : "Copy Link"}
-                    </button>
-                  </div>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
-                  <div className="bg-gradient-to-br from-[#141922]/60 to-[#11151C]/60 rounded-lg p-4 border border-[#0EC7FF]/10 text-center">
-                    <h3 className="text-slate-400 text-sm mb-1">Total Referrals</h3>
-                    <p className="text-2xl font-bold text-[#37D7FF]">5</p>
-                  </div>
-                  <div className="bg-gradient-to-br from-[#141922]/60 to-[#11151C]/60 rounded-lg p-4 border border-green-500/10 text-center">
-                    <h3 className="text-slate-400 text-sm mb-1">Total Earnings</h3>
-                    <p className="text-2xl font-bold text-green-400">$12,500</p>
-                  </div>
-                  <div className="bg-gradient-to-br from-[#141922]/60 to-[#11151C]/60 rounded-lg p-4 border border-[#0EC7FF]/10 text-center">
-                    <h3 className="text-slate-400 text-sm mb-1">Pending Rewards</h3>
-                    <p className="text-2xl font-bold text-[#0EC7FF]">$450</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+
 
           {/* Referral Commission Structure */}
           <div className="bg-gradient-to-br from-[#141922]/85 to-[#11151C]/85 backdrop-blur-xl border border-[#232B3A] rounded-2xl shadow-2xl shadow-black/50 overflow-hidden">

@@ -37,6 +37,19 @@ export default function LandingPage() {
   // Password validation state
   const [passwordsMatch, setPasswordsMatch] = useState(false);
   
+  // Real-time validation states
+  const [sponsorValidation, setSponsorValidation] = useState<{
+    isValidating: boolean;
+    isValid: boolean | null;
+    message: string;
+  }>({ isValidating: false, isValid: null, message: '' });
+  
+  const [usernameValidation, setUsernameValidation] = useState<{
+    isValidating: boolean;
+    isValid: boolean | null;
+    message: string;
+  }>({ isValidating: false, isValid: null, message: '' });
+  
   const [loginFormData, setLoginFormData] = useState<LoginData>({
     usernameOrEmail: '',
     password: '',
@@ -49,8 +62,136 @@ export default function LandingPage() {
     setPasswordsMatch(match);
     return match;
   };
+
+  // Validate sponsor username
+  const validateSponsor = async (sponsor: string) => {
+    if (!sponsor.trim()) {
+      setSponsorValidation({ isValidating: false, isValid: null, message: '' });
+      return;
+    }
+
+    setSponsorValidation({ isValidating: true, isValid: null, message: '' });
+
+    try {
+      const response = await fetch('/api/auth/verify-username', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: sponsor.trim() }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        if (data.exists) {
+          setSponsorValidation({
+            isValidating: false,
+            isValid: true,
+            message: 'Sponsor username is valid'
+          });
+        } else {
+          setSponsorValidation({
+            isValidating: false,
+            isValid: false,
+            message: 'Invalid sponsor username'
+          });
+        }
+      } else {
+        setSponsorValidation({
+          isValidating: false,
+          isValid: false,
+          message: 'Failed to verify sponsor username'
+        });
+      }
+    } catch (error) {
+      setSponsorValidation({
+        isValidating: false,
+        isValid: false,
+        message: 'Error checking sponsor username'
+      });
+    }
+  };
+
+  // Validate username availability
+  const validateUsername = async (username: string) => {
+    if (!username.trim()) {
+      setUsernameValidation({ isValidating: false, isValid: null, message: '' });
+      return;
+    }
+
+    // Basic validation
+    if (username.length < 3) {
+      setUsernameValidation({
+        isValidating: false,
+        isValid: false,
+        message: 'Username must be at least 3 characters'
+      });
+      return;
+    }
+
+    if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+      setUsernameValidation({
+        isValidating: false,
+        isValid: false,
+        message: 'Username can only contain letters, numbers, and underscores'
+      });
+      return;
+    }
+
+    setUsernameValidation({ isValidating: true, isValid: null, message: '' });
+
+    try {
+      const response = await fetch('/api/auth/verify-username', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: username.trim() }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        if (data.exists) {
+          setUsernameValidation({
+            isValidating: false,
+            isValid: false,
+            message: 'Username is already taken'
+          });
+        } else {
+          setUsernameValidation({
+            isValidating: false,
+            isValid: true,
+            message: 'Username is available'
+          });
+        }
+      } else {
+        setUsernameValidation({
+          isValidating: false,
+          isValid: false,
+          message: 'Failed to check username availability'
+        });
+      }
+    } catch (error) {
+      setUsernameValidation({
+        isValidating: false,
+        isValid: false,
+        message: 'Error checking username availability'
+      });
+    }
+  };
   
   useEffect(() => {
+    // Check for sponsor parameter in URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const sponsorParam = urlParams.get('sponsor');
+    
+    if (sponsorParam) {
+      setSignupFormData(prev => ({
+        ...prev,
+        sponsor: sponsorParam
+      }));
+      // Switch to signup tab if not already there
+      setActiveTab('signup');
+    }
+    
     // Trigger animation after component mount
     setTimeout(() => {
       setAnimateIn(true);
@@ -62,6 +203,9 @@ export default function LandingPage() {
     setAnimateIn(false);
     setErrorMessage('');
     setSuccessMessage('');
+    // Reset validation states when switching tabs
+    setSponsorValidation({ isValidating: false, isValid: null, message: '' });
+    setUsernameValidation({ isValidating: false, isValid: null, message: '' });
     setTimeout(() => {
       setAnimateIn(true);
     }, 50);
@@ -96,6 +240,18 @@ export default function LandingPage() {
       validatePasswordMatch(newFormData.password, value);
     }
   };
+
+  const handleSignupInputBlur = async (field: keyof SignupData, value: string) => {
+    // Validate sponsor on blur
+    if (field === 'sponsor') {
+      await validateSponsor(value);
+    }
+    
+    // Validate username on blur
+    if (field === 'username') {
+      await validateUsername(value);
+    }
+  };
   
   const handleLoginInputChange = (field: keyof LoginData, value: string | boolean) => {
     setLoginFormData(prev => ({
@@ -115,6 +271,20 @@ export default function LandingPage() {
 
     if (!passwordMatch) {
       setErrorMessage('Passwords do not match');
+      setIsLoading(false);
+      return;
+    }
+
+    // Validate sponsor if provided
+    if (signupFormData.sponsor && signupFormData.sponsor.trim() && sponsorValidation.isValid === false) {
+      setErrorMessage('Please enter a valid sponsor username');
+      setIsLoading(false);
+      return;
+    }
+
+    // Validate username
+    if (usernameValidation.isValid === false) {
+      setErrorMessage('Please choose a valid username');
       setIsLoading(false);
       return;
     }
@@ -371,9 +541,26 @@ export default function LandingPage() {
                                   type="text" 
                                   value={signupFormData.sponsor}
                                   onChange={(e) => handleSignupInputChange('sponsor', e.target.value)}
-                                  className="form-input" 
+                                  onBlur={(e) => handleSignupInputBlur('sponsor', e.target.value)}
+                                  className={`form-input ${
+                                    sponsorValidation.isValid === false ? 'border-red-500 focus:border-red-500' :
+                                    sponsorValidation.isValid === true ? 'border-green-500 focus:border-green-500' : ''
+                                  }`}
                                   placeholder="Enter sponsor username" 
                                 />
+                                {sponsorValidation.isValidating && (
+                                  <div className="mt-2 flex items-center text-blue-400 text-sm">
+                                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-400 mr-2"></div>
+                                    Checking sponsor username...
+                                  </div>
+                                )}
+                                {sponsorValidation.message && !sponsorValidation.isValidating && (
+                                  <div className={`mt-2 text-sm ${
+                                    sponsorValidation.isValid === true ? 'text-green-400' : 'text-red-400'
+                                  }`}>
+                                    {sponsorValidation.message}
+                                  </div>
+                                )}
                               </div>
                               
                               <div className="grid grid-cols-2 gap-4">
@@ -407,10 +594,27 @@ export default function LandingPage() {
                                   type="text" 
                                   value={signupFormData.username}
                                   onChange={(e) => handleSignupInputChange('username', e.target.value)}
-                                  className="form-input" 
+                                  onBlur={(e) => handleSignupInputBlur('username', e.target.value)}
+                                  className={`form-input ${
+                                    usernameValidation.isValid === false ? 'border-red-500 focus:border-red-500' :
+                                    usernameValidation.isValid === true ? 'border-green-500 focus:border-green-500' : ''
+                                  }`}
                                   placeholder="Choose a username" 
                                   required 
                                 />
+                                {usernameValidation.isValidating && (
+                                  <div className="mt-2 flex items-center text-blue-400 text-sm">
+                                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-400 mr-2"></div>
+                                    Checking username availability...
+                                  </div>
+                                )}
+                                {usernameValidation.message && !usernameValidation.isValidating && (
+                                  <div className={`mt-2 text-sm ${
+                                    usernameValidation.isValid === true ? 'text-green-400' : 'text-red-400'
+                                  }`}>
+                                    {usernameValidation.message}
+                                  </div>
+                                )}
                               </div>
                               
                               <div>
