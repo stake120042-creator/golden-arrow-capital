@@ -268,9 +268,7 @@ export default function Dashboard() {
                       <span>+4.2%</span>
                     </div>
                   </div>
-                  <div className="w-full h-2 bg-[#1C2330] rounded-full overflow-hidden">
-                    <div className="h-2 w-3/5 bg-gradient-to-r from-[#7C4DFF] to-[#6C63FF] rounded-full transition-all duration-500 group-hover:w-4/5"></div>
-                  </div>
+
                 </div>
               </div>
             </div>
@@ -295,9 +293,7 @@ export default function Dashboard() {
                       <span>+2.8%</span>
                     </div>
                   </div>
-                  <div className="w-full h-2 bg-[#1C2330] rounded-full overflow-hidden">
-                    <div className="h-2 w-2/5 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full transition-all duration-500 group-hover:w-3/5"></div>
-                  </div>
+
                 </div>
               </div>
             </div>
@@ -322,9 +318,7 @@ export default function Dashboard() {
                       <span>Matured</span>
                     </div>
                   </div>
-                  <div className="w-full h-2 bg-[#1C2330] rounded-full overflow-hidden">
-                    <div className="h-2 w-full bg-gradient-to-r from-amber-500 to-orange-600 rounded-full"></div>
-                  </div>
+
                 </div>
               </div>
             </div>
@@ -360,9 +354,7 @@ export default function Dashboard() {
                       6 De-active
                     </span>
                   </div>
-                  <div className="w-full h-1.5 bg-[#1C2330] mt-4 rounded-full overflow-hidden">
-                    <div className="h-1.5 w-4/5 bg-gradient-to-r from-[#0EC7FF] to-[#2E6BFF]"></div>
-                  </div>
+
                 </div>
               </div>
             </div>
@@ -395,9 +387,7 @@ export default function Dashboard() {
                       6 De-active
                     </span>
                   </div>
-                  <div className="w-full h-1.5 bg-[#1C2330] mt-4 rounded-full overflow-hidden">
-                    <div className="h-1.5 w-11/12 bg-gradient-to-r from-[#2E6BFF] to-[#4C82FF]"></div>
-                  </div>
+
                 </div>
               </div>
             </div>
