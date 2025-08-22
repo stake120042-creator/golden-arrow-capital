@@ -18,16 +18,15 @@ body {
   max-width: 100vw;
   overflow-x: hidden;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: #0E1116; /* sp.bg */
+  color: #E6EAF2; /* sp.text */
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  color: #E6EAF2;
+  background: radial-gradient(1200px 800px at 10% -10%, rgba(46, 107, 255, 0.14), transparent 40%),
+              radial-gradient(800px 600px at 110% 20%, rgba(14, 199, 255, 0.12), transparent 45%),
+              #0E1116;
 }
 
 a {
@@ -42,17 +41,17 @@ a {
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(15, 23, 42, 0.3);
+  background: #11151C;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  background: linear-gradient(135deg, #0EC7FF, #2E6BFF);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, #f59e0b, #d97706);
+  background: linear-gradient(135deg, #37D7FF, #4C82FF);
 }
 
 /* Professional Animations */
@@ -173,20 +172,20 @@ a {
 
 /* Glass Morphism Effects */
 .glass {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(23, 28, 38, 0.7);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(35, 43, 58, 0.8);
 }
 
 .glass-dark {
-  background: rgba(15, 23, 42, 0.8);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(14, 17, 22, 0.85);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(35, 43, 58, 0.8);
 }
 
 /* Professional Gradients */
 .gradient-primary {
-  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #d97706 100%);
+  background: linear-gradient(135deg, #0EC7FF 0%, #2E6BFF 50%, #4C82FF 100%);
 }
 
 .gradient-secondary {
@@ -214,24 +213,24 @@ a {
 
 /* Button Styles */
 .btn-primary {
-  @apply px-6 py-3 rounded-xl font-semibold transition-all duration-300;
-  @apply bg-gradient-to-r from-yellow-400 to-amber-500 text-slate-900;
-  @apply hover:from-yellow-300 hover:to-amber-400 transform hover:scale-105;
-  @apply shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed;
+  @apply px-6 py-3 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed;
+  @apply text-slate-900;
+  background: linear-gradient(90deg, #0EC7FF, #2E6BFF);
 }
 
 .btn-secondary {
-  @apply px-6 py-3 rounded-xl font-semibold transition-all duration-300;
-  @apply bg-gradient-to-r from-slate-700 to-slate-800 text-white;
-  @apply hover:from-slate-600 hover:to-slate-700 transform hover:scale-105;
-  @apply border border-slate-600/50 shadow-lg hover:shadow-xl;
+  @apply px-6 py-3 rounded-xl font-semibold transition-all duration-300 text-white shadow-lg hover:shadow-xl;
+  background: #171C26;
+  border: 1px solid #232B3A;
 }
 
 /* Card Styles */
 .card {
-  @apply bg-gradient-to-br from-slate-800/70 to-slate-900/70 backdrop-blur-sm;
-  @apply border border-slate-700/50 rounded-xl shadow-lg shadow-slate-900/20;
-  @apply hover:border-yellow-500/30 transition-all duration-300;
+  background: linear-gradient(180deg, rgba(20,25,34,0.85), rgba(17,21,28,0.85));
+  backdrop-filter: blur(10px);
+  border: 1px solid #232B3A;
+  border-radius: 0.75rem;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.35);
 }
 
 .card-hover {
@@ -264,14 +263,14 @@ a {
 
 /* Professional Typography */
 .text-gradient {
-  background: linear-gradient(135deg, #fbbf24, #f59e0b, #d97706);
+  background: linear-gradient(135deg, #FFFFFF, #B4C1D6);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .text-gradient-secondary {
-  background: linear-gradient(135deg, #8b5cf6, #7c3aed, #6d28d9);
+  background: linear-gradient(135deg, #0EC7FF, #2E6BFF);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

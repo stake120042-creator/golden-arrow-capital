@@ -7,6 +7,34 @@ module.exports = {
   ],
   theme: {
     extend: {
+      colors: {
+        // SafePal-inspired palette (purple variant)
+        sp: {
+          bg: {
+            DEFAULT: '#0E1116',
+            soft: '#11151C',
+            card: '#141922'
+          },
+          surface: '#171C26',
+          border: '#232B3A',
+          text: {
+            DEFAULT: '#E6EAF2',
+            muted: '#9AA7B8'
+          },
+          primary: {
+            DEFAULT: '#7C4DFF', // purple
+            hover: '#9C6CFF',
+            ring: '#7C4DFF33'
+          },
+          secondary: {
+            DEFAULT: '#6C63FF',
+            hover: '#857CFF'
+          },
+          success: '#10B981',
+          warning: '#F59E0B',
+          danger: '#EF4444',
+        }
+      },
       screens: {
         'mobile': '320px',
         'tablet': '640px',
@@ -18,7 +46,7 @@ module.exports = {
         'pulse-slow': 'pulse 4s infinite',
       },
       fontFamily: {
-        'sans': ['Poppins', 'sans-serif'],
+        'sans': ['Inter', 'Poppins', 'sans-serif'],
       },
       backdropBlur: {
         'xs': '2px',

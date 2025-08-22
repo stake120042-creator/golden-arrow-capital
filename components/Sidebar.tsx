@@ -85,25 +85,25 @@ const Sidebar: React.FC<SidebarProps> = ({ onLogout, isOpen = false, onClose }) 
       )}
       
       {/* Sidebar */}
-      <div className={`fixed left-0 top-0 h-full w-64 bg-gradient-to-b from-slate-900/95 to-slate-800/95 backdrop-blur-xl border-r border-slate-700/50 z-50 transition-transform duration-300 lg:translate-x-0 ${
+      <div className={`fixed left-0 top-0 h-full w-64 bg-[rgba(14,17,22,0.9)] backdrop-blur-xl border-r border-[#232B3A] z-50 transition-transform duration-300 lg:translate-x-0 ${
         isOpen ? 'translate-x-0' : '-translate-x-full'
       }`}>
         
         {/* Logo Section */}
-        <div className="flex items-center p-6 border-b border-slate-700/50 relative overflow-hidden">
+        <div className="flex items-center p-6 border-b border-[#232B3A] relative overflow-hidden">
           {/* Background effect */}
-          <div className="absolute inset-0 bg-gradient-to-r from-yellow-400/10 to-amber-500/5"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-[#7C4DFF]/10 to-[#6C63FF]/5"></div>
           
           <div className="relative flex items-center space-x-3">
             <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-yellow-400/40 to-amber-500/30 rounded-xl blur-lg opacity-75 animate-pulse-glow"></div>
-              <div className="relative w-12 h-12 bg-gradient-to-br from-yellow-400 to-amber-500 rounded-xl flex items-center justify-center text-slate-900 font-bold text-xl shadow-2xl">
+              <div className="absolute inset-0 bg-gradient-to-r from-[#7C4DFF]/40 to-[#6C63FF]/30 rounded-xl blur-lg opacity-75 animate-pulse-glow"></div>
+              <div className="relative w-12 h-12 bg-gradient-to-br from-[#7C4DFF] to-[#6C63FF] rounded-xl flex items-center justify-center text-slate-900 font-bold text-xl shadow-2xl">
                 GA
               </div>
             </div>
             <div>
-              <h1 className="text-xl font-bold text-gradient">Golden Arrow</h1>
-              <p className="text-xs text-slate-400 font-medium">Capital</p>
+              <h1 className="text-xl font-bold text-white">Golden Arrow</h1>
+              <p className="text-xs text-sp-text-muted font-medium">Capital</p>
             </div>
           </div>
         </div>
@@ -112,7 +112,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onLogout, isOpen = false, onClose }) 
         <nav className="flex-1 px-4 py-6">
           <div className="space-y-2">
             <div className="px-3 mb-4">
-              <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Main Menu</h3>
+              <h3 className="text-xs font-semibold text-sp-text-muted uppercase tracking-wider">Main Menu</h3>
             </div>
             
             {navItems.map((item) => (
@@ -122,24 +122,24 @@ const Sidebar: React.FC<SidebarProps> = ({ onLogout, isOpen = false, onClose }) 
                   onClick={handleLinkClick}
                   className={`group flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-300 relative overflow-hidden ${
                     pathname === item.path
-                      ? 'bg-gradient-to-r from-yellow-400/20 to-amber-500/10 text-yellow-400 border border-yellow-400/30 shadow-lg shadow-yellow-400/10'
-                      : 'text-slate-400 hover:text-white hover:bg-slate-800/50 hover:border hover:border-slate-700/50'
+                      ? 'bg-gradient-to-r from-[#0EC7FF]/15 to-[#2E6BFF]/10 text-[#37D7FF] border border-[#0EC7FF]/30 shadow-lg shadow-[#0EC7FF]/10'
+                      : 'text-sp-text-muted hover:text-white hover:bg-[#171C26] hover:border hover:border-[#232B3A]'
                   }`}
                 >
                   {/* Hover background effect */}
-                  <div className={`absolute inset-0 bg-gradient-to-r from-yellow-400/5 to-amber-500/3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${
+                  <div className={`absolute inset-0 bg-gradient-to-r from-[#7C4DFF]/5 to-[#6C63FF]/3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${
                     pathname === item.path ? 'opacity-100' : ''
                   }`}></div>
                   
                   <span className={`relative mr-3 transition-colors duration-200 ${
-                    pathname === item.path ? 'text-yellow-400' : 'text-slate-500 group-hover:text-slate-300'
+                    pathname === item.path ? 'text-[#7C4DFF]' : 'text-slate-500 group-hover:text-slate-300'
                   }`}>
                     {item.icon}
                   </span>
                   <span className="relative">{item.name}</span>
                   
                   {pathname === item.path && (
-                    <div className="relative ml-auto w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
+                    <div className="relative ml-auto w-2 h-2 bg-[#7C4DFF] rounded-full animate-pulse"></div>
                   )}
                 </Link>
               </div>
@@ -148,27 +148,15 @@ const Sidebar: React.FC<SidebarProps> = ({ onLogout, isOpen = false, onClose }) 
         </nav>
         
         {/* Bottom Section */}
-        <div className="p-4 border-t border-slate-700/50 relative">
+        <div className="p-4 border-t border-[#232B3A] relative">
           {/* Background effect */}
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-800/50 to-transparent"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-[#171C26]/60 to-transparent"></div>
           
           <div className="relative space-y-3">
-            {/* User Info */}
-            <div className="flex items-center space-x-3 p-3 bg-slate-800/50 rounded-xl border border-slate-700/30">
-              <div className="w-8 h-8 bg-gradient-to-br from-yellow-400 to-amber-500 rounded-lg flex items-center justify-center">
-                <span className="text-slate-900 font-bold text-sm">U</span>
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-white truncate">Premium User</p>
-                <p className="text-xs text-slate-400">Active Account</p>
-              </div>
-              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-            </div>
-            
             {/* Logout Button */}
             <button 
               onClick={handleLogout} 
-              className="w-full group flex items-center px-4 py-3 text-sm font-medium text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded-xl transition-all duration-300 relative overflow-hidden"
+              className="w-full group flex items-center px-4 py-3 text-sm font-medium text-sp-text-muted hover:text-red-400 hover:bg-red-500/10 rounded-xl transition-all duration-300 relative overflow-hidden"
             >
               <div className="absolute inset-0 bg-gradient-to-r from-red-500/5 to-pink-500/3 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               <LogOut size={20} className="relative mr-3 group-hover:text-red-400 transition-colors duration-200" />

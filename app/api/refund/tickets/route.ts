@@ -54,15 +54,26 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { transactionId, reason, userId } = body;
+    const { amount, address, reason, userId } = body;
 
     // Validate required fields
-    if (!transactionId || !reason || !userId) {
+    if (!amount || !address || !reason || !userId) {
       return NextResponse.json(
         {
           success: false,
           message: 'Missing required fields',
-          error: 'Transaction ID, reason, and user ID are required'
+          error: 'Amount, wallet address, reason, and user ID are required'
+        },
+        { status: 400 }
+      );
+    }
+
+    const parsedAmount = parseFloat(amount);
+    if (isNaN(parsedAmount) || parsedAmount <= 0) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: 'Invalid amount'
         },
         { status: 400 }
       );
@@ -70,18 +81,18 @@ export async function POST(request: NextRequest) {
 
     // In a real implementation, you would:
     // 1. Verify user authentication
-    // 2. Validate that the transaction exists and is eligible for refund
-    // 3. Check if a refund ticket already exists for this transaction
-    // 4. Create the refund ticket in the database
+    // 2. Validate wallet address format and refund policy
+    // 3. Create the refund ticket in the database
 
     const newTicket = {
       id: `REF${String(refundTickets.length + 1).padStart(3, '0')}`,
-      transactionId,
-      amount: 500.00, // This would come from the transaction
+      transactionId: 'N/A',
+      amount: parsedAmount,
       status: 'Pending' as const,
       createdAt: new Date().toISOString().split('T')[0],
       updatedAt: new Date().toISOString().split('T')[0],
       reason,
+      walletAddress: address,
       userId
     };
 

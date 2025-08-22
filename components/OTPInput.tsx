@@ -118,7 +118,7 @@ const OTPInput: React.FC<OTPInputProps> = ({
             className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 text-center text-lg sm:text-xl md:text-2xl font-bold 
                      bg-gradient-to-br from-slate-800/80 to-slate-900/80 backdrop-blur-sm
                      border-2 border-slate-600/50 text-white
-                     focus:border-yellow-400 focus:ring-4 focus:ring-yellow-400/20 
+                     focus:border-[#7C4DFF] focus:ring-4 focus:ring-[#7C4DFF]/20 
                      focus:outline-none transition-all duration-300
                      disabled:opacity-50 disabled:cursor-not-allowed
                      rounded-xl shadow-lg hover:shadow-xl

@@ -101,33 +101,4 @@ export class RefundService {
       return false;
     }
   }
-
-  // Get refund statistics for user
-  static async getRefundStats(): Promise<{
-    totalRequests: number;
-    pendingRequests: number;
-    approvedRequests: number;
-    rejectedRequests: number;
-    totalRefunded: number;
-  }> {
-    try {
-      const response = await refundApiRequest('/refund/stats', 'GET');
-      return response.stats || {
-        totalRequests: 0,
-        pendingRequests: 0,
-        approvedRequests: 0,
-        rejectedRequests: 0,
-        totalRefunded: 0
-      };
-    } catch (error) {
-      console.error('Error fetching refund stats:', error);
-      return {
-        totalRequests: 0,
-        pendingRequests: 0,
-        approvedRequests: 0,
-        rejectedRequests: 0,
-        totalRefunded: 0
-      };
-    }
-  }
 }

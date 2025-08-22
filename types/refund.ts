@@ -19,10 +19,12 @@ export interface RefundTicket {
   reason: string;
   adminResponse?: string;
   userId: string;
+  walletAddress?: string;
 }
 
 export interface CreateRefundRequest {
-  transactionId: string;
+  amount: string;
+  address: string;
   reason: string;
   userId: string;
 }
