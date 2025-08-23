@@ -15,6 +15,17 @@ async function apiRequest<T>(endpoint: string, method: string, data?: any): Prom
     credentials: 'include', // Include cookies for sessions
   };
 
+  // Add authorization header if token exists
+  if (typeof window !== 'undefined') {
+    const token = localStorage.getItem('authToken');
+    if (token) {
+      options.headers = {
+        ...options.headers,
+        'Authorization': `Bearer ${token}`
+      };
+    }
+  }
+
   if (data) {
     options.body = JSON.stringify(data);
   }
@@ -57,11 +68,16 @@ const apiClient = {
     
     updateProfile: (data: any): Promise<ApiResponse> =>
       apiRequest('/user/profile', 'PUT', data),
+    
+    requestProfileUpdateOTP: (data: any): Promise<ApiResponse> =>
+      apiRequest('/user/profile', 'POST', data),
   },
 
   wallet: {
     getOrCreate: (userId: string): Promise<any> =>
       apiRequest('/wallet/get-or-create', 'POST', { userId }),
+    updateBalance: (amount: number, operation: 'deduct' | 'add' = 'deduct'): Promise<any> =>
+      apiRequest('/wallet/update-balance', 'POST', { amount, operation }),
   },
 };
 

@@ -17,7 +17,8 @@ import {
   FileText,
   Award,
   RotateCcw,
-  ChevronLeft
+  ChevronLeft,
+  TrendingUp
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -48,6 +49,11 @@ const Sidebar: React.FC<SidebarProps> = ({ onLogout, isOpen = false, onClose }) 
       name: 'Deposit Funds',
       path: '/dashboard/deposit',
       icon: <Wallet size={20} />
+    },
+    {
+      name: 'Invest Now',
+      path: '/dashboard/invest',
+      icon: <TrendingUp size={20} />
     },
     {
       name: 'Withdraw Funds',

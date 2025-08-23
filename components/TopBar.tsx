@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { ChevronDown, Settings, User, LogOut, Menu, Search, TrendingUp } from 'lucide-react';
+import { ChevronDown, User, LogOut, Menu, Search, TrendingUp } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 
 interface TopBarProps {
@@ -97,8 +97,8 @@ const TopBar: React.FC<TopBarProps> = ({ onLogout, toggleSidebar }) => {
               <div className="hidden md:block text-left">
                 <p className="text-sm font-semibold text-gray-900">{user?.firstName} {user?.lastName}</p>
                 <div className="flex items-center space-x-2">
-                  <span className="text-xs text-gray-600">Premium Client</span>
-                  <div className="w-2 h-2 bg-purple-600 rounded-full animate-pulse"></div>
+                  <span className="text-xs text-gray-600">Active Client</span>
+                  <div className="w-2 h-2 bg-green-600 rounded-full animate-pulse"></div>
                 </div>
               </div>
               <ChevronDown size={16} className="text-gray-400 group-hover:text-gray-600 transition-colors duration-300" />
@@ -117,7 +117,6 @@ const TopBar: React.FC<TopBarProps> = ({ onLogout, toggleSidebar }) => {
                       <p className="text-sm font-semibold text-gray-900">{user?.firstName} {user?.lastName}</p>
                       <p className="text-xs text-gray-600">{user?.email}</p>
                       <div className="flex items-center space-x-2 mt-1">
-                        <span className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full">Premium</span>
                         <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">Verified</span>
                       </div>
                     </div>
@@ -125,13 +124,9 @@ const TopBar: React.FC<TopBarProps> = ({ onLogout, toggleSidebar }) => {
                 </div>
                 
                 <div className="p-2">
-                  <a href="#" className="flex items-center px-3 py-2 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-all duration-300 group">
+                  <a href="/dashboard/profile" className="flex items-center px-3 py-2 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-all duration-300 group">
                     <User size={16} className="mr-3 group-hover:text-purple-600 transition-colors duration-300" />
                     My Profile
-                  </a>
-                  <a href="#" className="flex items-center px-3 py-2 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-all duration-300 group">
-                    <Settings size={16} className="mr-3 group-hover:text-purple-600 transition-colors duration-300" />
-                    Account Settings
                   </a>
                 </div>
                 

@@ -441,13 +441,6 @@ export default function LandingPage() {
                   <p className="text-gray-600 text-sm">Premium Investment Platform</p>
                 </div>
               </div>
-              
-              {/* Navigation */}
-              <nav className="hidden md:flex items-center space-x-8">
-                <a href="#features" className="text-gray-600 hover:text-purple-600 transition-colors duration-300 font-medium">Features</a>
-                <a href="#about" className="text-gray-600 hover:text-purple-600 transition-colors duration-300 font-medium">About</a>
-                <a href="#contact" className="text-gray-600 hover:text-purple-600 transition-colors duration-300 font-medium">Contact</a>
-              </nav>
             </div>
           </div>
         </header>

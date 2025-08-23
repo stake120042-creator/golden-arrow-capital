@@ -21,7 +21,8 @@ import {
   Coins,
   Trophy,
   X,
-  RotateCcw
+  RotateCcw,
+  TrendingDown
 } from 'lucide-react';
 
 export default function Dashboard() {
@@ -135,7 +136,7 @@ export default function Dashboard() {
   };
 
   const handleCopyReferralLink = () => {
-    const referralLink = `goldenarrowcapital.com/ref/${user?.username || 'user'}`;
+    const referralLink = `goldenarrowcapital.io/ref/${user?.username || 'user'}`;
     navigator.clipboard.writeText(referralLink);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -211,7 +212,6 @@ export default function Dashboard() {
               <div className="p-6 relative overflow-hidden">
                 {/* Animated background */}
                 <div className="absolute inset-0 bg-gradient-to-br from-purple-50 to-indigo-50 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                
                 <div className="relative flex justify-between items-start">
                   <div className="flex-1">
                     <div className="flex items-center mb-4">
@@ -225,10 +225,16 @@ export default function Dashboard() {
                     </div>
                     <div className="text-center">
                       <p className="text-2xl font-bold text-gray-900 mb-4">$452.19</p>
-                      <Link href="/dashboard/deposit" className="inline-flex items-center px-3 py-2 text-white font-medium rounded-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105 text-sm" style={{background: 'linear-gradient(90deg,#8b5cf6,#7c3aed)'}}>
-                        <ArrowUp size={14} className="mr-1" />
-                        Deposit now
-                      </Link>
+                      <div className="flex flex-wrap gap-2 justify-center">
+                        <Link href="/dashboard/deposit" className="inline-flex items-center px-3 py-2 text-white font-medium rounded-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105 text-sm" style={{background: 'linear-gradient(90deg,#8b5cf6,#7c3aed)'}}>
+                          <ArrowUp size={14} className="mr-1" />
+                          Deposit now
+                        </Link>
+                        <Link href="/dashboard/invest" className="inline-flex items-center px-3 py-2 text-white font-medium rounded-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105 text-sm" style={{background: 'linear-gradient(90deg,#7c3aed,#8b5cf6)'}}>
+                          <TrendingDown size={14} className="mr-1" />
+                          Invest now
+                        </Link>
+                      </div>
                     </div>
                   </div>
                   <div className="p-3 rounded-full bg-purple-100 group-hover:bg-purple-200 transition-colors duration-300">
