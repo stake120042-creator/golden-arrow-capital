@@ -104,16 +104,16 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-sp-bg relative overflow-hidden">
+    <div className="min-h-screen bg-white relative overflow-hidden">
       {/* Enhanced Background */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-full">
           {/* Subtle gradient orbs */}
-          <div className="absolute w-[800px] h-[800px] rounded-full bg-gradient-to-br from-[#7C4DFF]/12 to-[#6C63FF]/8 blur-3xl -top-40 -left-40 animate-float"></div>
-          <div className="absolute w-[600px] h-[600px] rounded-full bg-gradient-to-tl from-[#6C63FF]/10 to-[#7C4DFF]/6 blur-3xl -bottom-40 -right-40 animate-float" style={{animationDelay: '2s'}}></div>
+          <div className="absolute w-[800px] h-[800px] rounded-full bg-gradient-to-br from-purple-500/5 to-indigo-600/3 blur-3xl -top-40 -left-40 animate-float"></div>
+          <div className="absolute w-[600px] h-[600px] rounded-full bg-gradient-to-tl from-indigo-500/4 to-purple-600/2 blur-3xl -bottom-40 -right-40 animate-float" style={{animationDelay: '2s'}}></div>
           
           {/* Grid pattern overlay */}
-          <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.01)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.01)_1px,transparent_1px)] bg-[size:50px_50px]"></div>
+          <div className="absolute inset-0 bg-[linear-gradient(rgba(139,92,246,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(139,92,246,0.02)_1px,transparent_1px)] bg-[size:50px_50px]"></div>
         </div>
       </div>
 
@@ -133,36 +133,36 @@ export default function Dashboard() {
         />
         
         {/* Dashboard Content */}
-        <div className="pt-20 sm:pt-24 px-3 sm:px-4 md:px-6 lg:px-8 pb-8 sm:pb-12 space-y-6 sm:space-y-8 max-w-7xl mx-auto">
+        <div className="pt-32 px-4 md:px-6 pb-12 space-y-8 max-w-7xl mx-auto">
           {/* Referral Link */}
-          <div className="bg-gradient-to-br from-[#141922]/80 to-[#11151C]/80 backdrop-blur-sm border border-[#232B3A] rounded-xl shadow-lg shadow-black/30 overflow-hidden hover:border-[#2E6BFF]/30 transition-all duration-300">
-            <div className="p-1">
-                              <div className="bg-gradient-to-br from-[#0EC7FF]/10 to-[#2E6BFF]/5 p-4 sm:p-6 rounded-lg">
-                  <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center space-y-4 lg:space-y-0">
-                    <div className="w-full lg:w-auto">
-                      <div className="flex items-center">
-                          <div className="p-2 sm:p-2.5 rounded-lg bg-gradient-to-br from-[#0EC7FF]/30 to-[#2E6BFF]/20 border border-[#0EC7FF]/30 mr-3">
-                          <Award size={18} className="sm:w-5 sm:h-5 text-[#0EC7FF]" />
-                        </div>
-                        <h2 className="text-white text-base sm:text-lg font-bold">Referral Link</h2>
+          <div className="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden">
+            <div className="p-6">
+              <div className="bg-gradient-to-br from-purple-50 to-indigo-50 p-6 rounded-lg">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
+                  <div className="mb-6 md:mb-0">
+                    <div className="flex items-center">
+                        <div className="p-2.5 rounded-lg bg-gradient-to-br from-purple-100 to-indigo-100 border border-purple-200 mr-3">
+                        <Award size={20} className="text-purple-700" />
                       </div>
-                    </div>
-                    
-                    <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center w-full lg:w-auto">
-                      <div className="flex-grow bg-gradient-to-r from-[#171C26] to-[#11151C] rounded-lg px-3 sm:px-4 py-2.5 sm:py-3 border border-[#232B3A] overflow-hidden">
-                        <span className="text-slate-300 font-mono text-sm sm:text-base break-all">goldenarrowcapital.com/ref/{user?.username || 'user'}</span>
-                      </div>
-                      <button 
-                        className="px-3 sm:px-4 py-2.5 text-slate-900 font-medium rounded-lg transition-colors flex items-center justify-center whitespace-nowrap shadow-md text-sm sm:text-base"
-                        style={{background:'linear-gradient(90deg,#0EC7FF,#2E6BFF)'}}
-                        onClick={handleCopyReferralLink}
-                      >
-                        {copied ? <Check size={14} className="sm:w-4 sm:h-4 mr-1.5 sm:mr-2" /> : <Copy size={14} className="sm:w-4 sm:h-4 mr-1.5 sm:mr-2" />}
-                        {copied ? "Copied!" : "Copy Link"}
-                      </button>
+                      <h2 className="text-gray-900 text-lg font-bold">Referral Link</h2>
                     </div>
                   </div>
+                  
+                  <div className="flex flex-wrap md:flex-nowrap gap-3 items-center w-full md:w-auto">
+                    <div className="flex-grow bg-white rounded-lg px-4 py-3 border border-gray-200 overflow-hidden overflow-x-auto">
+                      <span className="text-gray-700 font-mono">goldenarrowcapital.com/ref/{user?.username || 'user'}</span>
+                    </div>
+                    <button 
+                      className="px-4 py-2.5 text-white font-medium rounded-lg transition-colors flex items-center whitespace-nowrap shadow-md"
+                      style={{background:'linear-gradient(90deg,#8b5cf6,#7c3aed)'}}
+                      onClick={handleCopyReferralLink}
+                    >
+                      {copied ? <Check size={16} className="mr-2" /> : <Copy size={16} className="mr-2" />}
+                      {copied ? "Copied!" : "Copy Link"}
+                    </button>
+                  </div>
                 </div>
+              </div>
             </div>
           </div>
 
@@ -170,31 +170,29 @@ export default function Dashboard() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
             {/* Deposit Wallet */}
             <div className="group card card-hover">
-              <div className="p-1">
-                <div className="bg-gradient-to-br from-[#7C4DFF]/10 to-[#6C63FF]/5 p-4 sm:p-6 rounded-lg relative overflow-hidden">
-                  {/* Animated background */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-[#7C4DFF]/5 to-[#6C63FF]/3 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                  
-                  <div className="relative flex flex-col sm:flex-row justify-between items-start space-y-4 sm:space-y-0">
-                    <div className="flex-1 w-full">
-                      <div className="flex items-center mb-3 sm:mb-4">
-                        <div className="p-2 sm:p-3 rounded-xl bg-gradient-to-br from-[#7C4DFF]/30 to-[#6C63FF]/20 border border-[#7C4DFF]/30 mr-3 sm:mr-4 group-hover:scale-110 transition-transform duration-300">
-                          <Wallet size={20} className="sm:w-6 sm:h-6 text-[#9C6CFF]" />
-                        </div>
-                        <div>
-                          <h3 className="text-white text-lg sm:text-xl font-semibold">Deposit Wallet</h3>
-                          <p className="text-slate-400 text-xs sm:text-sm">Available for investments</p>
-                        </div>
+              <div className="p-6 relative overflow-hidden">
+                {/* Animated background */}
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-50 to-indigo-50 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                
+                <div className="relative flex justify-between items-start">
+                  <div className="flex-1">
+                    <div className="flex items-center mb-4">
+                      <div className="p-3 rounded-xl bg-gradient-to-br from-purple-100 to-indigo-100 border border-purple-200 mr-4 group-hover:scale-110 transition-transform duration-300">
+                        <Wallet size={24} className="text-purple-700" />
                       </div>
-                      <p className="text-3xl sm:text-4xl font-bold text-white mb-3 sm:mb-4">$452.19</p>
-                      <Link href="/dashboard/deposit" className="inline-flex items-center px-4 sm:px-6 py-2.5 sm:py-3 text-slate-900 font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 text-sm sm:text-base" style={{background: 'linear-gradient(90deg,#7C4DFF,#6C63FF)'}}>
-                        <ArrowUp size={16} className="sm:w-[18px] sm:h-[18px] mr-1.5 sm:mr-2" />
-                        Deposit now
-                      </Link>
+                      <div>
+                        <h3 className="text-gray-900 text-xl font-semibold">Deposit Wallet</h3>
+                        <p className="text-gray-600 text-sm">Available for investments</p>
+                      </div>
                     </div>
-                    <div className="p-2 sm:p-3 rounded-full bg-[#7C4DFF]/10 group-hover:bg-[#7C4DFF]/20 transition-colors duration-300 self-start">
-                      <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#7C4DFF] animate-pulse"></div>
-                    </div>
+                    <p className="text-4xl font-bold text-gray-900 mb-4">$452.19</p>
+                    <Link href="/dashboard/deposit" className="inline-flex items-center px-6 py-3 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105" style={{background: 'linear-gradient(90deg,#8b5cf6,#7c3aed)'}}>
+                      <ArrowUp size={18} className="mr-2" />
+                      Deposit now
+                    </Link>
+                  </div>
+                  <div className="p-3 rounded-full bg-purple-100 group-hover:bg-purple-200 transition-colors duration-300">
+                    <div className="w-3 h-3 rounded-full bg-purple-600 animate-pulse"></div>
                   </div>
                 </div>
               </div>
@@ -202,37 +200,35 @@ export default function Dashboard() {
 
             {/* Income Wallet */}
             <div className="group card card-hover">
-              <div className="p-1">
-                <div className="bg-gradient-to-br from-[#7C4DFF]/8 to-[#6C63FF]/8 p-4 sm:p-6 rounded-lg relative overflow-hidden">
-                  {/* Animated background */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-[#7C4DFF]/5 to-[#6C63FF]/3 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                  
-                  <div className="relative flex flex-col sm:flex-row justify-between items-start space-y-4 sm:space-y-0">
-                    <div className="flex-1 w-full">
-                      <div className="flex items-center mb-3 sm:mb-4">
-                        <div className="p-2 sm:p-3 rounded-xl bg-gradient-to-br from-[#7C4DFF]/30 to-[#6C63FF]/20 border border-[#7C4DFF]/30 mr-3 sm:mr-4 group-hover:scale-110 transition-transform duration-300">
-                          <Wallet size={20} className="sm:w-6 sm:h-6 text-[#9C6CFF]" />
-                        </div>
-                        <div>
-                          <h3 className="text-white text-lg sm:text-xl font-semibold">Income Wallet</h3>
-                          <p className="text-slate-400 text-xs sm:text-sm">Earnings & rewards</p>
-                        </div>
+              <div className="p-6 relative overflow-hidden">
+                {/* Animated background */}
+                <div className="absolute inset-0 bg-gradient-to-br from-indigo-50 to-purple-50 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                
+                <div className="relative flex justify-between items-start">
+                  <div className="flex-1">
+                    <div className="flex items-center mb-4">
+                      <div className="p-3 rounded-xl bg-gradient-to-br from-indigo-100 to-purple-100 border border-indigo-200 mr-4 group-hover:scale-110 transition-transform duration-300">
+                        <Wallet size={24} className="text-indigo-700" />
                       </div>
-                      <p className="text-3xl sm:text-4xl font-bold text-white mb-3 sm:mb-4">$512.12</p>
-                      <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
-                        <Link href="/dashboard/withdraw" className="inline-flex items-center justify-center px-4 sm:px-6 py-2.5 sm:py-3 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 text-sm sm:text-base" style={{background:'linear-gradient(90deg,#6C63FF,#9C6CFF)'}}>
-                          <ArrowDownToLine size={16} className="sm:w-[18px] sm:h-[18px] mr-1.5 sm:mr-2" />
-                          Withdraw
-                        </Link>
-                        <Link href="/dashboard/refund" className="inline-flex items-center justify-center px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-purple-500 to-indigo-600 text-white font-semibold rounded-xl hover:from-purple-400 hover:to-indigo-500 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 text-sm sm:text-base">
-                          <RotateCcw size={16} className="sm:w-[18px] sm:h-[18px] mr-1.5 sm:mr-2" />
-                          Request Refund
-                        </Link>
+                      <div>
+                        <h3 className="text-gray-900 text-xl font-semibold">Income Wallet</h3>
+                        <p className="text-gray-600 text-sm">Earnings & rewards</p>
                       </div>
                     </div>
-                    <div className="p-2 sm:p-3 rounded-full bg-[#6C63FF]/10 group-hover:bg-[#6C63FF]/20 transition-colors duration-300 self-start">
-                      <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#6C63FF] animate-pulse"></div>
+                    <p className="text-4xl font-bold text-gray-900 mb-4">$512.12</p>
+                    <div className="flex flex-wrap gap-3">
+                      <Link href="/dashboard/withdraw" className="inline-flex items-center px-6 py-3 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105" style={{background:'linear-gradient(90deg,#7c3aed,#8b5cf6)'}}>
+                        <ArrowDownToLine size={18} className="mr-2" />
+                        Withdraw
+                      </Link>
+                      <Link href="/dashboard/refund" className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-500 to-indigo-600 text-white font-semibold rounded-xl hover:from-purple-400 hover:to-indigo-500 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
+                        <RotateCcw size={18} className="mr-2" />
+                        Request Refund
+                      </Link>
                     </div>
+                  </div>
+                  <div className="p-3 rounded-full bg-indigo-100 group-hover:bg-indigo-200 transition-colors duration-300">
+                    <div className="w-3 h-3 rounded-full bg-indigo-600 animate-pulse"></div>
                   </div>
                 </div>
               </div>
@@ -245,19 +241,19 @@ export default function Dashboard() {
             <div className="group card card-hover">
               <div className="p-4 sm:p-6 relative overflow-hidden">
                 {/* Animated background */}
-                <div className="absolute inset-0 bg-gradient-to-br from-[#7C4DFF]/8 to-[#6C63FF]/6 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-50 to-indigo-50 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                 
                 <div className="relative">
-                  <div className="flex items-center mb-3 sm:mb-4">
-                    <div className="p-2 sm:p-3 rounded-xl bg-gradient-to-br from-[#7C4DFF]/30 to-[#6C63FF]/20 border border-[#7C4DFF]/30 mr-3 sm:mr-4 group-hover:scale-110 transition-transform duration-300">
-                      <DollarSign size={18} className="sm:w-5 sm:h-5 text-[#9C6CFF]" />
+                  <div className="flex items-center mb-4">
+                    <div className="p-3 rounded-xl bg-gradient-to-br from-purple-100 to-indigo-100 border border-purple-200 mr-4 group-hover:scale-110 transition-transform duration-300">
+                      <DollarSign size={20} className="text-purple-700" />
                     </div>
-                    <h3 className="text-white text-base sm:text-lg font-semibold">Total Invested</h3>
+                    <h3 className="text-gray-900 text-lg font-semibold">Total Invested</h3>
                   </div>
-                  <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between space-y-2 sm:space-y-0 mb-3 sm:mb-4">
-                    <p className="text-2xl sm:text-4xl font-bold text-white">$10,000.27</p>
-                    <div className="flex items-center text-[#9C6CFF] text-xs sm:text-sm font-medium bg-[#7C4DFF]/10 px-2 sm:px-3 py-1 rounded-full w-fit">
-                      <ArrowUp size={14} className="sm:w-4 sm:h-4 mr-1" />
+                  <div className="flex items-end justify-between mb-4">
+                    <p className="text-4xl font-bold text-gray-900">$10,000.27</p>
+                    <div className="flex items-center text-green-600 text-sm font-medium bg-green-100 px-3 py-1 rounded-full">
+                      <ArrowUp size={16} className="mr-1" />
                       <span>+4.2%</span>
                     </div>
                   </div>
@@ -270,19 +266,19 @@ export default function Dashboard() {
             <div className="group card card-hover">
               <div className="p-4 sm:p-6 relative overflow-hidden">
                 {/* Animated background */}
-                <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-emerald-600/3 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                <div className="absolute inset-0 bg-gradient-to-br from-green-50 to-emerald-50 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                 
-                <div className="relative">
-                  <div className="flex items-center mb-3 sm:mb-4">
-                    <div className="p-2 sm:p-3 rounded-xl bg-gradient-to-br from-green-500/30 to-emerald-600/20 border border-green-400/30 mr-3 sm:mr-4 group-hover:scale-110 transition-transform duration-300">
-                      <TrendingUp size={18} className="sm:w-5 sm:h-5 text-green-400" />
+                <div className="relative text-center">
+                  <div className="flex items-center justify-center mb-4">
+                    <div className="p-3 rounded-xl bg-gradient-to-br from-green-100 to-emerald-100 border border-green-200 mr-4 group-hover:scale-110 transition-transform duration-300">
+                      <TrendingUp size={20} className="text-green-600" />
                     </div>
-                    <h3 className="text-white text-base sm:text-lg font-semibold">Active Investment</h3>
+                    <h3 className="text-gray-900 text-lg font-semibold">Active Investment</h3>
                   </div>
-                  <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between space-y-2 sm:space-y-0 mb-3 sm:mb-4">
-                    <p className="text-2xl sm:text-4xl font-bold text-white">$800.27</p>
-                    <div className="flex items-center text-green-400 text-xs sm:text-sm font-medium bg-green-400/10 px-2 sm:px-3 py-1 rounded-full w-fit">
-                      <ArrowUp size={14} className="sm:w-4 sm:h-4 mr-1" />
+                  <div className="flex items-end justify-center mb-4">
+                    <p className="text-4xl font-bold text-gray-900">$800.27</p>
+                    <div className="flex items-center text-green-600 text-sm font-medium bg-green-100 px-3 py-1 rounded-full ml-3">
+                      <ArrowUp size={16} className="mr-1" />
                       <span>+2.8%</span>
                     </div>
                   </div>
@@ -295,19 +291,19 @@ export default function Dashboard() {
             <div className="group card card-hover">
               <div className="p-4 sm:p-6 relative overflow-hidden">
                 {/* Animated background */}
-                <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-orange-600/3 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                <div className="absolute inset-0 bg-gradient-to-br from-amber-50 to-orange-50 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                 
-                <div className="relative">
-                  <div className="flex items-center mb-3 sm:mb-4">
-                    <div className="p-2 sm:p-3 rounded-xl bg-gradient-to-br from-amber-500/30 to-orange-600/20 border border-amber-400/30 mr-3 sm:mr-4 group-hover:scale-110 transition-transform duration-300">
-                      <Clock size={18} className="sm:w-5 sm:h-5 text-amber-400" />
+                <div className="relative text-center">
+                  <div className="flex items-center justify-center mb-4">
+                    <div className="p-3 rounded-xl bg-gradient-to-br from-amber-100 to-orange-100 border border-amber-200 mr-4 group-hover:scale-110 transition-transform duration-300">
+                      <Clock size={20} className="text-amber-600" />
                     </div>
-                    <h3 className="text-white text-base sm:text-lg font-semibold">Expired Investment</h3>
+                    <h3 className="text-gray-900 text-lg font-semibold">Expired Investment</h3>
                   </div>
-                  <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between space-y-2 sm:space-y-0 mb-3 sm:mb-4">
-                    <p className="text-2xl sm:text-4xl font-bold text-white">$13,727.00</p>
-                    <div className="flex items-center text-amber-400 text-xs sm:text-sm font-medium bg-amber-400/10 px-2 sm:px-3 py-1 rounded-full w-fit">
-                      <Clock size={14} className="sm:w-4 sm:h-4 mr-1" />
+                  <div className="flex items-end justify-center mb-4">
+                    <p className="text-4xl font-bold text-gray-900">$13,727.00</p>
+                    <div className="flex items-center text-amber-600 text-sm font-medium bg-amber-100 px-3 py-1 rounded-full ml-3">
+                      <Clock size={16} className="mr-1" />
                       <span>Matured</span>
                     </div>
                   </div>
@@ -320,30 +316,30 @@ export default function Dashboard() {
           {/* Business Statistics */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
             {/* Direct Business */}
-            <div className="group bg-gradient-to-br from-[#141922]/80 to-[#11151C]/80 backdrop-blur-sm border border-[#232B3A] rounded-xl shadow-lg shadow-black/30 overflow-hidden hover:border-[#2E6BFF]/40 transition-all duration-300">
-              <div className="px-4 sm:px-6 pt-4 sm:pt-6 pb-4">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 space-y-2 sm:space-y-0">
+            <div className="group bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300">
+              <div className="px-6 pt-6 pb-4">
+                <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center">
-                    <div className="p-2 sm:p-2.5 rounded-lg bg-gradient-to-br from-[#0EC7FF]/30 to-[#2E6BFF]/20 border border-[#0EC7FF]/30 mr-3 group-hover:scale-110 transition-transform duration-300">
-                      <Users size={16} className="sm:w-[18px] sm:h-[18px] text-[#0EC7FF]" />
+                    <div className="p-2.5 rounded-lg bg-gradient-to-br from-purple-100 to-indigo-100 border border-purple-200 mr-3 group-hover:scale-110 transition-transform duration-300">
+                      <Users size={18} className="text-purple-700" />
                     </div>
-                    <h3 className="text-slate-300 text-base sm:text-lg font-medium">Direct Business</h3>
+                    <h3 className="text-gray-900 text-lg font-medium">Direct Business</h3>
                   </div>
-                  <span className="bg-[#0EC7FF]/10 text-[#37D7FF] text-xs px-2 sm:px-3 py-1 rounded-full border border-[#0EC7FF]/20 w-fit">Personal</span>
+                  <span className="bg-purple-100 text-purple-700 text-xs px-3 py-1 rounded-full border border-purple-200">Personal</span>
                 </div>
                 <div>
-                  <p className="text-2xl sm:text-3xl font-bold text-white mb-3">$10,000.27</p>
-                  <div className="flex flex-wrap gap-2 sm:gap-3 mb-3">
-                    <span className="inline-flex items-center bg-[#171C26] border border-[#232B3A] rounded-full px-2 sm:px-3 py-1 text-xs sm:text-sm text-slate-300">
-                      <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-blue-400 rounded-full mr-1.5 sm:mr-2"></span>
+                  <p className="text-3xl font-bold text-gray-900 mb-3">$10,000.27</p>
+                  <div className="flex flex-wrap gap-3 mb-3">
+                    <span className="inline-flex items-center bg-gray-50 border border-gray-200 rounded-full px-3 py-1 text-sm text-gray-700">
+                      <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
                       34 Members
                     </span>
-                    <span className="inline-flex items-center bg-green-500/10 border border-green-500/20 rounded-full px-2 sm:px-3 py-1 text-xs sm:text-sm text-green-400">
-                      <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-green-400 rounded-full mr-1.5 sm:mr-2"></span>
+                    <span className="inline-flex items-center bg-green-100 border border-green-200 rounded-full px-3 py-1 text-sm text-green-700">
+                      <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
                       28 Active
                     </span>
-                    <span className="inline-flex items-center bg-red-500/10 border border-red-500/20 rounded-full px-2 sm:px-3 py-1 text-xs sm:text-sm text-red-400">
-                      <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-red-400 rounded-full mr-1.5 sm:mr-2"></span>
+                    <span className="inline-flex items-center bg-red-100 border border-red-200 rounded-full px-3 py-1 text-sm text-red-700">
+                      <span className="w-2 h-2 bg-red-500 rounded-full mr-2"></span>
                       6 De-active
                     </span>
                   </div>
@@ -353,30 +349,30 @@ export default function Dashboard() {
             </div>
 
             {/* Team Business */}
-            <div className="group bg-gradient-to-br from-[#141922]/80 to-[#11151C]/80 backdrop-blur-sm border border-[#232B3A] rounded-xl shadow-lg shadow-black/30 overflow-hidden hover:border-[#2E6BFF]/30 transition-all duration-300">
-              <div className="px-4 sm:px-6 pt-4 sm:pt-6 pb-4">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 space-y-2 sm:space-y-0">
+            <div className="group bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300">
+              <div className="px-6 pt-6 pb-4">
+                <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center">
-                    <div className="p-2 sm:p-2.5 rounded-lg bg-gradient-to-br from-[#0EC7FF]/30 to-[#2E6BFF]/20 border border-[#0EC7FF]/30 mr-3 group-hover:scale-110 transition-transform duration-300">
-                      <Users size={16} className="sm:w-[18px] sm:h-[18px] text-[#37D7FF]" />
+                    <div className="p-2.5 rounded-lg bg-gradient-to-br from-indigo-100 to-purple-100 border border-indigo-200 mr-3 group-hover:scale-110 transition-transform duration-300">
+                      <Users size={18} className="text-indigo-700" />
                     </div>
-                    <h3 className="text-slate-300 text-base sm:text-lg font-medium">Team Business</h3>
+                    <h3 className="text-gray-900 text-lg font-medium">Team Business</h3>
                   </div>
-                  <span className="bg-[#2E6BFF]/10 text-[#4C82FF] text-xs px-2 sm:px-3 py-1 rounded-full border border-[#2E6BFF]/20 w-fit">Network</span>
+                  <span className="bg-indigo-100 text-indigo-700 text-xs px-3 py-1 rounded-full border border-indigo-200">Network</span>
                 </div>
                 <div>
-                  <p className="text-2xl sm:text-3xl font-bold text-white mb-3">$1,000,000.27</p>
-                  <div className="flex flex-wrap gap-2 sm:gap-3 mb-3">
-                    <span className="inline-flex items-center bg-[#171C26] border border-[#232B3A] rounded-full px-2 sm:px-3 py-1 text-xs sm:text-sm text-slate-300">
-                      <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-purple-400 rounded-full mr-1.5 sm:mr-2"></span>
+                  <p className="text-3xl font-bold text-gray-900 mb-3">$1,000,000.27</p>
+                  <div className="flex flex-wrap gap-3 mb-3">
+                    <span className="inline-flex items-center bg-gray-50 border border-gray-200 rounded-full px-3 py-1 text-sm text-gray-700">
+                      <span className="w-2 h-2 bg-purple-500 rounded-full mr-2"></span>
                       201 Members
                     </span>
-                    <span className="inline-flex items-center bg-green-500/10 border border-green-500/20 rounded-full px-2 sm:px-3 py-1 text-xs sm:text-sm text-green-400">
-                      <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-green-400 rounded-full mr-1.5 sm:mr-2"></span>
+                    <span className="inline-flex items-center bg-green-100 border border-green-200 rounded-full px-3 py-1 text-sm text-green-700">
+                      <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
                       28 Active
                     </span>
-                    <span className="inline-flex items-center bg-red-500/10 border border-red-500/20 rounded-full px-2 sm:px-3 py-1 text-xs sm:text-sm text-red-400">
-                      <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-red-400 rounded-full mr-1.5 sm:mr-2"></span>
+                    <span className="inline-flex items-center bg-red-100 border border-red-200 rounded-full px-3 py-1 text-sm text-red-700">
+                      <span className="w-2 h-2 bg-red-500 rounded-full mr-2"></span>
                       6 De-active
                     </span>
                   </div>
@@ -388,49 +384,49 @@ export default function Dashboard() {
 
           {/* Income Breakdowns */}
           <div className="relative">
-            <div className="bg-gradient-to-br from-[#141922]/80 to-[#11151C]/80 backdrop-blur-sm border border-[#232B3A] rounded-xl shadow-lg shadow-black/30 p-4 sm:p-6 mt-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6 mt-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {/* Referral Income */}
-                <div className="group p-4 sm:p-5 bg-gradient-to-br from-[#0EC7FF]/5 to-[#2E6BFF]/10 rounded-xl border border-[#0EC7FF]/20 hover:border-[#0EC7FF]/40 transition-all duration-300">
+                <div className="group p-5 bg-gradient-to-br from-purple-50 to-indigo-50 rounded-xl border border-purple-200 hover:border-purple-300 transition-all duration-300">
                   <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-slate-300 text-base sm:text-lg font-medium">Referral Income</h3>
-                    <div className="p-1.5 sm:p-2 rounded-full bg-[#0EC7FF]/10 group-hover:bg-[#0EC7FF]/20 transition-colors duration-300">
-                      <Share size={16} className="sm:w-[18px] sm:h-[18px] text-[#0EC7FF]" />
+                    <h3 className="text-gray-900 text-lg font-medium">Referral Income</h3>
+                    <div className="p-2 rounded-full bg-purple-100 group-hover:bg-purple-200 transition-colors duration-300">
+                      <Share size={18} className="text-purple-700" />
                     </div>
                   </div>
-                  <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-white mb-2">$10,000.27</p>
-                  <div className="flex items-center text-[#37D7FF] text-xs sm:text-sm mt-2 bg-[#0EC7FF]/10 w-fit px-2 sm:px-3 py-1 rounded-full">
-                    <ArrowUp size={12} className="sm:w-[14px] sm:h-[14px] mr-1" />
+                  <p className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">$10,000.27</p>
+                  <div className="flex items-center text-green-600 text-sm mt-2 bg-green-100 w-fit px-3 py-1 rounded-full">
+                    <ArrowUp size={14} className="mr-1" />
                     <span>+12% this month</span>
                   </div>
                 </div>
 
                 {/* Rank Income */}
-                <div className="group p-4 sm:p-5 bg-gradient-to-br from-green-500/5 to-emerald-600/10 rounded-xl border border-green-500/20 hover:border-green-500/40 transition-all duration-300">
+                <div className="group p-5 bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl border border-green-200 hover:border-green-300 transition-all duration-300">
                   <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-slate-300 text-base sm:text-lg font-medium">Rank Income</h3>
-                    <div className="p-1.5 sm:p-2 rounded-full bg-green-400/10 group-hover:bg-green-400/20 transition-colors duration-300">
-                      <Trophy size={16} className="sm:w-[18px] sm:h-[18px] text-green-400" />
+                    <h3 className="text-gray-900 text-lg font-medium">Rank Income</h3>
+                    <div className="p-2 rounded-full bg-green-100 group-hover:bg-green-200 transition-colors duration-300">
+                      <Trophy size={18} className="text-green-600" />
                     </div>
                   </div>
-                  <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-white mb-2">$10,000.27</p>
-                  <div className="flex items-center text-green-400 text-xs sm:text-sm mt-2 bg-green-400/10 w-fit px-2 sm:px-3 py-1 rounded-full">
-                    <ArrowUp size={12} className="sm:w-[14px] sm:h-[14px] mr-1" />
+                  <p className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">$10,000.27</p>
+                  <div className="flex items-center text-green-600 text-sm mt-2 bg-green-100 w-fit px-3 py-1 rounded-full">
+                    <ArrowUp size={14} className="mr-1" />
                     <span>+8% this month</span>
                   </div>
                 </div>
 
                 {/* Daily Staking Income */}
-                <div className="group p-4 sm:p-5 bg-gradient-to-br from-[#0EC7FF]/5 to-[#2E6BFF]/10 rounded-xl border border-[#0EC7FF]/20 hover:border-[#0EC7FF]/40 transition-all duration-300">
+                <div className="group p-5 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-200 hover:border-blue-300 transition-all duration-300">
                   <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-slate-300 text-base sm:text-lg font-medium">Daily Staking</h3>
-                    <div className="p-1.5 sm:p-2 rounded-full bg-[#0EC7FF]/10 group-hover:bg-[#0EC7FF]/20 transition-colors duration-300">
-                      <Coins size={16} className="sm:w-[18px] sm:h-[18px] text-[#0EC7FF]" />
+                    <h3 className="text-gray-900 text-lg font-medium">Daily Staking</h3>
+                    <div className="p-2 rounded-full bg-blue-100 group-hover:bg-blue-200 transition-colors duration-300">
+                      <Coins size={18} className="text-blue-600" />
                     </div>
                   </div>
-                  <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-white mb-2">$820.27</p>
-                  <div className="flex items-center text-blue-400 text-xs sm:text-sm mt-2 bg-blue-400/10 w-fit px-2 sm:px-3 py-1 rounded-full">
-                    <ArrowUp size={12} className="sm:w-[14px] sm:h-[14px] mr-1" />
+                  <p className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">$820.27</p>
+                  <div className="flex items-center text-blue-600 text-sm mt-2 bg-blue-100 w-fit px-3 py-1 rounded-full">
+                    <ArrowUp size={14} className="mr-1" />
                     <span>Daily reward</span>
                   </div>
                 </div>
@@ -440,49 +436,49 @@ export default function Dashboard() {
 
           {/* Rank Information */}
           <div className="grid grid-cols-1 gap-6">
-            <div className="bg-gradient-to-br from-[#141922]/80 to-[#11151C]/80 backdrop-blur-sm border border-[#232B3A] rounded-xl shadow-lg shadow-black/30 overflow-hidden hover:border-[#2E6BFF]/30 transition-all duration-300">
-              <div className="p-1">
-                <div className="p-4 sm:p-6 bg-gradient-to-br from-[#0EC7FF]/10 to-[#2E6BFF]/5 rounded-lg">
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 space-y-2 sm:space-y-0">
+            <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden hover:shadow-lg transition-all duration-300">
+              <div className="p-6">
+                <div className="bg-gradient-to-br from-purple-50 to-indigo-50 p-6 rounded-lg">
+                  <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center">
-                      <div className="p-2 sm:p-2.5 rounded-lg bg-gradient-to-br from-[#0EC7FF]/30 to-[#2E6BFF]/20 border border-[#0EC7FF]/30 mr-3">
-                        <Trophy size={16} className="sm:w-[18px] sm:h-[18px] text-[#0EC7FF]" />
+                      <div className="p-2.5 rounded-lg bg-gradient-to-br from-purple-100 to-indigo-100 border border-purple-200 mr-3">
+                        <Trophy size={18} className="text-purple-700" />
                       </div>
-                      <h3 className="text-white text-base sm:text-lg font-medium">Rank Information</h3>
+                      <h3 className="text-gray-900 text-lg font-medium">Rank Information</h3>
                     </div>
-                    <div className="bg-[#0EC7FF]/10 text-[#37D7FF] text-xs px-2 sm:px-3 py-1 rounded-full border border-[#0EC7FF]/20 w-fit">
+                    <div className="bg-purple-100 text-purple-700 text-xs px-3 py-1 rounded-full border border-purple-200">
                       Member Status
                     </div>
                   </div>
                   
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-                    <div className="bg-gradient-to-br from-[#141922]/60 to-[#11151C]/60 rounded-lg p-3 sm:p-4 border border-[#0EC7FF]/10">
-                      <h3 className="text-slate-400 text-xs sm:text-sm mb-2">Current Rank</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="bg-white rounded-lg p-4 border border-purple-200">
+                      <h3 className="text-gray-600 text-sm mb-2">Current Rank</h3>
                       <div className="flex items-center">
-                        <div className="h-8 w-8 sm:h-10 sm:w-10 flex items-center justify-center rounded-lg bg-[#0EC7FF]/20 mr-2 sm:mr-3">
-                          <span className="text-[#0EC7FF] font-bold text-lg sm:text-xl">**</span>
+                        <div className="h-10 w-10 flex items-center justify-center rounded-lg bg-purple-100 mr-3">
+                          <span className="text-purple-700 font-bold text-xl">**</span>
                         </div>
-                        <p className="text-base sm:text-lg font-bold text-[#37D7FF]">Gold</p>
+                        <p className="text-lg font-bold text-purple-700">Gold</p>
                       </div>
                     </div>
                     
-                    <div className="bg-gradient-to-br from-[#141922]/60 to-[#11151C]/60 rounded-lg p-3 sm:p-4 border border-[#2E6BFF]/10">
-                      <h3 className="text-slate-400 text-xs sm:text-sm mb-2">Next Rank</h3>
+                    <div className="bg-white rounded-lg p-4 border border-indigo-200">
+                      <h3 className="text-gray-600 text-sm mb-2">Next Rank</h3>
                       <div className="flex items-center">
-                        <div className="h-8 w-8 sm:h-10 sm:w-10 flex items-center justify-center rounded-lg bg-[#2E6BFF]/20 mr-2 sm:mr-3">
-                          <span className="text-[#4C82FF] font-bold text-lg sm:text-xl">***</span>
+                        <div className="h-10 w-10 flex items-center justify-center rounded-lg bg-indigo-100 mr-3">
+                          <span className="text-indigo-700 font-bold text-xl">***</span>
                         </div>
-                        <p className="text-base sm:text-lg font-bold text-[#4C82FF]">Platinum</p>
+                        <p className="text-lg font-bold text-indigo-700">Platinum</p>
                       </div>
                     </div>
                     
-                    <div className="bg-gradient-to-br from-[#141922]/60 to-[#11151C]/60 rounded-lg p-3 sm:p-4 border border-[#232B3A]/80">
-                      <h3 className="text-slate-400 text-xs sm:text-sm mb-2">User ID</h3>
+                    <div className="bg-white rounded-lg p-4 border border-gray-200">
+                      <h3 className="text-gray-600 text-sm mb-2">User ID</h3>
                       <div className="flex items-center">
-                        <div className="h-8 w-8 sm:h-10 sm:w-10 flex items-center justify-center rounded-lg bg-[#171C26] mr-2 sm:mr-3">
-                          <User size={16} className="sm:w-[18px] sm:h-[18px] text-slate-300" />
+                        <div className="h-10 w-10 flex items-center justify-center rounded-lg bg-gray-100 mr-3">
+                          <User size={18} className="text-gray-600" />
                         </div>
-                        <p className="text-base sm:text-lg font-bold text-slate-300">{user?.username || 'N/A'}</p>
+                        <p className="text-lg font-bold text-gray-900">{user?.username || 'N/A'}</p>
                       </div>
                     </div>
                   </div>
@@ -491,71 +487,69 @@ export default function Dashboard() {
             </div>
           </div>
 
-
-
           {/* Referral Commission Structure */}
-          <div className="bg-gradient-to-br from-[#141922]/85 to-[#11151C]/85 backdrop-blur-xl border border-[#232B3A] rounded-2xl shadow-2xl shadow-black/50 overflow-hidden">
-            <div className="p-4 sm:p-6 lg:p-8">
+          <div className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
+            <div className="p-8">
               {/* Header Section */}
               <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 sm:mb-8">
                 <div className="flex items-center mb-4 lg:mb-0">
                   <div className="relative">
-                    <div className="absolute inset-0 bg-gradient-to-r from-[#0EC7FF] to-[#2E6BFF] rounded-xl blur-sm opacity-75"></div>
-                    <div className="relative p-2 sm:p-3 rounded-xl bg-gradient-to-br from-[#0EC7FF]/30 to-[#2E6BFF]/20 border border-[#0EC7FF]/40">
-                      <Users size={18} className="sm:w-5 sm:h-5 text-[#0EC7FF]" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-xl blur-sm opacity-75"></div>
+                    <div className="relative p-3 rounded-xl bg-gradient-to-br from-purple-100 to-indigo-100 border border-purple-200">
+                      <Users size={20} className="text-purple-700" />
                     </div>
                   </div>
-                  <div className="ml-3 sm:ml-4">
-                    <h2 className="text-white text-lg sm:text-xl font-bold bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">
+                  <div className="ml-4">
+                    <h2 className="text-gray-900 text-xl font-bold">
                       Referral Commission Structure
                     </h2>
-                    <p className="text-slate-400 text-xs sm:text-sm mt-1">Multi-tier earning opportunities</p>
+                    <p className="text-gray-600 text-sm mt-1">Multi-tier earning opportunities</p>
                   </div>
                 </div>
-                <div className="flex items-center space-x-2 sm:space-x-3">
-                  <span className="px-3 sm:px-4 py-1.5 sm:py-2 bg-gradient-to-r from-[#0EC7FF]/20 to-[#2E6BFF]/20 text-[#37D7FF] rounded-full text-xs sm:text-sm font-medium border border-[#0EC7FF]/30 shadow-lg">
-                    <span className="inline-block w-1.5 h-1.5 sm:w-2 sm:h-2 bg-[#0EC7FF] rounded-full mr-1.5 sm:mr-2 animate-pulse"></span>
+                <div className="flex items-center space-x-3">
+                  <span className="px-4 py-2 bg-purple-100 text-purple-700 rounded-full text-sm font-medium border border-purple-200 shadow-sm">
+                    <span className="inline-block w-2 h-2 bg-purple-600 rounded-full mr-2 animate-pulse"></span>
                     Active Program
                   </span>
                 </div>
               </div>
               
               {/* Responsive Table (md+) and Cards (mobile) */}
-              <div className="relative rounded-xl border border-[#232B3A] bg-gradient-to-br from-[#0E1116]/60 to-[#11151C]/60 backdrop-blur-sm">
+              <div className="relative rounded-xl border border-gray-200 bg-gray-50">
                 <div className="p-2">
                   <table className="hidden lg:table w-full table-fixed">
                     <thead>
-                      <tr className="bg-[#11151C] border-b border-[#232B3A]">
-                        <th className="text-left py-3 px-4 text-slate-300 font-semibold text-xs uppercase tracking-wider w-1/3">
+                      <tr className="bg-white border-b border-gray-200">
+                        <th className="text-left py-3 px-4 text-gray-700 font-semibold text-xs uppercase tracking-wider w-2/5">
                           <div className="flex items-center space-x-2">
-                            <Trophy size={14} className="text-[#0EC7FF]" />
+                            <Trophy size={14} className="text-purple-600" />
                             <span>Level</span>
                           </div>
                         </th>
-                        <th className="text-center py-3 px-4 text-slate-300 font-semibold text-xs uppercase tracking-wider w-1/6">Status</th>
-                        <th className="text-center py-3 px-4 text-slate-300 font-semibold text-xs uppercase tracking-wider w-1/6">Members</th>
-                        <th className="text-center py-3 px-4 text-slate-300 font-semibold text-xs uppercase tracking-wider w-1/6">Commission</th>
+                        <th className="text-center py-3 px-4 text-gray-700 font-semibold text-xs uppercase tracking-wider w-1/5">Status</th>
+                        <th className="text-center py-3 px-4 text-gray-700 font-semibold text-xs uppercase tracking-wider w-1/5">Members</th>
+                        <th className="text-center py-3 px-4 text-gray-700 font-semibold text-xs uppercase tracking-wider w-1/5">Commission</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-[#232B3A] text-sm">
+                    <tbody className="divide-y divide-gray-200 text-sm">
                       {commissionData.map(row => (
-                        <tr key={row.key} className="hover:bg-slate-800/40">
-                          <td className="py-3 px-4 text-slate-200">
+                        <tr key={row.key} className="hover:bg-gray-50">
+                          <td className="py-3 px-4 text-gray-900">
                             {row.title}
                         </td>
                           <td className="py-3 px-4 text-center">
                             {row.status === 'active' && (
-                              <Check size={16} className="inline text-green-400" />
+                              <Check size={16} className="inline text-green-600" />
                             )}
                             {row.status === 'inactive' && (
-                              <X size={16} className="inline text-red-400" />
+                              <X size={16} className="inline text-red-600" />
                             )}
                             {row.status === 'locked' && (
-                              <span className="inline-block w-3 h-3 rounded bg-slate-500/70 align-middle"></span>
+                              <span className="inline-block w-3 h-3 rounded bg-gray-400 align-middle"></span>
                             )}
                         </td>
-                          <td className="py-3 px-4 text-center text-slate-200">{row.members}</td>
-                          <td className="py-3 px-4 text-center font-semibold text-slate-200">{row.commission}</td>
+                          <td className="py-3 px-4 text-center text-gray-900">{row.members}</td>
+                          <td className="py-3 px-4 text-center font-semibold text-gray-900">{row.commission}</td>
                       </tr>
                       ))}
                     </tbody>
@@ -563,25 +557,25 @@ export default function Dashboard() {
 
                   <div className="lg:hidden space-y-3">
                     {commissionData.map(row => (
-                      <div key={row.key} className="rounded-lg border border-[#232B3A] bg-[#141922]/60 p-3">
+                      <div key={row.key} className="rounded-lg border border-gray-200 bg-white p-3">
                         <div className="flex items-center justify-between">
-                          <div className="text-slate-200 font-semibold text-sm">{row.title}</div>
+                          <div className="text-gray-900 font-semibold text-sm">{row.title}</div>
                           <div>
-                            {row.status === 'active' && <Check size={16} className="text-green-400" />}
-                            {row.status === 'inactive' && <X size={16} className="text-red-400" />}
-                            {row.status === 'locked' && <span className="inline-block w-3 h-3 rounded bg-slate-500/70"></span>}
+                            {row.status === 'active' && <Check size={16} className="text-green-600" />}
+                            {row.status === 'inactive' && <X size={16} className="text-red-600" />}
+                            {row.status === 'locked' && <span className="inline-block w-3 h-3 rounded bg-gray-400"></span>}
                           </div>
                         </div>
                         <div className="mt-2 grid grid-cols-2 gap-2 text-xs">
-                          <div className="bg-[#0E1116]/60 border border-[#232B3A] rounded px-2 py-1">
-                            <div className="text-slate-400">Members</div>
-                            <div className="text-slate-200 font-medium">{row.members}</div>
+                          <div className="bg-gray-50 border border-gray-200 rounded px-2 py-1">
+                            <div className="text-gray-600">Members</div>
+                            <div className="text-gray-900 font-medium">{row.members}</div>
                           </div>
-                          <div className="bg-[#0E1116]/60 border border-[#232B3A] rounded px-2 py-1">
-                            <div className="text-slate-400">Commission</div>
-                            <div className="text-slate-200 font-semibold">{row.commission}</div>
+                          <div className="bg-gray-50 border border-gray-200 rounded px-2 py-1">
+                            <div className="text-gray-600">Commission</div>
+                            <div className="text-gray-900 font-semibold">{row.commission}</div>
                           </div>
-                        </div>
+              </div>
                       </div>
                     ))}
                   </div>
