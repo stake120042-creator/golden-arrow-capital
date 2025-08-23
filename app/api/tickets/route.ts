@@ -9,7 +9,6 @@ export async function POST(request: NextRequest) {
     // Extract form data
     const subject = formData.get('subject') as string;
     const category = formData.get('category') as string;
-    const priority = formData.get('priority') as string;
     const description = formData.get('description') as string;
     const userId = formData.get('userId') as string;
     const userEmail = formData.get('userEmail') as string;
@@ -18,7 +17,7 @@ export async function POST(request: NextRequest) {
     // Get uploaded files
     const files = formData.getAll('files') as File[];
     
-    if (!subject || !category || !priority || !description || !userId) {
+    if (!subject || !category || !description || !userId) {
       return NextResponse.json(
         { success: false, message: 'Missing required fields' },
         { status: 400 }
@@ -33,7 +32,7 @@ export async function POST(request: NextRequest) {
           user_id: userId,
           subject: subject,
           category: category,
-          priority: priority,
+          priority: 'medium', // Default priority
           description: description,
           status: 'open',
           created_at: new Date().toISOString()

@@ -31,7 +31,6 @@ export default function RaiseTicketPage() {
   const [formData, setFormData] = useState({
     subject: '',
     category: '',
-    priority: 'medium',
     description: '',
     attachments: [] as File[]
   });
@@ -102,7 +101,6 @@ export default function RaiseTicketPage() {
       const submitFormData = new FormData();
       submitFormData.append('subject', formData.subject);
       submitFormData.append('category', formData.category);
-      submitFormData.append('priority', formData.priority);
       submitFormData.append('description', formData.description);
       submitFormData.append('userId', user?.id || '');
       submitFormData.append('userEmail', user?.email || '');
@@ -126,7 +124,6 @@ export default function RaiseTicketPage() {
         setFormData({
           subject: '',
           category: '',
-          priority: 'medium',
           description: '',
           attachments: []
         });
@@ -162,7 +159,7 @@ export default function RaiseTicketPage() {
       {/* Main Content */}
       <div className="lg:pl-64">
         {/* Top Bar */}
-        <TopBar toggleSidebar={handleToggleSidebar} onLogout={handleLogout} />
+        <TopBar toggleSidebar={handleToggleSidebar} onLogout={handleLogout} currentPage="support" />
 
         {/* Page Content */}
         <main className="pt-24 pb-8">
@@ -182,7 +179,6 @@ export default function RaiseTicketPage() {
               </div>
               
               <div className="mt-6">
-                <h1 className="text-2xl font-bold text-gray-900">Raise a Support Ticket</h1>
                 <p className="mt-2 text-gray-600">Get help from our support team for any issues or questions you may have.</p>
               </div>
             </div>
@@ -254,40 +250,24 @@ export default function RaiseTicketPage() {
                       />
                     </div>
 
-                    {/* Category and Priority */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Category *</label>
-                        <select 
-                          value={formData.category}
-                          onChange={(e) => handleInputChange('category', e.target.value)}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors"
-                          required
-                        >
-                          <option value="">Select a category</option>
-                          <option value="technical">Technical Issue</option>
-                          <option value="account">Deposit Issue</option>
-                          <option value="investment">Investment Related</option>
-                          <option value="withdrawal">Withdrawal Issue</option>
-                          <option value="refund">Refund Request</option>
-                          <option value="general">General Inquiry</option>
-                          <option value="other">Other</option>
-                        </select>
-                      </div>
-                      
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Priority *</label>
-                        <select 
-                          value={formData.priority}
-                          onChange={(e) => handleInputChange('priority', e.target.value)}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors"
-                        >
-                          <option value="low">Low</option>
-                          <option value="medium">Medium</option>
-                          <option value="high">High</option>
-                          <option value="urgent">Urgent</option>
-                        </select>
-                      </div>
+                    {/* Category */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Category *</label>
+                      <select 
+                        value={formData.category}
+                        onChange={(e) => handleInputChange('category', e.target.value)}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors"
+                        required
+                      >
+                        <option value="">Select a category</option>
+                        <option value="technical">Technical Issue</option>
+                        <option value="account">Deposit Issue</option>
+                        <option value="investment">Investment Related</option>
+                        <option value="withdrawal">Withdrawal Issue</option>
+                        <option value="refund">Refund Request</option>
+                        <option value="general">General Inquiry</option>
+                        <option value="other">Other</option>
+                      </select>
                     </div>
 
                     {/* Description */}

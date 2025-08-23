@@ -199,15 +199,17 @@ export default function DepositPage() {
                     </div>
                     
                     <div className="bg-white rounded-lg p-3 border border-gray-200">
-                      <div className="flex items-center justify-between">
+                      <div className="flex items-start justify-between">
                         <span className="text-gray-600 text-sm">Your Unique Address</span>
-                        <div className="flex items-center space-x-2">
-                          <code className="text-purple-700 font-mono text-xs max-w-100 truncate">
-                            {userAddress}
-                          </code>
+                        <div className="flex items-start space-x-2 ml-4">
+                          <div className="text-right">
+                            <code className="text-purple-700 font-mono text-xs break-all leading-relaxed">
+                              {userAddress}
+                            </code>
+                          </div>
                           <button 
                             onClick={handleCopyAddress}
-                            className="p-1 text-gray-400 hover:text-purple-600 transition-colors"
+                            className="p-1 text-gray-400 hover:text-purple-600 transition-colors flex-shrink-0 mt-0.5"
                           >
                             {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
                           </button>

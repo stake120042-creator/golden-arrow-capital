@@ -23,10 +23,10 @@ import {
 
 interface Investment {
   id: number;
-  userid: string;
+  user_id: string;
   package_id: number;
   amount: number;
-  isactive: boolean;
+  is_active: boolean;
   created_at: string;
   package: {
     id: number;
@@ -115,7 +115,7 @@ export default function InvestmentsPage() {
 
   const getTotalActiveInvestment = (): number => {
     return investments
-      .filter(inv => inv.isactive)
+      .filter(inv => inv.is_active)
       .reduce((sum, inv) => sum + Number(inv.amount), 0);
   };
 
@@ -124,7 +124,7 @@ export default function InvestmentsPage() {
   };
 
   const getActiveInvestmentsCount = (): number => {
-    return investments.filter(inv => inv.isactive).length;
+    return investments.filter(inv => inv.is_active).length;
   };
 
   if (isLoading) {
@@ -308,7 +308,7 @@ export default function InvestmentsPage() {
                           </div>
                         </div>
                         <div className="flex items-center space-x-2">
-                          {investment.isactive ? (
+                          {investment.is_active ? (
                             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                               <CheckCircle className="w-3 h-3 mr-1" />
                               Active

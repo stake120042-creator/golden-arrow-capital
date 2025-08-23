@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { ChevronDown, User, LogOut, Menu, Search, TrendingUp, Wallet, ArrowDownToLine, RotateCcw, Users, Settings } from 'lucide-react';
+import { ChevronDown, User, LogOut, Menu, Search, TrendingUp, Wallet, ArrowDownToLine, RotateCcw, Users, Settings, MessageSquare } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 
 interface TopBarProps {
@@ -58,6 +58,12 @@ const TopBar: React.FC<TopBarProps> = ({ onLogout, toggleSidebar, currentPage = 
           title: 'My Profile',
           subtitle: 'Manage your account settings',
           icon: <Settings size={20} className="text-purple-600" />
+        };
+      case 'support':
+        return {
+          title: 'Support System',
+          subtitle: 'Get help from our support team',
+          icon: <MessageSquare size={20} className="text-purple-600" />
         };
       default:
         return {
