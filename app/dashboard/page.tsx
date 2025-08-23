@@ -223,11 +223,13 @@ export default function Dashboard() {
                         <p className="text-gray-600 text-sm">Available for investments</p>
                       </div>
                     </div>
-                    <p className="text-4xl font-bold text-gray-900 mb-4">$452.19</p>
-                    <Link href="/dashboard/deposit" className="inline-flex items-center px-6 py-3 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105" style={{background: 'linear-gradient(90deg,#8b5cf6,#7c3aed)'}}>
-                      <ArrowUp size={18} className="mr-2" />
-                      Deposit now
-                    </Link>
+                    <div className="text-center">
+                      <p className="text-2xl font-bold text-gray-900 mb-4">$452.19</p>
+                      <Link href="/dashboard/deposit" className="inline-flex items-center px-3 py-2 text-white font-medium rounded-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105 text-sm" style={{background: 'linear-gradient(90deg,#8b5cf6,#7c3aed)'}}>
+                        <ArrowUp size={14} className="mr-1" />
+                        Deposit now
+                      </Link>
+                    </div>
                   </div>
                   <div className="p-3 rounded-full bg-purple-100 group-hover:bg-purple-200 transition-colors duration-300">
                     <div className="w-3 h-3 rounded-full bg-purple-600 animate-pulse"></div>
@@ -253,16 +255,18 @@ export default function Dashboard() {
                         <p className="text-gray-600 text-sm">Earnings & rewards</p>
                       </div>
                     </div>
-                    <p className="text-4xl font-bold text-gray-900 mb-4">$512.12</p>
-                    <div className="flex flex-wrap gap-3">
-                      <Link href="/dashboard/withdraw" className="inline-flex items-center px-6 py-3 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105" style={{background:'linear-gradient(90deg,#7c3aed,#8b5cf6)'}}>
-                        <ArrowDownToLine size={18} className="mr-2" />
-                        Withdraw
-                      </Link>
-                      <Link href="/dashboard/refund" className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-500 to-indigo-600 text-white font-semibold rounded-xl hover:from-purple-400 hover:to-indigo-500 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
-                        <RotateCcw size={18} className="mr-2" />
-                        Request Refund
-                      </Link>
+                    <div className="text-center">
+                      <p className="text-2xl font-bold text-gray-900 mb-3">$512.12</p>
+                      <div className="flex flex-wrap gap-2 justify-center">
+                        <Link href="/dashboard/withdraw" className="inline-flex items-center px-3 py-2 text-white font-medium rounded-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105 text-sm" style={{background:'linear-gradient(90deg,#7c3aed,#8b5cf6)'}}>
+                          <ArrowDownToLine size={14} className="mr-1" />
+                          Withdraw
+                        </Link>
+                        <Link href="/dashboard/refund" className="inline-flex items-center px-3 py-2 bg-gradient-to-r from-purple-500 to-indigo-600 text-white font-medium rounded-lg hover:from-purple-400 hover:to-indigo-500 transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105 text-sm">
+                          <RotateCcw size={14} className="mr-1" />
+                          Refund
+                        </Link>
+                      </div>
                     </div>
                   </div>
                   <div className="p-3 rounded-full bg-indigo-100 group-hover:bg-indigo-200 transition-colors duration-300">
@@ -277,25 +281,21 @@ export default function Dashboard() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {/* Total Invested */}
             <div className="group card card-hover">
-              <div className="p-4 sm:p-6 relative overflow-hidden">
+              <div className="p-4 sm:p-6 relative overflow-hidden text-center">
                 {/* Animated background */}
                 <div className="absolute inset-0 bg-gradient-to-br from-purple-50 to-indigo-50 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                 
                 <div className="relative">
-                  <div className="flex items-center mb-4">
+                  <div className="flex items-center justify-center mb-4">
                     <div className="p-3 rounded-xl bg-gradient-to-br from-purple-100 to-indigo-100 border border-purple-200 mr-4 group-hover:scale-110 transition-transform duration-300">
                       <DollarSign size={20} className="text-purple-700" />
                     </div>
                     <h3 className="text-gray-900 text-lg font-semibold">Total Invested</h3>
                   </div>
-                  <div className="flex items-end justify-between mb-4">
-                    <p className="text-4xl font-bold text-gray-900">$
+                  <div className="flex items-end justify-center mb-4">
+                    <p className="text-2xl font-bold text-gray-900">$
                       {metrics ? Number(metrics.total_investment).toLocaleString(undefined, { maximumFractionDigits: 2 }) : '0.00'}
                     </p>
-                    <div className="flex items-center text-green-600 text-sm font-medium bg-green-100 px-3 py-1 rounded-full">
-                      <ArrowUp size={16} className="mr-1" />
-                      <span>+4.2%</span>
-                    </div>
                   </div>
 
                 </div>
@@ -304,7 +304,7 @@ export default function Dashboard() {
 
             {/* Active Investment */}
             <div className="group card card-hover">
-              <div className="p-4 sm:p-6 relative overflow-hidden">
+              <div className="p-4 sm:p-6 relative overflow-hidden text-center">
                 {/* Animated background */}
                 <div className="absolute inset-0 bg-gradient-to-br from-green-50 to-emerald-50 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                 
@@ -316,13 +316,9 @@ export default function Dashboard() {
                     <h3 className="text-gray-900 text-lg font-semibold">Active Investment</h3>
                   </div>
                   <div className="flex items-end justify-center mb-4">
-                    <p className="text-4xl font-bold text-gray-900">$
+                    <p className="text-2xl font-bold text-gray-900">$
                       {metrics ? Number(metrics.active_investment).toLocaleString(undefined, { maximumFractionDigits: 2 }) : '0.00'}
                     </p>
-                    <div className="flex items-center text-green-600 text-sm font-medium bg-green-100 px-3 py-1 rounded-full ml-3">
-                      <ArrowUp size={16} className="mr-1" />
-                      <span>+2.8%</span>
-                    </div>
                   </div>
 
                 </div>
@@ -331,7 +327,7 @@ export default function Dashboard() {
 
             {/* Expired Investment */}
             <div className="group card card-hover">
-              <div className="p-4 sm:p-6 relative overflow-hidden">
+              <div className="p-4 sm:p-6 relative overflow-hidden text-center">
                 {/* Animated background */}
                 <div className="absolute inset-0 bg-gradient-to-br from-amber-50 to-orange-50 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                 
@@ -343,10 +339,10 @@ export default function Dashboard() {
                     <h3 className="text-gray-900 text-lg font-semibold">Expired Investment</h3>
                   </div>
                   <div className="flex items-end justify-center mb-4">
-                    <p className="text-4xl font-bold text-gray-900">$
+                    <p className="text-2xl font-bold text-gray-900">$
                       {metrics ? Number(metrics.expired_investment).toLocaleString(undefined, { maximumFractionDigits: 2 }) : '0.00'}
                     </p>
-                    <div className="flex items-center text-amber-400 text-sm font-medium bg-amber-400/10 px-3 py-1 rounded-full">
+                    <div className="flex items-center justify-center text-amber-400 text-sm font-medium bg-amber-400/10 px-3 py-1 rounded-full">
                       <Clock size={16} className="mr-1" />
                       <span>Matured</span>
                     </div>
@@ -435,51 +431,43 @@ export default function Dashboard() {
             <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6 mt-4">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {/* Referral Income */}
-                <div className="group p-5 bg-gradient-to-br from-purple-50 to-indigo-50 rounded-xl border border-purple-200 hover:border-purple-300 transition-all duration-300">
-                  <div className="flex items-center justify-between mb-3">
+                <div className="group p-5 bg-gradient-to-br from-purple-50 to-indigo-50 rounded-xl border border-purple-200 hover:border-purple-300 transition-all duration-300 text-center">
+                  <div className="flex items-center justify-center mb-3">
                     <h3 className="text-gray-900 text-lg font-medium">Referral Income</h3>
-                    <div className="p-2 rounded-full bg-purple-100 group-hover:bg-purple-200 transition-colors duration-300">
+                    <div className="p-2 rounded-full bg-purple-100 group-hover:bg-purple-200 transition-colors duration-300 ml-3">
                       <Share size={18} className="text-purple-700" />
                     </div>
                   </div>
                   <p className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">$
                     {metrics ? Number(metrics.referral_income).toLocaleString(undefined, { maximumFractionDigits: 2 }) : '0.00'}
                   </p>
-                  <div className="flex items-center text-green-600 text-sm mt-2 bg-green-100 w-fit px-3 py-1 rounded-full">
-                    <ArrowUp size={14} className="mr-1" />
-                    <span>+12% this month</span>
-                  </div>
                 </div>
 
                 {/* Rank Income */}
-                <div className="group p-5 bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl border border-green-200 hover:border-green-300 transition-all duration-300">
-                  <div className="flex items-center justify-between mb-3">
+                <div className="group p-5 bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl border border-green-200 hover:border-green-300 transition-all duration-300 text-center">
+                  <div className="flex items-center justify-center mb-3">
                     <h3 className="text-gray-900 text-lg font-medium">Rank Income</h3>
-                    <div className="p-2 rounded-full bg-green-100 group-hover:bg-green-200 transition-colors duration-300">
+                    <div className="p-2 rounded-full bg-green-100 group-hover:bg-green-200 transition-colors duration-300 ml-3">
                       <Trophy size={18} className="text-green-600" />
                     </div>
                   </div>
                   <p className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">$
                     {metrics ? Number(metrics.rank_income).toLocaleString(undefined, { maximumFractionDigits: 2 }) : '0.00'}
                   </p>
-                  <div className="flex items-center text-green-600 text-sm mt-2 bg-green-100 w-fit px-3 py-1 rounded-full">
-                    <ArrowUp size={14} className="mr-1" />
-                    <span>+8% this month</span>
-                  </div>
                 </div>
 
                 {/* Daily Staking Income */}
-                <div className="group p-5 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-200 hover:border-blue-300 transition-all duration-300">
-                  <div className="flex items-center justify-between mb-3">
+                <div className="group p-5 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-200 hover:border-blue-300 transition-all duration-300 text-center">
+                  <div className="flex items-center justify-center mb-3">
                     <h3 className="text-gray-900 text-lg font-medium">Daily Staking</h3>
-                    <div className="p-2 rounded-full bg-blue-100 group-hover:bg-blue-200 transition-colors duration-300">
+                    <div className="p-2 rounded-full bg-blue-100 group-hover:bg-blue-200 transition-colors duration-300 ml-3">
                       <Coins size={18} className="text-blue-600" />
                     </div>
                   </div>
                   <p className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">$
                     {metrics ? Number(metrics.self_income).toLocaleString(undefined, { maximumFractionDigits: 2 }) : '0.00'}
                   </p>
-                  <div className="flex items-center text-blue-600 text-sm mt-2 bg-blue-100 w-fit px-3 py-1 rounded-full">
+                  <div className="flex items-center justify-center text-blue-600 text-sm mt-2 bg-blue-100 w-fit px-3 py-1 rounded-full mx-auto">
                     <ArrowUp size={14} className="mr-1" />
                     <span>Daily reward</span>
                   </div>
