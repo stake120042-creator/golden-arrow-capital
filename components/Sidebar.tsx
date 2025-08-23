@@ -40,6 +40,11 @@ const Sidebar: React.FC<SidebarProps> = ({ onLogout, isOpen = false, onClose }) 
       icon: <LayoutDashboard size={20} />
     },
     {
+      name: 'My Team',
+      path: '/dashboard/my-team',
+      icon: <Users size={20} />
+    },
+    {
       name: 'Deposit Funds',
       path: '/dashboard/deposit',
       icon: <Wallet size={20} />

@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Eye, EyeOff, ArrowRight, AlertCircle, CheckCircle, Shield, Award } from 'lucide-react';
-import userService from '@/services/userService';
+import apiClient from '@/services/apiClient';
 import { SignupData, LoginData } from '@/types/user';
 import { useAuth } from '@/contexts/AuthContext';
 import OTPInput from '@/components/OTPInput';
@@ -290,7 +290,7 @@ export default function LandingPage() {
     }
     
     try {
-      const result = await userService.initiateSignup(signupFormData);
+      const result = await apiClient.auth.signup(signupFormData);
       
       if (result.success) {
         setCurrentEmail(signupFormData.email);
@@ -317,7 +317,7 @@ export default function LandingPage() {
     setSuccessMessage('');
     
     try {
-      const result = await userService.initiateLogin(loginFormData);
+      const result = await apiClient.auth.login(loginFormData);
       
       if (result.success) {
         setCurrentEmail(result.data?.email || '');
@@ -344,7 +344,7 @@ export default function LandingPage() {
     
     try {
       const otpString = otpValue;
-      const result = await userService.verifySignupOTP(currentEmail, otpString);
+      const result = await apiClient.auth.verifySignupOTP(currentEmail, otpString);
       
       if (result.success) {
         setSuccessMessage(result.message);
@@ -371,7 +371,7 @@ export default function LandingPage() {
     
     try {
       const otpString = otpValue;
-      const result = await userService.verifyLoginOTP(currentEmail, otpString);
+      const result = await apiClient.auth.verifyLoginOTP(currentEmail, otpString);
       
       if (result.success && result.user && result.token) {
         setSuccessMessage(result.message);
@@ -398,7 +398,7 @@ export default function LandingPage() {
       
       try {
         const otpType = activeTab === 'otp' ? 'signup' : 'login';
-        const result = await userService.resendOTP(currentEmail, otpType);
+        const result = await apiClient.auth.resendOTP(currentEmail, otpType);
         
         if (result.success) {
           setSuccessMessage(result.message);

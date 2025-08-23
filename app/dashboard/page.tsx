@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import Sidebar from '@/components/Sidebar';
 import TopBar from '@/components/TopBar';
@@ -28,25 +28,63 @@ export default function Dashboard() {
   const { logout, user } = useAuth();
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [metrics, setMetrics] = useState<{ 
+    direct_business: number; 
+    team_business: number;
+    direct_members: number;
+    direct_active_members: number;
+    direct_inactive_members: number;
+    total_team_members: number;
+    team_active_members: number;
+    team_inactive_members: number;
+    total_investment: number;
+    active_investment: number;
+    expired_investment: number;
+    referral_income: number;
+    rank_income: number;
+    self_income: number;
+  } | null>(null);
+  const authToken = useMemo(() => (typeof window !== 'undefined' ? localStorage.getItem('authToken') : null), []);
+
+  useEffect(() => {
+    const fetchMetrics = async () => {
+      try {
+        const res = await fetch('/api/dashboard/metrics', {
+          headers: {
+            Authorization: `Bearer ${authToken || ''}`,
+          },
+          cache: 'no-store',
+        });
+        if (!res.ok) return;
+        const json = await res.json();
+        setMetrics(json?.data || null);
+      } catch (_) {
+        // ignore
+      }
+    };
+    if (authToken) fetchMetrics();
+  }, [authToken]);
+
+  
   const commissionData = [
     {
       key: 'L1',
       title: 'Level 1',
-      members: '20',
+      members: metrics ? String(Math.max(0, Math.round(Number(metrics.direct_business)))) : '20',
       commission: '20%',
       status: 'active'
     },
     {
       key: 'L2',
       title: 'Level 2',
-      members: '34',
+      members: '—',
       commission: '10%',
       status: 'inactive'
     },
     {
       key: 'L3',
       title: 'Level 3',
-      members: '45',
+      members: '—',
       commission: '5%',
       status: 'locked'
     },
@@ -251,7 +289,9 @@ export default function Dashboard() {
                     <h3 className="text-gray-900 text-lg font-semibold">Total Invested</h3>
                   </div>
                   <div className="flex items-end justify-between mb-4">
-                    <p className="text-4xl font-bold text-gray-900">$10,000.27</p>
+                    <p className="text-4xl font-bold text-gray-900">$
+                      {metrics ? Number(metrics.total_investment).toLocaleString(undefined, { maximumFractionDigits: 2 }) : '0.00'}
+                    </p>
                     <div className="flex items-center text-green-600 text-sm font-medium bg-green-100 px-3 py-1 rounded-full">
                       <ArrowUp size={16} className="mr-1" />
                       <span>+4.2%</span>
@@ -276,7 +316,9 @@ export default function Dashboard() {
                     <h3 className="text-gray-900 text-lg font-semibold">Active Investment</h3>
                   </div>
                   <div className="flex items-end justify-center mb-4">
-                    <p className="text-4xl font-bold text-gray-900">$800.27</p>
+                    <p className="text-4xl font-bold text-gray-900">$
+                      {metrics ? Number(metrics.active_investment).toLocaleString(undefined, { maximumFractionDigits: 2 }) : '0.00'}
+                    </p>
                     <div className="flex items-center text-green-600 text-sm font-medium bg-green-100 px-3 py-1 rounded-full ml-3">
                       <ArrowUp size={16} className="mr-1" />
                       <span>+2.8%</span>
@@ -301,8 +343,10 @@ export default function Dashboard() {
                     <h3 className="text-gray-900 text-lg font-semibold">Expired Investment</h3>
                   </div>
                   <div className="flex items-end justify-center mb-4">
-                    <p className="text-4xl font-bold text-gray-900">$13,727.00</p>
-                    <div className="flex items-center text-amber-600 text-sm font-medium bg-amber-100 px-3 py-1 rounded-full ml-3">
+                    <p className="text-4xl font-bold text-gray-900">$
+                      {metrics ? Number(metrics.expired_investment).toLocaleString(undefined, { maximumFractionDigits: 2 }) : '0.00'}
+                    </p>
+                    <div className="flex items-center text-amber-400 text-sm font-medium bg-amber-400/10 px-3 py-1 rounded-full">
                       <Clock size={16} className="mr-1" />
                       <span>Matured</span>
                     </div>
@@ -328,19 +372,21 @@ export default function Dashboard() {
                   <span className="bg-purple-100 text-purple-700 text-xs px-3 py-1 rounded-full border border-purple-200">Personal</span>
                 </div>
                 <div>
-                  <p className="text-3xl font-bold text-gray-900 mb-3">$10,000.27</p>
+                  <p className="text-3xl font-bold text-gray-900 mb-3">$
+                    {metrics ? Number(metrics.direct_business).toLocaleString(undefined, { maximumFractionDigits: 2 }) : '0.00'}
+                  </p>
                   <div className="flex flex-wrap gap-3 mb-3">
                     <span className="inline-flex items-center bg-gray-50 border border-gray-200 rounded-full px-3 py-1 text-sm text-gray-700">
                       <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
-                      34 Members
+                      {metrics ? metrics.direct_members : 0} Members
                     </span>
                     <span className="inline-flex items-center bg-green-100 border border-green-200 rounded-full px-3 py-1 text-sm text-green-700">
                       <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
-                      28 Active
+                      {metrics ? metrics.direct_active_members : 0} Active
                     </span>
                     <span className="inline-flex items-center bg-red-100 border border-red-200 rounded-full px-3 py-1 text-sm text-red-700">
                       <span className="w-2 h-2 bg-red-500 rounded-full mr-2"></span>
-                      6 De-active
+                      {metrics ? metrics.direct_inactive_members : 0} Inactive
                     </span>
                   </div>
 
@@ -361,19 +407,21 @@ export default function Dashboard() {
                   <span className="bg-indigo-100 text-indigo-700 text-xs px-3 py-1 rounded-full border border-indigo-200">Network</span>
                 </div>
                 <div>
-                  <p className="text-3xl font-bold text-gray-900 mb-3">$1,000,000.27</p>
+                  <p className="text-3xl font-bold text-gray-900 mb-3">$
+                    {metrics ? Number(metrics.team_business).toLocaleString(undefined, { maximumFractionDigits: 2 }) : '0.00'}
+                  </p>
                   <div className="flex flex-wrap gap-3 mb-3">
                     <span className="inline-flex items-center bg-gray-50 border border-gray-200 rounded-full px-3 py-1 text-sm text-gray-700">
                       <span className="w-2 h-2 bg-purple-500 rounded-full mr-2"></span>
-                      201 Members
+                      {metrics ? metrics.total_team_members : 0} Members
                     </span>
                     <span className="inline-flex items-center bg-green-100 border border-green-200 rounded-full px-3 py-1 text-sm text-green-700">
                       <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
-                      28 Active
+                      {metrics ? metrics.team_active_members : 0} Active
                     </span>
                     <span className="inline-flex items-center bg-red-100 border border-red-200 rounded-full px-3 py-1 text-sm text-red-700">
                       <span className="w-2 h-2 bg-red-500 rounded-full mr-2"></span>
-                      6 De-active
+                      {metrics ? metrics.team_inactive_members : 0} Inactive
                     </span>
                   </div>
 
@@ -394,7 +442,9 @@ export default function Dashboard() {
                       <Share size={18} className="text-purple-700" />
                     </div>
                   </div>
-                  <p className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">$10,000.27</p>
+                  <p className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">$
+                    {metrics ? Number(metrics.referral_income).toLocaleString(undefined, { maximumFractionDigits: 2 }) : '0.00'}
+                  </p>
                   <div className="flex items-center text-green-600 text-sm mt-2 bg-green-100 w-fit px-3 py-1 rounded-full">
                     <ArrowUp size={14} className="mr-1" />
                     <span>+12% this month</span>
@@ -409,7 +459,9 @@ export default function Dashboard() {
                       <Trophy size={18} className="text-green-600" />
                     </div>
                   </div>
-                  <p className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">$10,000.27</p>
+                  <p className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">$
+                    {metrics ? Number(metrics.rank_income).toLocaleString(undefined, { maximumFractionDigits: 2 }) : '0.00'}
+                  </p>
                   <div className="flex items-center text-green-600 text-sm mt-2 bg-green-100 w-fit px-3 py-1 rounded-full">
                     <ArrowUp size={14} className="mr-1" />
                     <span>+8% this month</span>
@@ -424,7 +476,9 @@ export default function Dashboard() {
                       <Coins size={18} className="text-blue-600" />
                     </div>
                   </div>
-                  <p className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">$820.27</p>
+                  <p className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">$
+                    {metrics ? Number(metrics.self_income).toLocaleString(undefined, { maximumFractionDigits: 2 }) : '0.00'}
+                  </p>
                   <div className="flex items-center text-blue-600 text-sm mt-2 bg-blue-100 w-fit px-3 py-1 rounded-full">
                     <ArrowUp size={14} className="mr-1" />
                     <span>Daily reward</span>
