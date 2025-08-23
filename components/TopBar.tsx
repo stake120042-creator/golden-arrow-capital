@@ -1,17 +1,74 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { ChevronDown, User, LogOut, Menu, Search, TrendingUp } from 'lucide-react';
+import { ChevronDown, User, LogOut, Menu, Search, TrendingUp, Wallet, ArrowDownToLine, RotateCcw, Users, Settings } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 
 interface TopBarProps {
   onLogout: () => void;
   toggleSidebar: () => void;
+  currentPage?: string;
 }
 
-const TopBar: React.FC<TopBarProps> = ({ onLogout, toggleSidebar }) => {
+const TopBar: React.FC<TopBarProps> = ({ onLogout, toggleSidebar, currentPage = 'dashboard' }) => {
   const { user } = useAuth();
   const [showDropdown, setShowDropdown] = useState(false);
+  
+  // Function to get page-specific content
+  const getPageContent = (page: string) => {
+    switch (page) {
+      case 'invest':
+        return {
+          title: 'Invest Now',
+          subtitle: 'Grow your wealth with our investment plans',
+          icon: <TrendingUp size={20} className="text-purple-600" />
+        };
+      case 'investments':
+        return {
+          title: 'My Investments',
+          subtitle: 'Track your investment portfolio and earnings',
+          icon: <TrendingUp size={20} className="text-purple-600" />
+        };
+      case 'deposit':
+        return {
+          title: 'Deposit Funds',
+          subtitle: 'Add funds to your investment account',
+          icon: <Wallet size={20} className="text-purple-600" />
+        };
+      case 'withdraw':
+        return {
+          title: 'Withdraw Funds',
+          subtitle: 'Withdraw your earnings and profits',
+          icon: <ArrowDownToLine size={20} className="text-purple-600" />
+        };
+      case 'refund':
+        return {
+          title: 'Request Refund',
+          subtitle: 'Submit refund requests and track status',
+          icon: <RotateCcw size={20} className="text-purple-600" />
+        };
+      case 'my-team':
+        return {
+          title: 'My Team',
+          subtitle: 'Manage your team and track performance',
+          icon: <Users size={20} className="text-purple-600" />
+        };
+      case 'profile':
+        return {
+          title: 'My Profile',
+          subtitle: 'Manage your account settings',
+          icon: <Settings size={20} className="text-purple-600" />
+        };
+      default:
+        return {
+          title: 'Portfolio Dashboard',
+          subtitle: `Welcome back, ${user?.firstName} ${user?.lastName}`,
+          icon: <TrendingUp size={20} className="text-purple-600" />
+        };
+    }
+  };
+
+  const pageContent = getPageContent(currentPage);
   
   const dropdownRef = useRef<HTMLDivElement>(null);
   
@@ -48,18 +105,18 @@ const TopBar: React.FC<TopBarProps> = ({ onLogout, toggleSidebar }) => {
           <div className="flex items-center space-x-4">
             <div className="hidden md:flex items-center space-x-3">
               <div className="w-10 h-10 bg-gradient-to-br from-purple-100 to-indigo-100 rounded-xl flex items-center justify-center border border-purple-200">
-                <TrendingUp size={20} className="text-purple-600" />
+                {pageContent.icon}
               </div>
               <div>
-                <h1 className="text-xl md:text-2xl font-bold text-gray-900">Portfolio Dashboard</h1>
-                <p className="text-sm text-gray-600 mt-0.5">Welcome back, {user?.firstName} {user?.lastName}</p>
+                <h1 className="text-xl md:text-2xl font-bold text-gray-900">{pageContent.title}</h1>
+                <p className="text-sm text-gray-600 mt-0.5">{pageContent.subtitle}</p>
               </div>
             </div>
             
             {/* Mobile Title */}
             <div className="md:hidden">
-              <h1 className="text-lg font-bold text-gray-900">Dashboard</h1>
-              <p className="text-xs text-gray-600">Welcome, {user?.firstName}</p>
+              <h1 className="text-lg font-bold text-gray-900">{pageContent.title}</h1>
+              <p className="text-xs text-gray-600">{pageContent.subtitle}</p>
             </div>
           </div>
         </div>

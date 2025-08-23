@@ -330,6 +330,37 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql STABLE;
 
+-- Packages table
+CREATE TABLE IF NOT EXISTS packages (
+    id SERIAL PRIMARY KEY,
+    interest NUMERIC NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Insert default packages
+INSERT INTO packages (id, interest) VALUES 
+    (1, 0.4),  -- Basic Package
+    (2, 0.45), -- Silver Package
+    (3, 0.5),  -- Gold Package
+    (4, 0.6)   -- Platinum Package
+ON CONFLICT (id) DO NOTHING;
+
+-- Investments table
+CREATE TABLE IF NOT EXISTS investments (
+    id SERIAL PRIMARY KEY,
+    userid VARCHAR(255) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    package_id INTEGER NOT NULL REFERENCES packages(id),
+    amount NUMERIC NOT NULL,
+    isactive BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Indexes for investments table
+CREATE INDEX IF NOT EXISTS idx_investments_userid ON investments(userid);
+CREATE INDEX IF NOT EXISTS idx_investments_package_id ON investments(package_id);
+CREATE INDEX IF NOT EXISTS idx_investments_isactive ON investments(isactive);
+CREATE INDEX IF NOT EXISTS idx_investments_created_at ON investments(created_at);
+
 -- Optional RLS helpers (policies can be enabled when Supabase Auth is in place)
 -- CREATE OR REPLACE FUNCTION get_user_downline_ids()
 -- RETURNS SETOF VARCHAR LANGUAGE plpgsql SECURITY DEFINER AS $$

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
+import Link from 'next/link';
 import Sidebar from '@/components/Sidebar';
 import TopBar from '@/components/TopBar';
 import { useAuth } from '@/contexts/AuthContext';
@@ -18,7 +19,8 @@ import {
   Star,
   Crown,
   Award,
-  Activity
+  Activity,
+  ArrowLeft
 } from 'lucide-react';
 
 interface TeamMember {
@@ -156,7 +158,7 @@ const MyTeamPage: React.FC = () => {
     <div className="min-h-screen bg-white relative overflow-hidden">
       <Sidebar onLogout={logout} isOpen={showMobileSidebar} onClose={handleCloseSidebar} />
       <div className="ml-0 lg:ml-64 min-h-screen relative z-10">
-        <TopBar onLogout={logout} toggleSidebar={handleToggleSidebar} />
+        <TopBar onLogout={logout} toggleSidebar={handleToggleSidebar} currentPage="my-team" />
         
         {/* Enhanced Background */}
         <div className="absolute inset-0 overflow-hidden">
@@ -172,15 +174,15 @@ const MyTeamPage: React.FC = () => {
 
                 {/* Content */}
         <div className="relative z-10 pt-24 px-4 md:px-6 pb-12 space-y-8 max-w-7xl mx-auto">
-          {/* Page Header */}
-          <div className="flex items-center">
-            <div className="p-2 rounded-lg bg-gradient-to-br from-purple-100 to-indigo-100 border border-purple-200 mr-3">
-              <Users size={20} className="text-purple-700" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">My Team</h1>
-              <p className="text-gray-600">Manage and view your team members</p>
-            </div>
+          {/* Back Button */}
+          <div className="mb-6 md:mb-8">
+            <Link 
+              href="/dashboard"
+              className="inline-flex items-center text-purple-600 hover:text-purple-700 transition-colors mb-4 md:mb-6 text-sm md:text-base"
+            >
+              <ArrowLeft className="w-4 h-4 md:w-5 md:h-5 mr-2" />
+              Back to Dashboard
+            </Link>
           </div>
           {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">

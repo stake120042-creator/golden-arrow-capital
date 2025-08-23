@@ -56,6 +56,11 @@ const Sidebar: React.FC<SidebarProps> = ({ onLogout, isOpen = false, onClose }) 
       icon: <TrendingUp size={20} />
     },
     {
+      name: 'My Investments',
+      path: '/dashboard/investments',
+      icon: <BarChart3 size={20} />
+    },
+    {
       name: 'Withdraw Funds',
       path: '/dashboard/withdraw',
       icon: <ArrowDownToLine size={20} />

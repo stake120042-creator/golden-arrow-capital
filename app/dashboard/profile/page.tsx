@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
+import Link from 'next/link';
 import Sidebar from '@/components/Sidebar';
 import TopBar from '@/components/TopBar';
 import { useAuth } from '@/contexts/AuthContext';
@@ -18,7 +19,8 @@ import {
   Clock,
   Star,
   AlertCircle,
-  Loader2
+  Loader2,
+  ArrowLeft
 } from 'lucide-react';
 
 export default function ProfilePage() {
@@ -332,18 +334,24 @@ export default function ProfilePage() {
         {/* Header */}
         <TopBar 
           onLogout={handleLogout} 
-          toggleSidebar={handleToggleSidebar} 
+          toggleSidebar={handleToggleSidebar}
+          currentPage="profile"
         />
         
         {/* Profile Content */}
         <div className="pt-32 px-4 md:px-6 pb-12">
           <div className="max-w-4xl mx-auto">
-            {/* Header */}
-            <div className="mb-8">
+            {/* Back Button and Actions */}
+            <div className="mb-6 md:mb-8">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
                 <div>
-                  <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">My Profile</h1>
-                  <p className="text-gray-600 mt-2 text-sm sm:text-base">Manage your account information and preferences</p>
+                  <Link 
+                    href="/dashboard"
+                    className="inline-flex items-center text-purple-600 hover:text-purple-700 transition-colors mb-4 md:mb-6 text-sm md:text-base"
+                  >
+                    <ArrowLeft className="w-4 h-4 md:w-5 md:h-5 mr-2" />
+                    Back to Dashboard
+                  </Link>
                 </div>
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
                   {!isEditing ? (

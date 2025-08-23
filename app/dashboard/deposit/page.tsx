@@ -134,32 +134,21 @@ export default function DepositPage() {
         {/* Header */}
         <TopBar 
           onLogout={handleLogout} 
-          toggleSidebar={handleToggleSidebar} 
+          toggleSidebar={handleToggleSidebar}
+          currentPage="deposit"
         />
         
         {/* Deposit Content */}
         <div className="pt-24 px-4 md:px-6 pb-12 max-w-6xl mx-auto">
-          {/* Header */}
-          <div className="mb-8">
+          {/* Back Button */}
+          <div className="mb-6 md:mb-8">
             <Link 
               href="/dashboard"
-              className="inline-flex items-center text-purple-600 hover:text-purple-700 transition-colors mb-6"
+              className="inline-flex items-center text-purple-600 hover:text-purple-700 transition-colors mb-4 md:mb-6 text-sm md:text-base"
             >
-              <ArrowLeft className="w-5 h-5 mr-2" />
+              <ArrowLeft className="w-4 h-4 md:w-5 md:h-5 mr-2" />
               Back to Dashboard
             </Link>
-            
-            <div className="flex items-center space-x-4 mb-4">
-              <div className="p-2 rounded-lg bg-gradient-to-br from-purple-100 to-indigo-100 border border-purple-200">
-                <Wallet size={24} className="text-purple-700" />
-              </div>
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900">
-                  Deposit Funds
-                </h1>
-                <p className="text-gray-600">Add funds to your investment portfolio</p>
-              </div>
-            </div>
           </div>
 
           <div className="max-w-2xl mx-auto">

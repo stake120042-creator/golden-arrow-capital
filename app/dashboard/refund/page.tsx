@@ -200,26 +200,21 @@ export default function RefundPage() {
         {/* Header */}
         <TopBar 
           onLogout={handleLogout} 
-          toggleSidebar={handleToggleSidebar} 
+          toggleSidebar={handleToggleSidebar}
+          currentPage="refund"
         />
         
         {/* Page Content */}
         <div className="pt-24 px-4 md:px-6 pb-12 space-y-8 max-w-3xl mx-auto">
-          {/* Header Section */}
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between">
-            <div className="flex items-center space-x-4 mb-6 md:mb-0">
-              <Link 
-                href="/dashboard"
-                className="p-2 rounded-lg bg-gray-100 border border-gray-200 hover:bg-gray-200 transition-colors"
-              >
-                <ArrowLeft size={20} className="text-gray-700" />
-              </Link>
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900">Refund Management</h1>
-                <p className="text-gray-600 mt-1">Submit a refund request with email verification</p>
-              </div>
-            </div>
-            <div className="hidden md:block" />
+          {/* Back Button */}
+          <div className="mb-6 md:mb-8">
+            <Link 
+              href="/dashboard"
+              className="inline-flex items-center text-purple-600 hover:text-purple-700 transition-colors mb-4 md:mb-6 text-sm md:text-base"
+            >
+              <ArrowLeft className="w-4 h-4 md:w-5 md:h-5 mr-2" />
+              Back to Dashboard
+            </Link>
           </div>
 
           {/* Refund Policy Info */}

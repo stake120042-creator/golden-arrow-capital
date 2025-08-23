@@ -188,7 +188,8 @@ export default function Dashboard() {
         {/* Header */}
         <TopBar 
           onLogout={handleLogout} 
-          toggleSidebar={handleToggleSidebar} 
+          toggleSidebar={handleToggleSidebar}
+          currentPage="dashboard"
         />
         
         {/* Dashboard Content */}
@@ -252,7 +253,7 @@ export default function Dashboard() {
                           Deposit now
                         </Link>
                         <Link href="/dashboard/invest" className="inline-flex items-center px-3 py-2 text-white font-medium rounded-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105 text-sm" style={{background: 'linear-gradient(90deg,#7c3aed,#8b5cf6)'}}>
-                          <TrendingDown size={14} className="mr-1" />
+                          <TrendingUp size={14} className="mr-1" />
                           Invest now
                         </Link>
                       </div>

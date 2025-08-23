@@ -76,8 +76,21 @@ const apiClient = {
   wallet: {
     getOrCreate: (userId: string): Promise<any> =>
       apiRequest('/wallet/get-or-create', 'POST', { userId }),
+    getBalance: (): Promise<any> =>
+      apiRequest('/wallet/balance', 'GET'),
     updateBalance: (amount: number, operation: 'deduct' | 'add' = 'deduct'): Promise<any> =>
-      apiRequest('/wallet/update-balance', 'POST', { amount, operation }),
+      apiRequest('/wallet/update-platform-balance', 'POST', { amount, operation }),
+  },
+
+  investment: {
+    create: (packageId: number, amount: number): Promise<any> =>
+      apiRequest('/investment/create', 'POST', { package_id: packageId, amount }),
+    update: (data: any): Promise<any> =>
+      apiRequest('/investment/update', 'POST', data),
+    updateSummary: (): Promise<any> =>
+      apiRequest('/investment/update-summary', 'POST'),
+    getUserInvestments: (): Promise<any> =>
+      apiRequest('/investment/user', 'GET'),
   },
 };
 

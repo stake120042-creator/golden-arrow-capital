@@ -32,12 +32,11 @@ interface InvestmentPlan {
   name: string;
   minAmount: number;
   maxAmount: number;
-  duration: number;
   dailyReturn: number;
-  totalReturn: number;
   description: string;
   features: string[];
   popular?: boolean;
+  packageId: number;
 }
 
 const investmentPlans: InvestmentPlan[] = [
@@ -46,69 +45,57 @@ const investmentPlans: InvestmentPlan[] = [
     name: 'Basic Package',
     minAmount: 50,
     maxAmount: 1000,
-    duration: 250,
     dailyReturn: 0.4,
-    totalReturn: 200,
     description: 'Entry-level investment with steady daily returns',
     features: [
       'Daily returns of 0.4%',
-      '250-day investment period',
       'Investment range: $50 - $1,000',
-      'Total ROI: 200%',
       'Daily USDT credits'
-    ]
+    ],
+    packageId: 1
   },
   {
     id: 'silver',
     name: 'Silver Package',
     minAmount: 1001,
     maxAmount: 5000,
-    duration: 223,
     dailyReturn: 0.45,
-    totalReturn: 200,
     description: 'Enhanced returns for moderate investors',
     features: [
       'Daily returns of 0.45%',
-      '223-day investment period',
       'Investment range: $1,001 - $5,000',
-      'Total ROI: 200%',
       'Daily USDT credits'
-    ]
+    ],
+    packageId: 2
   },
   {
     id: 'gold',
     name: 'Gold Package',
     minAmount: 5001,
     maxAmount: 10000,
-    duration: 200,
     dailyReturn: 0.5,
-    totalReturn: 200,
     description: 'Premium returns for serious investors',
     features: [
       'Daily returns of 0.5%',
-      '200-day investment period',
       'Investment range: $5,001 - $10,000',
-      'Total ROI: 200%',
       'Daily USDT credits'
     ],
-    popular: true
+    popular: true,
+    packageId: 3
   },
   {
     id: 'platinum',
     name: 'Platinum Package',
     minAmount: 10001,
     maxAmount: 100000,
-    duration: 166,
     dailyReturn: 0.6,
-    totalReturn: 200,
     description: 'Maximum returns for high-value investors',
     features: [
       'Daily returns of 0.6%',
-      '166-day investment period',
       'Investment range: $10,001+',
-      'Total ROI: 200%',
       'Daily USDT credits'
-    ]
+    ],
+    packageId: 4
   }
 ];
 
@@ -152,13 +139,13 @@ export default function InvestPage() {
     setIsLoading(true);
     setErrorMsg('');
     try {
-      // Fetch user's wallet balance
-      const resp = await apiClient.wallet.getOrCreate(user.id);
-      const balance = resp?.wallet?.balance || 0;
-      setAvailableBalance(balance);
+      // Fetch user's deposit balance
+      const resp = await apiClient.wallet.getBalance();
+      const depositBalance = resp?.data?.deposit_balance || 0;
+      setAvailableBalance(depositBalance);
     } catch (error) {
-      console.error('Error fetching balance:', error);
-      setErrorMsg('Failed to load your wallet balance.');
+      console.error('Error fetching deposit balance:', error);
+      setErrorMsg('Failed to load your deposit balance.');
     } finally {
       setIsLoading(false);
     }
@@ -198,6 +185,22 @@ export default function InvestPage() {
     setInvestmentAmount(amount);
     setErrorMsg('');
     setSuccessMsg('');
+    
+    // Real-time validation feedback
+    if (selectedPlan && amount) {
+      const numAmount = parseFloat(amount);
+      if (!isNaN(numAmount)) {
+        if (numAmount < selectedPlan.minAmount) {
+          setErrorMsg(`Minimum investment for ${selectedPlan.name} is $${selectedPlan.minAmount.toLocaleString()}.`);
+        } else if (numAmount > selectedPlan.maxAmount) {
+          setErrorMsg(`Maximum investment for ${selectedPlan.name} is $${selectedPlan.maxAmount.toLocaleString()}.`);
+        } else if (numAmount > availableBalance) {
+          setErrorMsg('Insufficient balance. Please deposit more funds first.');
+        } else {
+          setErrorMsg(''); // Clear error if amount is valid
+        }
+      }
+    }
   };
 
   const validateInvestment = (): boolean => {
@@ -246,27 +249,19 @@ export default function InvestPage() {
         throw new Error(walletResponse.message || 'Failed to update wallet balance');
       }
 
-      // Then, update investment details
-      const investmentResponse = await fetch('/api/investment/update', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('authToken') || ''}`,
-        },
-        body: JSON.stringify({
-          total_investment: amount,
-          active_investment: amount,
-          expired_investment: 0,
-          referral_income: 0,
-          rank_income: 0,
-          self_income: 0
-        }),
-      });
-
-      if (!investmentResponse.ok) {
-        // If investment update fails, revert the wallet balance
+      // Create investment record with package_id mapping
+      const investmentResponse = await apiClient.investment.create(selectedPlan!.packageId, amount);
+      if (!investmentResponse.success) {
+        // If investment creation fails, revert the wallet balance
         await apiClient.wallet.updateBalance(amount, 'add');
-        throw new Error('Failed to process investment');
+        throw new Error(investmentResponse.message || 'Failed to process investment');
+      }
+
+      // Update investment details summary
+      try {
+        await apiClient.investment.updateSummary();
+      } catch (summaryError) {
+        console.warn('Failed to update investment summary, but investment was created:', summaryError);
       }
 
       setSuccessMsg(`Successfully invested $${amount.toFixed(2)} in ${selectedPlan?.name}!`);
@@ -278,7 +273,7 @@ export default function InvestPage() {
       
     } catch (error) {
       console.error('Investment error:', error);
-      setErrorMsg('Failed to process investment. Please try again.');
+      setErrorMsg(error instanceof Error ? error.message : 'Failed to process investment. Please try again.');
     } finally {
       setIsInvesting(false);
     }
@@ -288,9 +283,7 @@ export default function InvestPage() {
     return (amount * dailyReturn) / 100;
   };
 
-  const calculateTotalEarnings = (amount: number, totalReturn: number): number => {
-    return (amount * totalReturn) / 100;
-  };
+
 
   if (isLoading) {
     return (
@@ -329,51 +322,40 @@ export default function InvestPage() {
         {/* Header */}
         <TopBar 
           onLogout={handleLogout} 
-          toggleSidebar={handleToggleSidebar} 
+          toggleSidebar={handleToggleSidebar}
+          currentPage="invest"
         />
         
         {/* Invest Content */}
-        <div className="pt-24 px-4 md:px-6 pb-12 max-w-7xl mx-auto">
-          {/* Header */}
-          <div className="mb-8">
+        <div className="pt-24 md:pt-28 px-3 sm:px-4 md:px-6 pb-8 md:pb-12 max-w-7xl mx-auto">
+          {/* Back Button */}
+          <div className="mb-6 md:mb-8">
             <Link 
               href="/dashboard"
-              className="inline-flex items-center text-purple-600 hover:text-purple-700 transition-colors mb-6"
+              className="inline-flex items-center text-purple-600 hover:text-purple-700 transition-colors mb-4 md:mb-6 text-sm md:text-base"
             >
-              <ArrowLeft className="w-5 h-5 mr-2" />
+              <ArrowLeft className="w-4 h-4 md:w-5 md:h-5 mr-2" />
               Back to Dashboard
             </Link>
-            
-            <div className="flex items-center space-x-4 mb-4">
-              <div className="p-2 rounded-lg bg-gradient-to-br from-purple-100 to-indigo-100 border border-purple-200">
-                <TrendingUp size={24} className="text-purple-700" />
-              </div>
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900">
-                  Invest Now
-                </h1>
-                <p className="text-gray-600">Grow your wealth with our investment plans</p>
-              </div>
-            </div>
           </div>
 
           {/* Available Balance */}
-          <div className="mb-8">
+          <div className="mb-6 md:mb-8">
             <div className="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300">
-              <div className="p-6">
-                <div className="flex items-center justify-between">
+              <div className="p-4 md:p-6">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
                   <div className="flex items-center">
-                    <div className="p-3 rounded-xl bg-gradient-to-br from-green-100 to-emerald-100 border border-green-200 mr-4">
-                      <Wallet size={24} className="text-green-600" />
+                    <div className="p-2 md:p-3 rounded-xl bg-gradient-to-br from-green-100 to-emerald-100 border border-green-200 mr-3 md:mr-4">
+                      <Wallet size={20} className="md:w-6 md:h-6 text-green-600" />
                     </div>
                     <div>
-                      <h3 className="text-gray-900 text-lg font-semibold">Available Balance</h3>
-                      <p className="text-gray-600 text-sm">Funds ready for investment</p>
+                      <h3 className="text-gray-900 text-base md:text-lg font-semibold">Available Balance</h3>
+                      <p className="text-gray-600 text-xs md:text-sm">Funds ready for investment</p>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <p className="text-3xl font-bold text-gray-900">${availableBalance.toFixed(2)}</p>
-                    <p className="text-green-600 text-sm font-medium">Ready to invest</p>
+                  <div className="text-left sm:text-right">
+                    <p className="text-2xl md:text-3xl font-bold text-gray-900">${availableBalance.toFixed(2)}</p>
+                    <p className="text-green-600 text-xs md:text-sm font-medium">Ready to invest</p>
                   </div>
                 </div>
               </div>
@@ -381,67 +363,58 @@ export default function InvestPage() {
           </div>
 
           {/* Investment Plans */}
-          <div className="mb-8">
-            <div className="flex items-center mb-6">
-              <div className="p-2 rounded-lg bg-gradient-to-br from-purple-100 to-indigo-100 border border-purple-200 mr-3">
-                <Target size={20} className="text-purple-700" />
-              </div>
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900">Investment Plans</h2>
-                <p className="text-gray-600">Choose the plan that fits your goals</p>
-              </div>
-            </div>
+          <div className="mb-6 md:mb-8">
 
             {/* Plan Selection Dropdown */}
             <div className="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300">
-              <div className="p-6">
-                <div className="mb-6">
+              <div className="p-4 md:p-6">
+                <div className="mb-4 md:mb-6">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Select Investment Package
                   </label>
                   <div className="relative plan-dropdown">
                     <button
                       onClick={() => setShowPlanDropdown(!showPlanDropdown)}
-                      className="w-full flex items-center justify-between px-4 py-3 border border-gray-300 rounded-lg bg-white hover:border-purple-500 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all duration-300"
+                      className="w-full flex items-center justify-between px-3 md:px-4 py-3 md:py-3 border border-gray-300 rounded-lg bg-white hover:border-purple-500 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all duration-300"
                     >
-                      <div className="flex items-center">
+                      <div className="flex items-center min-w-0 flex-1">
                         {selectedPlan ? (
                           <>
-                            <div className={`w-4 h-4 rounded-full bg-gradient-to-r ${getPlanColor(selectedPlan.id)} mr-3`}></div>
-                            <span className="text-gray-900 font-medium">{selectedPlan.name}</span>
+                            <div className={`w-3 h-3 md:w-4 md:h-4 rounded-full bg-gradient-to-r ${getPlanColor(selectedPlan.id)} mr-2 md:mr-3 flex-shrink-0`}></div>
+                            <span className="text-gray-900 font-medium text-sm md:text-base truncate">{selectedPlan.name}</span>
                           </>
                         ) : (
-                          <span className="text-gray-500">Choose an investment package</span>
+                          <span className="text-gray-500 text-sm md:text-base">Choose an investment package</span>
                         )}
                       </div>
-                      <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${showPlanDropdown ? 'rotate-180' : ''}`} />
+                      <ChevronDown className={`w-4 h-4 md:w-5 md:h-5 text-gray-400 transition-transform duration-200 flex-shrink-0 ${showPlanDropdown ? 'rotate-180' : ''}`} />
                     </button>
 
                     {showPlanDropdown && (
-                      <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-96 overflow-y-auto">
+                      <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-80 md:max-h-96 overflow-y-auto">
                         {investmentPlans.map((plan) => (
                           <div
                             key={plan.id}
                             onClick={() => handlePlanSelect(plan)}
-                            className="flex items-center justify-between px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
+                            className="flex items-center justify-between px-3 md:px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
                           >
-                            <div className="flex items-center">
-                              <div className={`w-4 h-4 rounded-full bg-gradient-to-r ${getPlanColor(plan.id)} mr-3`}></div>
-                              <div>
+                            <div className="flex items-center min-w-0 flex-1">
+                              <div className={`w-3 h-3 md:w-4 md:h-4 rounded-full bg-gradient-to-r ${getPlanColor(plan.id)} mr-2 md:mr-3 flex-shrink-0`}></div>
+                              <div className="min-w-0 flex-1">
                                 <div className="flex items-center">
-                                  <span className="font-medium text-gray-900">{plan.name}</span>
+                                  <span className="font-medium text-gray-900 text-sm md:text-base truncate">{plan.name}</span>
                                   {plan.popular && (
-                                    <span className="ml-2 px-2 py-1 bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-xs font-bold rounded-full">
+                                    <span className="ml-1 md:ml-2 px-1.5 md:px-2 py-0.5 md:py-1 bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-xs font-bold rounded-full flex-shrink-0">
                                       POPULAR
                                     </span>
                                   )}
                                 </div>
-                                <p className="text-sm text-gray-600">{plan.description}</p>
+                                <p className="text-xs md:text-sm text-gray-600 truncate">{plan.description}</p>
                               </div>
                             </div>
-                            <div className="text-right">
-                              <div className="text-sm font-semibold text-green-600">{plan.dailyReturn}% daily</div>
-                              <div className="text-xs text-gray-500">{plan.duration} days</div>
+                            <div className="text-right flex-shrink-0 ml-2">
+                              <div className="text-xs md:text-sm font-semibold text-green-600">{plan.dailyReturn}% daily</div>
+                              <div className="text-xs text-gray-500">${plan.minAmount.toLocaleString()} - ${plan.maxAmount === 100000 ? '∞' : plan.maxAmount.toLocaleString()}</div>
                             </div>
                           </div>
                         ))}
@@ -452,43 +425,35 @@ export default function InvestPage() {
 
                 {/* Selected Plan Details */}
                 {selectedPlan && (
-                  <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-lg p-6 border border-purple-200">
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center">
-                        <div className={`w-6 h-6 rounded-full bg-gradient-to-r ${getPlanColor(selectedPlan.id)} mr-3`}></div>
-                        <h3 className="text-lg font-bold text-gray-900">{selectedPlan.name}</h3>
+                  <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-lg p-4 md:p-6 border border-purple-200">
+                    <div className="flex items-center justify-between mb-3 md:mb-4">
+                      <div className="flex items-center min-w-0 flex-1">
+                        <div className={`w-4 h-4 md:w-6 md:h-6 rounded-full bg-gradient-to-r ${getPlanColor(selectedPlan.id)} mr-2 md:mr-3 flex-shrink-0`}></div>
+                        <h3 className="text-base md:text-lg font-bold text-gray-900 truncate">{selectedPlan.name}</h3>
                         {selectedPlan.popular && (
-                          <span className="ml-2 px-3 py-1 bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-xs font-bold rounded-full">
+                          <span className="ml-1 md:ml-2 px-2 md:px-3 py-0.5 md:py-1 bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-xs font-bold rounded-full flex-shrink-0">
                             MOST POPULAR
                           </span>
                         )}
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 mb-3 md:mb-4">
                       <div className="bg-white rounded-lg p-3 border border-purple-200">
-                        <div className="text-sm text-gray-600">Daily Return</div>
-                        <div className="text-lg font-bold text-green-600">{selectedPlan.dailyReturn}%</div>
+                        <div className="text-xs md:text-sm text-gray-600">Daily Return</div>
+                        <div className="text-base md:text-lg font-bold text-green-600">{selectedPlan.dailyReturn}%</div>
                       </div>
                       <div className="bg-white rounded-lg p-3 border border-purple-200">
-                        <div className="text-sm text-gray-600">Duration</div>
-                        <div className="text-lg font-bold text-gray-900">{selectedPlan.duration} days</div>
-                      </div>
-                      <div className="bg-white rounded-lg p-3 border border-purple-200">
-                        <div className="text-sm text-gray-600">Total ROI</div>
-                        <div className="text-lg font-bold text-purple-600">{selectedPlan.totalReturn}%</div>
-                      </div>
-                      <div className="bg-white rounded-lg p-3 border border-purple-200">
-                        <div className="text-sm text-gray-600">Investment Range</div>
-                        <div className="text-sm font-bold text-gray-900">${selectedPlan.minAmount.toLocaleString()} - ${selectedPlan.maxAmount === 100000 ? '∞' : selectedPlan.maxAmount.toLocaleString()}</div>
+                        <div className="text-xs md:text-sm text-gray-600">Investment Range</div>
+                        <div className="text-xs md:text-sm font-bold text-gray-900">${selectedPlan.minAmount.toLocaleString()} - ${selectedPlan.maxAmount === 100000 ? '∞' : selectedPlan.maxAmount.toLocaleString()}</div>
                       </div>
                     </div>
 
-                    <div className="space-y-2">
+                    <div className="space-y-1.5 md:space-y-2">
                       {selectedPlan.features.map((feature, index) => (
-                        <div key={index} className="flex items-center text-sm text-gray-700">
-                          <Check className="w-4 h-4 text-green-500 mr-2 flex-shrink-0" />
-                          {feature}
+                        <div key={index} className="flex items-center text-xs md:text-sm text-gray-700">
+                          <Check className="w-3 h-3 md:w-4 md:h-4 text-green-500 mr-2 flex-shrink-0" />
+                          <span className="truncate">{feature}</span>
                         </div>
                       ))}
                     </div>
@@ -500,33 +465,33 @@ export default function InvestPage() {
 
           {/* Investment Form */}
           {selectedPlan && (
-            <div className="mb-8">
+            <div className="mb-6 md:mb-8">
               <div className="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300">
-                <div className="p-6">
-                  <div className="flex items-center mb-6">
+                <div className="p-4 md:p-6">
+                  <div className="flex items-center mb-4 md:mb-6">
                     <div className="p-2 rounded-lg bg-gradient-to-br from-purple-100 to-indigo-100 border border-purple-200 mr-3">
-                      <Zap size={20} className="text-purple-700" />
+                      <Zap size={18} className="md:w-5 md:h-5 text-purple-700" />
                     </div>
                     <div>
-                      <h3 className="text-xl font-bold text-gray-900">Investment Details</h3>
-                      <p className="text-gray-600 text-sm">Configure your investment</p>
+                      <h3 className="text-lg md:text-xl font-bold text-gray-900">Investment Details</h3>
+                      <p className="text-gray-600 text-xs md:text-sm">Configure your investment</p>
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                  <div className="grid grid-cols-1 gap-4 md:gap-6 mb-4 md:mb-6">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Investment Amount (USD)
                       </label>
                       <div className="relative">
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                          <DollarSign className="h-5 w-5 text-gray-400" />
+                          <DollarSign className="h-4 w-4 md:h-5 md:w-5 text-gray-400" />
                         </div>
                         <input
                           type="number"
                           value={investmentAmount}
                           onChange={(e) => handleAmountChange(e.target.value)}
-                          className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                          className="block w-full pl-10 pr-3 py-3 md:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-base md:text-base"
                           placeholder="Enter amount"
                           min={selectedPlan.minAmount}
                           max={Math.min(selectedPlan.maxAmount, availableBalance)}
@@ -534,7 +499,7 @@ export default function InvestPage() {
                         />
                       </div>
                       <p className="text-xs text-gray-500 mt-1">
-                        Min: ${selectedPlan.minAmount} | Max: ${Math.min(selectedPlan.maxAmount, availableBalance)}
+                        Min: ${selectedPlan.minAmount.toLocaleString()} | Max: ${Math.min(selectedPlan.maxAmount, availableBalance).toLocaleString()}
                       </p>
                     </div>
 
@@ -542,38 +507,38 @@ export default function InvestPage() {
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Investment Plan
                       </label>
-                      <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                        <h4 className="font-semibold text-gray-900">{selectedPlan.name}</h4>
-                        <p className="text-sm text-gray-600">{selectedPlan.description}</p>
+                      <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 md:p-4">
+                        <h4 className="font-semibold text-gray-900 text-sm md:text-base">{selectedPlan.name}</h4>
+                        <p className="text-xs md:text-sm text-gray-600">{selectedPlan.description}</p>
                       </div>
                     </div>
                   </div>
 
                   {/* Investment Summary */}
                   {investmentAmount && parseFloat(investmentAmount) > 0 && (
-                    <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-lg p-6 mb-6">
-                      <h4 className="text-lg font-semibold text-gray-900 mb-4">Investment Summary</h4>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div className="bg-white rounded-lg p-4 border border-purple-200">
+                    <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-lg p-4 md:p-6 mb-4 md:mb-6">
+                      <h4 className="text-base md:text-lg font-semibold text-gray-900 mb-3 md:mb-4">Investment Summary</h4>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
+                        <div className="bg-white rounded-lg p-3 md:p-4 border border-purple-200">
                           <div className="flex items-center justify-between">
-                            <span className="text-gray-600 text-sm">Daily Earnings</span>
-                            <span className="text-green-600 font-semibold">
+                            <span className="text-gray-600 text-xs md:text-sm">Daily Earnings</span>
+                            <span className="text-green-600 font-semibold text-sm md:text-base">
                               ${calculateDailyEarnings(parseFloat(investmentAmount), selectedPlan.dailyReturn).toFixed(2)}
                             </span>
                           </div>
                         </div>
-                        <div className="bg-white rounded-lg p-4 border border-purple-200">
+                        <div className="bg-white rounded-lg p-3 md:p-4 border border-purple-200">
                           <div className="flex items-center justify-between">
-                            <span className="text-gray-600 text-sm">Total Earnings</span>
-                            <span className="text-purple-600 font-semibold">
-                              ${calculateTotalEarnings(parseFloat(investmentAmount), selectedPlan.totalReturn).toFixed(2)}
+                            <span className="text-gray-600 text-xs md:text-sm">Daily Return Rate</span>
+                            <span className="text-purple-600 font-semibold text-sm md:text-base">
+                              {selectedPlan.dailyReturn}%
                             </span>
                           </div>
                         </div>
-                        <div className="bg-white rounded-lg p-4 border border-purple-200">
+                        <div className="bg-white rounded-lg p-3 md:p-4 border border-purple-200 sm:col-span-2 lg:col-span-1">
                           <div className="flex items-center justify-between">
-                            <span className="text-gray-600 text-sm">Duration</span>
-                            <span className="text-gray-900 font-semibold">{selectedPlan.duration} days</span>
+                            <span className="text-gray-600 text-xs md:text-sm">Investment Range</span>
+                            <span className="text-gray-900 font-semibold text-xs md:text-sm">${selectedPlan.minAmount.toLocaleString()} - ${selectedPlan.maxAmount === 100000 ? '∞' : selectedPlan.maxAmount.toLocaleString()}</span>
                           </div>
                         </div>
                       </div>
@@ -601,8 +566,15 @@ export default function InvestPage() {
 
                   <button
                     onClick={handleInvest}
-                    disabled={isInvesting || !investmentAmount || parseFloat(investmentAmount) <= 0}
-                    className="w-full py-3 px-6 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-medium rounded-lg hover:from-purple-700 hover:to-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center"
+                    disabled={
+                      isInvesting || 
+                      !investmentAmount || 
+                      parseFloat(investmentAmount) <= 0 ||
+                      (selectedPlan && parseFloat(investmentAmount) < selectedPlan.minAmount) ||
+                      (selectedPlan && parseFloat(investmentAmount) > selectedPlan.maxAmount) ||
+                      parseFloat(investmentAmount) > availableBalance
+                    }
+                    className="w-full py-3 md:py-3 px-4 md:px-6 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-medium rounded-lg hover:from-purple-700 hover:to-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center text-sm md:text-base"
                   >
                     {isInvesting ? (
                       <>
@@ -611,7 +583,7 @@ export default function InvestPage() {
                       </>
                     ) : (
                       <>
-                        <TrendingUp className="w-5 h-5 mr-2" />
+                        <TrendingUp className="w-4 h-4 md:w-5 md:h-5 mr-2" />
                         Invest Now
                       </>
                     )}
@@ -622,16 +594,16 @@ export default function InvestPage() {
           )}
 
           {/* Investment Plans Summary Table */}
-          <div className="mb-8">
+          <div className="mb-6 md:mb-8">
             <div className="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300">
-              <div className="p-6">
-                <div className="flex items-center mb-6">
+              <div className="p-4 md:p-6">
+                <div className="flex items-center mb-4 md:mb-6">
                   <div className="p-2 rounded-lg bg-gradient-to-br from-purple-100 to-indigo-100 border border-purple-200 mr-3">
-                    <BarChart3 size={20} className="text-purple-700" />
+                    <BarChart3 size={18} className="md:w-5 md:h-5 text-purple-700" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900">Investment Plans Comparison</h3>
-                    <p className="text-gray-600 text-sm">Compare all available investment packages</p>
+                    <h3 className="text-base md:text-lg font-semibold text-gray-900">Investment Plans Comparison</h3>
+                    <p className="text-gray-600 text-xs md:text-sm">Compare all available investment packages</p>
                   </div>
                 </div>
 
@@ -639,34 +611,30 @@ export default function InvestPage() {
                   <table className="w-full">
                     <thead>
                       <tr className="border-b border-gray-200">
-                        <th className="text-left py-3 px-4 text-gray-700 font-semibold text-sm">Package</th>
-                        <th className="text-center py-3 px-4 text-gray-700 font-semibold text-sm">Investment Range</th>
-                        <th className="text-center py-3 px-4 text-gray-700 font-semibold text-sm">Daily Interest</th>
-                        <th className="text-center py-3 px-4 text-gray-700 font-semibold text-sm">Total ROI</th>
+                        <th className="text-left py-2 md:py-3 px-2 md:px-4 text-gray-700 font-semibold text-xs md:text-sm">Package</th>
+                        <th className="text-center py-2 md:py-3 px-2 md:px-4 text-gray-700 font-semibold text-xs md:text-sm">Investment Range</th>
+                        <th className="text-center py-2 md:py-3 px-2 md:px-4 text-gray-700 font-semibold text-xs md:text-sm">Daily Interest</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200">
                       {investmentPlans.map((plan) => (
                         <tr key={plan.id} className="hover:bg-gray-50">
-                          <td className="py-3 px-4">
+                          <td className="py-2 md:py-3 px-2 md:px-4">
                             <div className="flex items-center">
-                              <div className={`w-3 h-3 rounded-full bg-gradient-to-r ${getPlanColor(plan.id)} mr-3`}></div>
+                              <div className={`w-2 h-2 md:w-3 md:h-3 rounded-full bg-gradient-to-r ${getPlanColor(plan.id)} mr-2 md:mr-3`}></div>
                               <div>
-                                <div className="font-medium text-gray-900">{plan.name}</div>
+                                <div className="font-medium text-gray-900 text-xs md:text-sm">{plan.name}</div>
                                 {plan.popular && (
                                   <span className="text-xs text-purple-600 font-medium">Most Popular</span>
                                 )}
                               </div>
                             </div>
                           </td>
-                          <td className="py-3 px-4 text-center text-gray-900">
+                          <td className="py-2 md:py-3 px-2 md:px-4 text-center text-gray-900 text-xs md:text-sm">
                             ${plan.minAmount.toLocaleString()} - ${plan.maxAmount === 100000 ? '∞' : plan.maxAmount.toLocaleString()}
                           </td>
-                          <td className="py-3 px-4 text-center">
-                            <span className="text-green-600 font-semibold">{plan.dailyReturn}%</span>
-                          </td>
-                          <td className="py-3 px-4 text-center">
-                            <span className="text-purple-600 font-bold">{plan.totalReturn}%</span>
+                          <td className="py-2 md:py-3 px-2 md:px-4 text-center">
+                            <span className="text-green-600 font-semibold text-xs md:text-sm">{plan.dailyReturn}%</span>
                           </td>
                         </tr>
                       ))}
@@ -805,29 +773,7 @@ export default function InvestPage() {
             </div>
           </div>
 
-          {/* Risk Warning */}
-          <div className="mt-8">
-            <div className="bg-white border border-amber-200 rounded-xl shadow-sm">
-              <div className="p-6">
-                <div className="flex items-start space-x-4">
-                  <div className="p-2 rounded-lg bg-gradient-to-br from-amber-100 to-orange-100 border border-amber-200 flex-shrink-0">
-                    <AlertTriangle className="w-5 h-5 text-amber-600" />
-                  </div>
-                  <div>
-                    <h4 className="text-lg font-semibold text-gray-900 mb-2">Investment Risk Warning</h4>
-                    <ul className="text-gray-700 text-sm space-y-1">
-                      <li>• All investments carry inherent risks and may result in loss of capital</li>
-                      <li>• Past performance does not guarantee future results</li>
-                      <li>• Investment values can fluctuate and may go down as well as up</li>
-                      <li>• Consider your financial situation and risk tolerance before investing</li>
-                      <li>• We recommend diversifying your investment portfolio</li>
-                    </ul>
-                  </div>
-                </div>
               </div>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );
