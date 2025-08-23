@@ -34,56 +34,49 @@ export default function Dashboard() {
       title: 'Level 1',
       members: '20',
       commission: '20%',
-      status: 'active',
-      vip: 'active'
+      status: 'active'
     },
     {
       key: 'L2',
       title: 'Level 2',
       members: '34',
       commission: '10%',
-      status: 'inactive',
-      vip: 'inactive'
+      status: 'inactive'
     },
     {
       key: 'L3',
       title: 'Level 3',
       members: '45',
       commission: '5%',
-      status: 'locked',
-      vip: 'active'
+      status: 'locked'
     },
     {
       key: '4-8',
       title: 'Levels 4-8',
       members: '-',
       commission: '4%',
-      status: 'locked',
-      vip: 'locked'
+      status: 'locked'
     },
     {
       key: '9-13',
       title: 'Levels 9-13',
       members: '-',
       commission: '3%',
-      status: 'locked',
-      vip: 'locked'
+      status: 'locked'
     },
     {
       key: '14-20',
       title: 'Levels 14-20',
       members: '-',
       commission: '2%',
-      status: 'locked',
-      vip: 'locked'
+      status: 'locked'
     },
     {
       key: '21-25',
       title: 'Levels 21-25',
       members: '-',
       commission: '1%',
-      status: 'locked',
-      vip: 'locked'
+      status: 'locked'
     }
   ] as const;
 
@@ -140,7 +133,7 @@ export default function Dashboard() {
         />
         
         {/* Dashboard Content */}
-        <div className="pt-24 px-4 md:px-6 pb-12 space-y-8 max-w-7xl mx-auto">
+        <div className="pt-32 px-4 md:px-6 pb-12 space-y-8 max-w-7xl mx-auto">
           {/* Referral Link */}
           <div className="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden">
             <div className="p-6">
@@ -275,16 +268,16 @@ export default function Dashboard() {
                 {/* Animated background */}
                 <div className="absolute inset-0 bg-gradient-to-br from-green-50 to-emerald-50 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                 
-                <div className="relative">
-                  <div className="flex items-center mb-4">
+                <div className="relative text-center">
+                  <div className="flex items-center justify-center mb-4">
                     <div className="p-3 rounded-xl bg-gradient-to-br from-green-100 to-emerald-100 border border-green-200 mr-4 group-hover:scale-110 transition-transform duration-300">
                       <TrendingUp size={20} className="text-green-600" />
                     </div>
                     <h3 className="text-gray-900 text-lg font-semibold">Active Investment</h3>
                   </div>
-                  <div className="flex items-end justify-between mb-4">
+                  <div className="flex items-end justify-center mb-4">
                     <p className="text-4xl font-bold text-gray-900">$800.27</p>
-                    <div className="flex items-center text-green-600 text-sm font-medium bg-green-100 px-3 py-1 rounded-full">
+                    <div className="flex items-center text-green-600 text-sm font-medium bg-green-100 px-3 py-1 rounded-full ml-3">
                       <ArrowUp size={16} className="mr-1" />
                       <span>+2.8%</span>
                     </div>
@@ -300,16 +293,16 @@ export default function Dashboard() {
                 {/* Animated background */}
                 <div className="absolute inset-0 bg-gradient-to-br from-amber-50 to-orange-50 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                 
-                <div className="relative">
-                  <div className="flex items-center mb-4">
+                <div className="relative text-center">
+                  <div className="flex items-center justify-center mb-4">
                     <div className="p-3 rounded-xl bg-gradient-to-br from-amber-100 to-orange-100 border border-amber-200 mr-4 group-hover:scale-110 transition-transform duration-300">
                       <Clock size={20} className="text-amber-600" />
                     </div>
                     <h3 className="text-gray-900 text-lg font-semibold">Expired Investment</h3>
                   </div>
-                  <div className="flex items-end justify-between mb-4">
+                  <div className="flex items-end justify-center mb-4">
                     <p className="text-4xl font-bold text-gray-900">$13,727.00</p>
-                    <div className="flex items-center text-amber-600 text-sm font-medium bg-amber-100 px-3 py-1 rounded-full">
+                    <div className="flex items-center text-amber-600 text-sm font-medium bg-amber-100 px-3 py-1 rounded-full ml-3">
                       <Clock size={16} className="mr-1" />
                       <span>Matured</span>
                     </div>
@@ -536,7 +529,6 @@ export default function Dashboard() {
                         <th className="text-center py-3 px-4 text-gray-700 font-semibold text-xs uppercase tracking-wider w-1/5">Status</th>
                         <th className="text-center py-3 px-4 text-gray-700 font-semibold text-xs uppercase tracking-wider w-1/5">Members</th>
                         <th className="text-center py-3 px-4 text-gray-700 font-semibold text-xs uppercase tracking-wider w-1/5">Commission</th>
-                        <th className="text-center py-3 px-4 text-gray-700 font-semibold text-xs uppercase tracking-wider w-1/5">VIP</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200 text-sm">
@@ -558,17 +550,6 @@ export default function Dashboard() {
                         </td>
                           <td className="py-3 px-4 text-center text-gray-900">{row.members}</td>
                           <td className="py-3 px-4 text-center font-semibold text-gray-900">{row.commission}</td>
-                          <td className="py-3 px-4 text-center">
-                            {row.vip === 'active' && (
-                              <Check size={16} className="inline text-green-600" />
-                            )}
-                            {row.vip === 'inactive' && (
-                              <X size={16} className="inline text-red-600" />
-                            )}
-                            {row.vip === 'locked' && (
-                              <span className="inline-block w-3 h-3 rounded bg-gray-400 align-middle"></span>
-                            )}
-                        </td>
                       </tr>
                       ))}
                     </tbody>
@@ -594,14 +575,6 @@ export default function Dashboard() {
                             <div className="text-gray-600">Commission</div>
                             <div className="text-gray-900 font-semibold">{row.commission}</div>
                           </div>
-                          <div className="bg-gray-50 border border-gray-200 rounded px-2 py-1 col-span-2">
-                            <div className="text-gray-600">VIP</div>
-                            <div className="mt-1">
-                              {row.vip === 'active' && <Check size={16} className="text-green-600" />}
-                              {row.vip === 'inactive' && <X size={16} className="text-red-600" />}
-                              {row.vip === 'locked' && <span className="inline-block w-3 h-3 rounded bg-gray-400"></span>}
-                            </div>
-                        </div>
               </div>
                       </div>
                     ))}
