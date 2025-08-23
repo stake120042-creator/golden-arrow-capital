@@ -147,10 +147,14 @@ const Sidebar: React.FC<SidebarProps> = ({ onLogout, isOpen = false, onClose }) 
         <div className="p-4 border-t border-gray-200">
           <div className="space-y-3">
             {/* Help Button */}
-            <button className="w-full flex items-center justify-center px-4 py-2.5 bg-purple-600 text-white text-sm font-medium rounded-lg hover:bg-purple-700 transition-colors duration-200">
+            <Link 
+              href="/dashboard/raise-ticket"
+              onClick={handleLinkClick}
+              className="w-full flex items-center justify-center px-4 py-2.5 bg-purple-600 text-white text-sm font-medium rounded-lg hover:bg-purple-700 transition-colors duration-200"
+            >
               <HelpCircle size={16} className="mr-2" />
               Raise Ticket
-            </button>
+            </Link>
             
             {/* Logout Button */}
             <button 
