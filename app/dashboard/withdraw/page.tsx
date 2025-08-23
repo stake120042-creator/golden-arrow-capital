@@ -48,40 +48,17 @@ export default function WithdrawPage() {
   const [withdrawMemo, setWithdrawMemo] = useState<string>('');
   
   // Balance states
-  const [availableBalance, setAvailableBalance] = useState<string>('512.12');
-  const [pendingWithdrawals, setPendingWithdrawals] = useState<string>('0.00');
-  const [totalWithdrawn, setTotalWithdrawn] = useState<string>('1,250.00');
+  const [walletBalance, setWalletBalance] = useState<{
+    deposit_balance: number;
+    income_balance: number;
+    total_deposited: number;
+    total_withdrawn: number;
+  } | null>(null);
   
   // Withdrawal history
-  const [withdrawalHistory, setWithdrawalHistory] = useState([
-    {
-      id: '1',
-      amount: '100.00',
-      address: '0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6',
-      status: 'completed',
-      date: '2024-01-15',
-      txHash: '0x1234567890abcdef...',
-      memo: 'Withdrawal to main wallet'
-    },
-    {
-      id: '2',
-      amount: '50.00',
-      address: '0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6',
-      status: 'pending',
-      date: '2024-01-14',
-      txHash: '',
-      memo: 'Weekly withdrawal'
-    },
-    {
-      id: '3',
-      amount: '200.00',
-      address: '0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6',
-      status: 'completed',
-      date: '2024-01-10',
-      txHash: '0xabcdef1234567890...',
-      memo: 'Large withdrawal'
-    }
-  ]);
+  const [withdrawalHistory, setWithdrawalHistory] = useState<any[]>([]);
+  const [isLoadingWallet, setIsLoadingWallet] = useState(false);
+  const [isLoadingHistory, setIsLoadingHistory] = useState(false);
 
   const handleToggleSidebar = () => {
     setShowMobileSidebar(!showMobileSidebar);
@@ -101,6 +78,51 @@ export default function WithdrawPage() {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  // Fetch withdrawal data
+  useEffect(() => {
+    const fetchWithdrawalData = async () => {
+      const authToken = localStorage.getItem('authToken');
+      if (!authToken) return;
+
+      try {
+        // Fetch wallet balance (for available balance)
+        setIsLoadingWallet(true);
+        const walletRes = await fetch('/api/wallet/balance', {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+          cache: 'no-store',
+        });
+        if (walletRes.ok) {
+          const walletJson = await walletRes.json();
+          setWalletBalance(walletJson?.data || null);
+        }
+
+
+
+        // Fetch withdrawal history
+        setIsLoadingHistory(true);
+        const historyRes = await fetch('/api/withdrawal/history', {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+          cache: 'no-store',
+        });
+        if (historyRes.ok) {
+          const historyJson = await historyRes.json();
+          setWithdrawalHistory(historyJson?.data || []);
+        }
+      } catch (error) {
+        console.error('Error fetching withdrawal data:', error);
+      } finally {
+        setIsLoadingWallet(false);
+        setIsLoadingHistory(false);
+      }
+    };
+
+    fetchWithdrawalData();
+  }, []);
+
   const validateWithdrawalAmount = (amount: string): boolean => {
     const numAmount = parseFloat(amount);
     
@@ -119,9 +141,9 @@ export default function WithdrawPage() {
       return false;
     }
     
-    const availableBalanceNum = parseFloat(availableBalance);
+    const availableBalanceNum = walletBalance?.income_balance || 0;
     if (numAmount > availableBalanceNum) {
-      setAmountError(`Insufficient balance. Available: $${availableBalance} USDT`);
+      setAmountError(`Insufficient balance. Available: $${availableBalanceNum.toFixed(2)} USDT`);
       return false;
     }
     
@@ -240,39 +262,70 @@ export default function WithdrawPage() {
 
     setIsLoading(true);
     
-    // Simulate API call
-    setTimeout(() => {
-      // Add new withdrawal to history
-      const newWithdrawal = {
-        id: Date.now().toString(),
-        amount: withdrawAmount,
-        address: withdrawAddress,
-        status: 'pending',
-        date: new Date().toISOString().split('T')[0],
-        txHash: '',
-        memo: withdrawMemo || 'Manual withdrawal'
-      };
+    try {
+      const authToken = localStorage.getItem('authToken');
+      if (!authToken) {
+        setOtpMessage('Authentication required');
+        setIsLoading(false);
+        return;
+      }
+
+      const response = await fetch('/api/withdrawal/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${authToken}`,
+        },
+        body: JSON.stringify({
+          amount: withdrawAmount,
+          walletAddress: withdrawAddress,
+          description: withdrawMemo || 'Manual withdrawal'
+        }),
+      });
+
+      const result = await response.json();
       
-      setWithdrawalHistory([newWithdrawal, ...withdrawalHistory]);
-      
-      // Update balances
-      const currentBalance = parseFloat(availableBalance);
-      const withdrawValue = parseFloat(withdrawAmount);
-      setAvailableBalance((currentBalance - withdrawValue).toFixed(2));
-      setPendingWithdrawals((parseFloat(pendingWithdrawals) + withdrawValue).toFixed(2));
-      
-      // Reset form
-      setWithdrawAmount('');
-      setWithdrawAddress('');
-      setWithdrawMemo('');
-      setWithdrawalOTP('');
-      setOtpSent(false);
-      setOtpVerified(false);
-      setOtpMessage('');
-      setAmountError('');
-      
+      if (result.success) {
+        // Refresh wallet balance
+        const walletRes = await fetch('/api/wallet/balance', {
+          headers: { Authorization: `Bearer ${authToken}` },
+          cache: 'no-store',
+        });
+        if (walletRes.ok) {
+          const walletJson = await walletRes.json();
+          setWalletBalance(walletJson?.data || null);
+        }
+
+
+
+        // Refresh withdrawal history
+        const historyRes = await fetch('/api/withdrawal/history', {
+          headers: { Authorization: `Bearer ${authToken}` },
+          cache: 'no-store',
+        });
+        if (historyRes.ok) {
+          const historyJson = await historyRes.json();
+          setWithdrawalHistory(historyJson?.data || []);
+        }
+        
+        // Reset form
+        setWithdrawAmount('');
+        setWithdrawAddress('');
+        setWithdrawMemo('');
+        setWithdrawalOTP('');
+        setOtpSent(false);
+        setOtpVerified(false);
+        setOtpMessage('Withdrawal request created successfully!');
+        setAmountError('');
+      } else {
+        setOtpMessage(result.message || 'Failed to create withdrawal request');
+      }
+    } catch (error) {
+      console.error('Failed to create withdrawal:', error);
+      setOtpMessage('An error occurred while creating withdrawal request');
+    } finally {
       setIsLoading(false);
-    }, 2000);
+    }
   };
 
   const getStatusColor = (status: string) => {
@@ -348,15 +401,18 @@ export default function WithdrawPage() {
                     </div>
                   </div>
                   
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="text-center">
                     <div className="text-center p-4 bg-gray-50 rounded-lg border border-gray-200">
                       <p className="text-gray-600 text-sm mb-1">Available</p>
-                      <p className="text-2xl font-bold text-purple-700">${availableBalance}</p>
+                      {isLoadingWallet ? (
+                        <div className="w-8 h-8 border-2 border-purple-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+                      ) : (
+                        <p className="text-2xl font-bold text-purple-700">
+                          ${walletBalance?.income_balance?.toFixed(2) || '0.00'}
+                        </p>
+                      )}
                     </div>
-                    <div className="text-center p-4 bg-gray-50 rounded-lg border border-gray-200">
-                      <p className="text-gray-600 text-sm mb-1">Pending</p>
-                      <p className="text-2xl font-bold text-yellow-600">${pendingWithdrawals}</p>
-                    </div>
+
                   </div>
                 </div>
               </div>
@@ -384,7 +440,7 @@ export default function WithdrawPage() {
                           placeholder="0.0"
                           step="0.001"
                           min={MIN_WITHDRAWAL}
-                          max={Math.min(MAX_WITHDRAWAL, parseFloat(availableBalance))}
+                          max={Math.min(MAX_WITHDRAWAL, walletBalance?.income_balance || 0)}
                           required
                           className={`w-full p-4 bg-white border rounded-lg text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-purple-500/20 transition-all ${
                             amountError ? 'border-red-500 focus:border-red-500' : 'border-gray-200 focus:border-purple-500'
@@ -394,7 +450,7 @@ export default function WithdrawPage() {
                           <p className="text-red-600 text-xs mt-1">{amountError}</p>
                         ) : (
                           <p className="text-gray-500 text-xs mt-1">
-                            Available: ${availableBalance} USDT | Min: ${MIN_WITHDRAWAL} | Max: ${MAX_WITHDRAWAL}
+                            Available: ${walletBalance?.income_balance?.toFixed(2) || '0.00'} USDT | Min: ${MIN_WITHDRAWAL} | Max: ${MAX_WITHDRAWAL}
                           </p>
                         )}
                       </div>
@@ -493,31 +549,7 @@ export default function WithdrawPage() {
 
             {/* Withdrawal History */}
             <div className="space-y-6">
-              {/* Quick Stats */}
-              <div className="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300">
-                <div className="p-6">
-                  <div className="flex items-center mb-4">
-                    <div className="p-2 rounded-lg bg-gradient-to-br from-purple-100 to-indigo-100 border border-purple-200 mr-3">
-                      <DollarSign size={20} className="text-purple-700" />
-                    </div>
-                    <div>
-                      <h3 className="text-gray-900 text-lg font-medium">Withdrawal Stats</h3>
-                      <p className="text-gray-600 text-sm">Your withdrawal activity</p>
-                    </div>
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="text-center p-4 bg-gray-50 rounded-lg border border-gray-200">
-                      <p className="text-gray-600 text-sm mb-1">This Month</p>
-                      <p className="text-xl font-bold text-purple-700">$350.00</p>
-                    </div>
-                    <div className="text-center p-4 bg-gray-50 rounded-lg border border-gray-200">
-                      <p className="text-gray-600 text-sm mb-1">Total Withdrawals</p>
-                      <p className="text-xl font-bold text-green-600">$1,250.00</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
+
 
               {/* Withdrawal History */}
               <div className="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300">
@@ -533,61 +565,78 @@ export default function WithdrawPage() {
                   </div>
                     
                     <div className="space-y-4 max-h-96 overflow-y-auto">
-                      {withdrawalHistory.map((withdrawal) => (
-                        <div key={withdrawal.id} className="bg-white rounded-lg p-4 border border-gray-200 shadow-sm">
-                          <div className="flex items-center justify-between mb-3">
-                            <div className="flex items-center space-x-3">
-                              {getStatusIcon(withdrawal.status)}
-                              <div>
-                                <p className="text-gray-900 font-medium">{withdrawal.amount} USDT</p>
-                                <p className="text-gray-600 text-sm">{withdrawal.date}</p>
-                              </div>
-                            </div>
-                            <span className={`text-sm font-medium ${getStatusColor(withdrawal.status)}`}>
-                              {withdrawal.status.charAt(0).toUpperCase() + withdrawal.status.slice(1)}
-                            </span>
-                          </div>
-                          
-                          <div className="space-y-2">
-                            <div className="flex items-center justify-between text-sm">
-                              <span className="text-gray-600">Address:</span>
-                              <div className="flex items-center space-x-2">
-                                <code className="text-purple-700 font-mono text-xs">
-                                  {withdrawal.address.substring(0, 8)}...{withdrawal.address.substring(withdrawal.address.length - 6)}
-                                </code>
-                                <button 
-                                  onClick={() => handleCopyAddress(withdrawal.address)}
-                                  className="text-gray-400 hover:text-purple-600 transition-colors"
-                                >
-                                  {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
-                                </button>
-                              </div>
-                            </div>
-                            
-                            {withdrawal.memo && (
-                              <div className="flex items-center justify-between text-sm">
-                                <span className="text-gray-600">Memo:</span>
-                                <span className="text-gray-700">{withdrawal.memo}</span>
-                              </div>
-                            )}
-                            
-                            {withdrawal.txHash && (
-                              <div className="flex items-center justify-between text-sm">
-                                <span className="text-gray-600">Transaction:</span>
-                                <a 
-                                  href={`https://bscscan.com/tx/${withdrawal.txHash}`}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="text-purple-700 hover:text-purple-800 transition-colors flex items-center space-x-1"
-                                >
-                                  <span className="text-xs">View</span>
-                                  <ExternalLink className="w-3 h-3" />
-                                </a>
-                              </div>
-                            )}
-                          </div>
+                      {isLoadingHistory ? (
+                        <div className="flex items-center justify-center py-8">
+                          <div className="w-8 h-8 border-2 border-purple-600 border-t-transparent rounded-full animate-spin"></div>
+                          <span className="ml-2 text-gray-600">Loading history...</span>
                         </div>
-                      ))}
+                      ) : withdrawalHistory.length === 0 ? (
+                        <div className="text-center py-8">
+                          <div className="text-gray-400 mb-2">
+                            <Clock className="w-12 h-12 mx-auto" />
+                          </div>
+                          <p className="text-gray-600">No withdrawal history yet</p>
+                          <p className="text-gray-500 text-sm">Your withdrawal transactions will appear here</p>
+                        </div>
+                      ) : (
+                        withdrawalHistory.map((withdrawal) => (
+                          <div key={withdrawal.id} className="bg-white rounded-lg p-4 border border-gray-200 shadow-sm">
+                            <div className="flex items-center justify-between mb-3">
+                              <div className="flex items-center space-x-3">
+                                {getStatusIcon(withdrawal.status)}
+                                <div>
+                                  <p className="text-gray-900 font-medium">{withdrawal.amount} USDT</p>
+                                  <p className="text-gray-600 text-sm">
+                                    {new Date(withdrawal.created_at).toLocaleDateString()}
+                                  </p>
+                                </div>
+                              </div>
+                              <span className={`text-sm font-medium ${getStatusColor(withdrawal.status)}`}>
+                                {withdrawal.status.charAt(0).toUpperCase() + withdrawal.status.slice(1)}
+                              </span>
+                            </div>
+                            
+                            <div className="space-y-2">
+                              <div className="flex items-center justify-between text-sm">
+                                <span className="text-gray-600">Address:</span>
+                                <div className="flex items-center space-x-2">
+                                  <code className="text-purple-700 font-mono text-xs">
+                                    {withdrawal.wallet_address.substring(0, 8)}...{withdrawal.wallet_address.substring(withdrawal.wallet_address.length - 6)}
+                                  </code>
+                                  <button 
+                                    onClick={() => handleCopyAddress(withdrawal.wallet_address)}
+                                    className="text-gray-400 hover:text-purple-600 transition-colors"
+                                  >
+                                    {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+                                  </button>
+                                </div>
+                              </div>
+                              
+                              {withdrawal.description && (
+                                <div className="flex items-center justify-between text-sm">
+                                  <span className="text-gray-600">Memo:</span>
+                                  <span className="text-gray-700">{withdrawal.description}</span>
+                                </div>
+                              )}
+                              
+                              {withdrawal.transaction_hash && (
+                                <div className="flex items-center justify-between text-sm">
+                                  <span className="text-gray-600">Transaction:</span>
+                                  <a 
+                                    href={`https://bscscan.com/tx/${withdrawal.transaction_hash}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-purple-700 hover:text-purple-800 transition-colors flex items-center space-x-1"
+                                  >
+                                    <span className="text-xs">View</span>
+                                    <ExternalLink className="w-3 h-3" />
+                                  </a>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        ))
+                      )}
                     </div>
                 </div>
               </div>

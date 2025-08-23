@@ -245,8 +245,9 @@ export default function Dashboard() {
                       </div>
                     </div>
                     <div className="text-center">
-                      <p className="text-2xl font-bold text-gray-900 mb-4">$
-                      {walletBalance ? Number(walletBalance.deposit_balance).toLocaleString(undefined, { maximumFractionDigits: 2 }) : '0.00'}</p>
+                      <p className="text-2xl font-bold text-gray-900 mb-4">
+                        ${walletBalance ? Number(walletBalance.deposit_balance).toLocaleString(undefined, { maximumFractionDigits: 2 }) : '0.00'}
+                      </p>
                       <div className="flex flex-wrap gap-2 justify-center">
                         <Link href="/dashboard/deposit" className="inline-flex items-center px-3 py-2 text-white font-medium rounded-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105 text-sm" style={{background: 'linear-gradient(90deg,#8b5cf6,#7c3aed)'}}>
                           <ArrowUp size={14} className="mr-1" />
@@ -284,9 +285,9 @@ export default function Dashboard() {
                       </div>
                     </div>
                     <div className="text-center">
-                                             <p className="text-2xl font-bold text-gray-900 mb-3">$
-                         {walletBalance ? Number(walletBalance.income_balance).toLocaleString(undefined, { maximumFractionDigits: 2 }) : '0.00'}
-                       </p>
+                      <p className="text-2xl font-bold text-gray-900 mb-3">
+                        ${walletBalance ? Number(walletBalance.income_balance).toLocaleString(undefined, { maximumFractionDigits: 2 }) : '0.00'}
+                      </p>
                       <div className="flex flex-wrap gap-2 justify-center">
                         <Link href="/dashboard/withdraw" className="inline-flex items-center px-3 py-2 text-white font-medium rounded-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105 text-sm" style={{background:'linear-gradient(90deg,#7c3aed,#8b5cf6)'}}>
                           <ArrowDownToLine size={14} className="mr-1" />
@@ -323,8 +324,8 @@ export default function Dashboard() {
                     <h3 className="text-gray-900 text-lg font-semibold">Total Invested</h3>
                   </div>
                   <div className="flex items-end justify-center mb-4">
-                    <p className="text-2xl font-bold text-gray-900">$
-                      {metrics ? Number(metrics.total_investment).toLocaleString(undefined, { maximumFractionDigits: 2 }) : '0.00'}
+                    <p className="text-2xl font-bold text-gray-900">
+                      ${metrics ? Number(metrics.total_investment).toLocaleString(undefined, { maximumFractionDigits: 2 }) : '0.00'}
                     </p>
                   </div>
 
@@ -346,8 +347,8 @@ export default function Dashboard() {
                     <h3 className="text-gray-900 text-lg font-semibold">Active Investment</h3>
                   </div>
                   <div className="flex items-end justify-center mb-4">
-                    <p className="text-2xl font-bold text-gray-900">$
-                      {metrics ? Number(metrics.active_investment).toLocaleString(undefined, { maximumFractionDigits: 2 }) : '0.00'}
+                    <p className="text-2xl font-bold text-gray-900">
+                      ${metrics ? Number(metrics.active_investment).toLocaleString(undefined, { maximumFractionDigits: 2 }) : '0.00'}
                     </p>
                   </div>
 
@@ -369,8 +370,8 @@ export default function Dashboard() {
                     <h3 className="text-gray-900 text-lg font-semibold">Expired Investment</h3>
                   </div>
                   <div className="flex items-end justify-center mb-4">
-                    <p className="text-2xl font-bold text-gray-900">$
-                      {metrics ? Number(metrics.expired_investment).toLocaleString(undefined, { maximumFractionDigits: 2 }) : '0.00'}
+                    <p className="text-2xl font-bold text-gray-900">
+                      ${metrics ? Number(metrics.expired_investment).toLocaleString(undefined, { maximumFractionDigits: 2 }) : '0.00'}
                     </p>
                     <div className="flex items-center justify-center text-amber-400 text-sm font-medium bg-amber-400/10 px-3 py-1 rounded-full">
                       <Clock size={16} className="mr-1" />
@@ -398,8 +399,8 @@ export default function Dashboard() {
                   <span className="bg-purple-100 text-purple-700 text-xs px-3 py-1 rounded-full border border-purple-200">Personal</span>
                 </div>
                 <div>
-                  <p className="text-3xl font-bold text-gray-900 mb-3">$
-                    {metrics ? Number(metrics.direct_business).toLocaleString(undefined, { maximumFractionDigits: 2 }) : '0.00'}
+                  <p className="text-3xl font-bold text-gray-900 mb-3">
+                    ${metrics ? Number(metrics.direct_business).toLocaleString(undefined, { maximumFractionDigits: 2 }) : '0.00'}
                   </p>
                   <div className="flex flex-wrap gap-3 mb-3">
                     <span className="inline-flex items-center bg-gray-50 border border-gray-200 rounded-full px-3 py-1 text-sm text-gray-700">
@@ -433,8 +434,8 @@ export default function Dashboard() {
                   <span className="bg-indigo-100 text-indigo-700 text-xs px-3 py-1 rounded-full border border-indigo-200">Network</span>
                 </div>
                 <div>
-                  <p className="text-3xl font-bold text-gray-900 mb-3">$
-                    {metrics ? Number(metrics.team_business).toLocaleString(undefined, { maximumFractionDigits: 2 }) : '0.00'}
+                  <p className="text-3xl font-bold text-gray-900 mb-3">
+                    ${metrics ? Number(metrics.team_business).toLocaleString(undefined, { maximumFractionDigits: 2 }) : '0.00'}
                   </p>
                   <div className="flex flex-wrap gap-3 mb-3">
                     <span className="inline-flex items-center bg-gray-50 border border-gray-200 rounded-full px-3 py-1 text-sm text-gray-700">
@@ -468,8 +469,8 @@ export default function Dashboard() {
                       <Share size={18} className="text-purple-700" />
                     </div>
                   </div>
-                  <p className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">$
-                    {metrics ? Number(metrics.referral_income).toLocaleString(undefined, { maximumFractionDigits: 2 }) : '0.00'}
+                  <p className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+                    ${metrics ? Number(metrics.referral_income).toLocaleString(undefined, { maximumFractionDigits: 2 }) : '0.00'}
                   </p>
                 </div>
 
@@ -481,8 +482,8 @@ export default function Dashboard() {
                       <Trophy size={18} className="text-green-600" />
                     </div>
                   </div>
-                  <p className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">$
-                    {metrics ? Number(metrics.rank_income).toLocaleString(undefined, { maximumFractionDigits: 2 }) : '0.00'}
+                  <p className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+                    ${metrics ? Number(metrics.rank_income).toLocaleString(undefined, { maximumFractionDigits: 2 }) : '0.00'}
                   </p>
                 </div>
 
@@ -494,8 +495,8 @@ export default function Dashboard() {
                       <Coins size={18} className="text-blue-600" />
                     </div>
                   </div>
-                  <p className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">$
-                    {metrics ? Number(metrics.self_income).toLocaleString(undefined, { maximumFractionDigits: 2 }) : '0.00'}
+                  <p className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+                    ${metrics ? Number(metrics.self_income).toLocaleString(undefined, { maximumFractionDigits: 2 }) : '0.00'}
                   </p>
                   <div className="flex items-center justify-center text-blue-600 text-sm mt-2 bg-blue-100 w-fit px-3 py-1 rounded-full mx-auto">
                     <ArrowUp size={14} className="mr-1" />

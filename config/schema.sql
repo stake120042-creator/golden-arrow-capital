@@ -253,6 +253,45 @@ CREATE TABLE IF NOT EXISTS investment_details (
 CREATE INDEX IF NOT EXISTS idx_investment_details_user_id ON investment_details(user_id);
 CREATE INDEX IF NOT EXISTS idx_investment_details_updated_at ON investment_details(updated_at);
 
+-- Platform Wallet table for tracking user balances
+CREATE TABLE IF NOT EXISTS platform_wallet (
+    id SERIAL PRIMARY KEY,
+    user_id VARCHAR(255) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    deposit_balance NUMERIC DEFAULT 0,
+    income_balance NUMERIC DEFAULT 0,
+    total_deposited NUMERIC DEFAULT 0,
+    total_withdrawn NUMERIC DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(user_id)
+);
+
+-- Indexes for platform_wallet
+CREATE INDEX IF NOT EXISTS idx_platform_wallet_user_id ON platform_wallet(user_id);
+CREATE INDEX IF NOT EXISTS idx_platform_wallet_updated_at ON platform_wallet(updated_at);
+
+-- Transaction history table
+CREATE TABLE IF NOT EXISTS wallet_transactions (
+    id SERIAL PRIMARY KEY,
+    user_id VARCHAR(255) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    transaction_type VARCHAR(50) NOT NULL CHECK (transaction_type IN ('deposit', 'withdrawal', 'income', 'investment', 'refund')),
+    amount NUMERIC NOT NULL,
+    balance_before NUMERIC NOT NULL,
+    balance_after NUMERIC NOT NULL,
+    wallet_type VARCHAR(20) NOT NULL CHECK (wallet_type IN ('deposit', 'income')),
+    transaction_hash VARCHAR(255),
+    status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'completed', 'failed', 'cancelled')),
+    description TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Indexes for wallet_transactions
+CREATE INDEX IF NOT EXISTS idx_wallet_transactions_user_id ON wallet_transactions(user_id);
+CREATE INDEX IF NOT EXISTS idx_wallet_transactions_type ON wallet_transactions(transaction_type);
+CREATE INDEX IF NOT EXISTS idx_wallet_transactions_status ON wallet_transactions(status);
+CREATE INDEX IF NOT EXISTS idx_wallet_transactions_created_at ON wallet_transactions(created_at);
+
 -- Function to update investment details
 CREATE OR REPLACE FUNCTION update_investment_details(
     p_user_id VARCHAR,
@@ -329,6 +368,145 @@ BEGIN
     END IF;
 END;
 $$ LANGUAGE plpgsql STABLE;
+
+-- Function to get or create platform wallet for a user
+CREATE OR REPLACE FUNCTION get_or_create_wallet(p_user_id VARCHAR)
+RETURNS TABLE (
+    deposit_balance NUMERIC,
+    income_balance NUMERIC,
+    total_deposited NUMERIC,
+    total_withdrawn NUMERIC
+) AS $$
+BEGIN
+    -- Insert wallet if it doesn't exist, otherwise return existing
+    INSERT INTO platform_wallet (user_id, deposit_balance, income_balance, total_deposited, total_withdrawn)
+    VALUES (p_user_id, 0, 0, 0, 0)
+    ON CONFLICT (user_id) DO NOTHING;
+    
+    -- Return the wallet data
+    RETURN QUERY
+    SELECT 
+        pw.deposit_balance,
+        pw.income_balance,
+        pw.total_deposited,
+        pw.total_withdrawn
+    FROM platform_wallet pw
+    WHERE pw.user_id = p_user_id;
+END;
+$$ LANGUAGE plpgsql VOLATILE;
+
+-- Withdrawal Requests table
+CREATE TABLE IF NOT EXISTS withdrawal_requests (
+    id SERIAL PRIMARY KEY,
+    user_id VARCHAR(255) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    amount NUMERIC NOT NULL,
+    wallet_address VARCHAR(255) NOT NULL,
+    description TEXT,
+    balance_before NUMERIC NOT NULL,
+    balance_after NUMERIC NOT NULL,
+    transaction_hash VARCHAR(255),
+    status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'processing', 'completed', 'failed', 'cancelled')),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Indexes for withdrawal_requests
+CREATE INDEX IF NOT EXISTS idx_withdrawal_requests_user_id ON withdrawal_requests(user_id);
+CREATE INDEX IF NOT EXISTS idx_withdrawal_requests_status ON withdrawal_requests(status);
+CREATE INDEX IF NOT EXISTS idx_withdrawal_requests_created_at ON withdrawal_requests(created_at);
+
+-- Function to process wallet transaction
+CREATE OR REPLACE FUNCTION process_wallet_transaction(
+    p_user_id VARCHAR,
+    p_transaction_type VARCHAR,
+    p_amount NUMERIC,
+    p_wallet_type VARCHAR,
+    p_transaction_hash VARCHAR DEFAULT NULL,
+    p_description TEXT DEFAULT NULL
+)
+RETURNS BOOLEAN AS $$
+DECLARE
+    current_balance NUMERIC := 0;
+    new_balance NUMERIC := 0;
+    wallet_exists BOOLEAN := FALSE;
+BEGIN
+    -- Ensure wallet exists
+    PERFORM get_or_create_wallet(p_user_id);
+    
+    -- Get current balance based on wallet type
+    IF p_wallet_type = 'deposit' THEN
+        SELECT deposit_balance INTO current_balance FROM platform_wallet WHERE user_id = p_user_id;
+    ELSIF p_wallet_type = 'income' THEN
+        SELECT income_balance INTO current_balance FROM platform_wallet WHERE user_id = p_user_id;
+    END IF;
+    
+    -- Calculate new balance based on transaction type
+    CASE p_transaction_type
+        WHEN 'deposit' THEN
+            new_balance := current_balance + p_amount;
+        WHEN 'withdrawal' THEN
+            IF current_balance >= p_amount THEN
+                new_balance := current_balance - p_amount;
+            ELSE
+                RETURN FALSE; -- Insufficient balance
+            END IF;
+        WHEN 'income' THEN
+            new_balance := current_balance + p_amount;
+        WHEN 'investment' THEN
+            IF current_balance >= p_amount THEN
+                new_balance := current_balance - p_amount;
+            ELSE
+                RETURN FALSE; -- Insufficient balance
+            END IF;
+        WHEN 'refund' THEN
+            new_balance := current_balance + p_amount;
+        ELSE
+            RETURN FALSE; -- Invalid transaction type
+    END CASE;
+    
+    -- Update wallet balance
+    IF p_wallet_type = 'deposit' THEN
+        UPDATE platform_wallet 
+        SET 
+            deposit_balance = new_balance,
+            total_deposited = CASE WHEN p_transaction_type = 'deposit' THEN total_deposited + p_amount ELSE total_deposited END,
+            total_withdrawn = CASE WHEN p_transaction_type = 'withdrawal' THEN total_withdrawn + p_amount ELSE total_withdrawn END,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE user_id = p_user_id;
+    ELSIF p_wallet_type = 'income' THEN
+        UPDATE platform_wallet 
+        SET 
+            income_balance = new_balance,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE user_id = p_user_id;
+    END IF;
+    
+    -- Record transaction
+    INSERT INTO wallet_transactions (
+        user_id,
+        transaction_type,
+        amount,
+        balance_before,
+        balance_after,
+        wallet_type,
+        transaction_hash,
+        status,
+        description
+    ) VALUES (
+        p_user_id,
+        p_transaction_type,
+        p_amount,
+        current_balance,
+        new_balance,
+        p_wallet_type,
+        p_transaction_hash,
+        'completed',
+        p_description
+    );
+    
+    RETURN TRUE;
+END;
+$$ LANGUAGE plpgsql VOLATILE;
 
 -- Packages table
 CREATE TABLE IF NOT EXISTS packages (
