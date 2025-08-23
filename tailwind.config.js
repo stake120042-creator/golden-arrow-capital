@@ -8,27 +8,27 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // SafePal-inspired palette (purple variant)
+        // Purple and white theme palette
         sp: {
           bg: {
-            DEFAULT: '#0E1116',
-            soft: '#11151C',
-            card: '#141922'
+            DEFAULT: '#ffffff',
+            soft: '#f8fafc',
+            card: '#ffffff'
           },
-          surface: '#171C26',
-          border: '#232B3A',
+          surface: '#f1f5f9',
+          border: '#e2e8f0',
           text: {
-            DEFAULT: '#E6EAF2',
-            muted: '#9AA7B8'
+            DEFAULT: '#1f2937',
+            muted: '#6b7280'
           },
           primary: {
-            DEFAULT: '#7C4DFF', // purple
-            hover: '#9C6CFF',
-            ring: '#7C4DFF33'
+            DEFAULT: '#8b5cf6', // purple
+            hover: '#7c3aed',
+            ring: '#8b5cf633'
           },
           secondary: {
-            DEFAULT: '#6C63FF',
-            hover: '#857CFF'
+            DEFAULT: '#a78bfa',
+            hover: '#8b5cf6'
           },
           success: '#10B981',
           warning: '#F59E0B',

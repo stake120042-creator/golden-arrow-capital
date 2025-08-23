@@ -278,31 +278,31 @@ export default function WithdrawPage() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'completed':
-        return 'text-green-400';
+        return 'text-green-600';
       case 'pending':
-        return 'text-yellow-400';
+        return 'text-yellow-600';
       case 'failed':
-        return 'text-red-400';
+        return 'text-red-600';
       default:
-        return 'text-slate-400';
+        return 'text-gray-600';
     }
   };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'completed':
-        return <Check className="w-4 h-4 text-green-400" />;
+        return <Check className="w-4 h-4 text-green-600" />;
       case 'pending':
-        return <Clock className="w-4 h-4 text-yellow-400" />;
+        return <Clock className="w-4 h-4 text-yellow-600" />;
       case 'failed':
-        return <AlertTriangle className="w-4 h-4 text-red-400" />;
+        return <AlertTriangle className="w-4 h-4 text-red-600" />;
       default:
-        return <Clock className="w-4 h-4 text-slate-400" />;
+        return <Clock className="w-4 h-4 text-gray-600" />;
     }
   };
 
   return (
-    <div className="min-h-screen bg-sp-bg">
+    <div className="min-h-screen bg-white">
       {/* Sidebar */}
       <Sidebar 
         onLogout={handleLogout} 
@@ -324,21 +324,21 @@ export default function WithdrawPage() {
           <div className="mb-8">
             <Link 
               href="/dashboard"
-              className="inline-flex items-center text-[#9C6CFF] hover:text-[#B79CFF] transition-colors mb-6"
+              className="inline-flex items-center text-purple-600 hover:text-purple-700 transition-colors mb-6"
             >
               <ArrowLeft className="w-5 h-5 mr-2" />
               Back to Dashboard
             </Link>
             
             <div className="flex items-center space-x-4 mb-4">
-              <div className="p-2 rounded-lg bg-gradient-to-br from-[#7C4DFF]/30 to-[#6C63FF]/20 border border-[#7C4DFF]/30">
-                <ArrowUpRight size={24} className="text-[#9C6CFF]" />
+              <div className="p-2 rounded-lg bg-gradient-to-br from-purple-100 to-indigo-100 border border-purple-200">
+                <ArrowUpRight size={24} className="text-purple-700" />
               </div>
               <div>
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-[#B79CFF] to-[#9C6CFF] bg-clip-text text-transparent">
+                <h1 className="text-3xl font-bold text-gray-900">
                   Withdraw Funds
                 </h1>
-                <p className="text-slate-300">Withdraw your earnings to your wallet</p>
+                <p className="text-gray-600">Withdraw your earnings to your wallet</p>
               </div>
             </div>
           </div>
@@ -347,50 +347,47 @@ export default function WithdrawPage() {
             {/* Withdraw Form */}
             <div className="space-y-6">
               {/* Balance Overview */}
-              <div className="bg-gradient-to-br from-[#141922]/80 to-[#11151C]/80 backdrop-blur-sm border border-[#232B3A] rounded-xl shadow-lg shadow-black/30 overflow-hidden hover:border-[#7C4DFF]/30 transition-all duration-300">
-                <div className="p-1">
-                  <div className="bg-gradient-to-br from-[#7C4DFF]/10 to-[#6C63FF]/5 p-6 rounded-lg">
-                    <div className="flex items-center mb-4">
-                      <div className="p-2 rounded-lg bg-gradient-to-br from-[#7C4DFF]/30 to-[#6C63FF]/20 border border-[#7C4DFF]/30 mr-3">
-                        <Wallet size={20} className="text-[#9C6CFF]" />
-                      </div>
-                      <div>
-                        <h3 className="text-slate-300 text-lg font-medium">Income Wallet Balance</h3>
-                        <p className="text-slate-400 text-sm">Available for withdrawal</p>
-                      </div>
+              <div className="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300">
+                <div className="p-6">
+                  <div className="flex items-center mb-4">
+                    <div className="p-2 rounded-lg bg-gradient-to-br from-purple-100 to-indigo-100 border border-purple-200 mr-3">
+                      <Wallet size={20} className="text-purple-700" />
                     </div>
-                    
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="text-center p-4 bg-[#171C26] rounded-lg border border-[#232B3A]">
-                        <p className="text-slate-400 text-sm mb-1">Available</p>
-                        <p className="text-2xl font-bold text-[#9C6CFF]">${availableBalance}</p>
-                      </div>
-                      <div className="text-center p-4 bg-[#171C26] rounded-lg border border-[#232B3A]">
-                        <p className="text-slate-400 text-sm mb-1">Pending</p>
-                        <p className="text-2xl font-bold text-yellow-400">${pendingWithdrawals}</p>
-                      </div>
+                    <div>
+                      <h3 className="text-gray-900 text-lg font-medium">Income Wallet Balance</h3>
+                      <p className="text-gray-600 text-sm">Available for withdrawal</p>
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="text-center p-4 bg-gray-50 rounded-lg border border-gray-200">
+                      <p className="text-gray-600 text-sm mb-1">Available</p>
+                      <p className="text-2xl font-bold text-purple-700">${availableBalance}</p>
+                    </div>
+                    <div className="text-center p-4 bg-gray-50 rounded-lg border border-gray-200">
+                      <p className="text-gray-600 text-sm mb-1">Pending</p>
+                      <p className="text-2xl font-bold text-yellow-600">${pendingWithdrawals}</p>
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* Withdraw Form */}
-              <div className="bg-gradient-to-br from-[#141922]/80 to-[#11151C]/80 backdrop-blur-sm border border-[#232B3A] rounded-xl shadow-lg shadow-black/30 overflow-hidden hover:border-[#7C4DFF]/30 transition-all duration-300">
-                <div className="p-1">
-                  <div className="bg-gradient-to-br from-[#7C4DFF]/10 to-[#6C63FF]/5 p-6 rounded-lg">
-                    <div className="flex items-center mb-6">
-                      <div className="p-2 rounded-lg bg-gradient-to-br from-[#7C4DFF]/30 to-[#6C63FF]/20 border border-[#7C4DFF]/30 mr-3">
-                        <TrendingDown size={20} className="text-[#9C6CFF]" />
-                      </div>
-                      <div>
-                        <h3 className="text-slate-300 text-lg font-medium">Withdraw Funds</h3>
-                        <p className="text-slate-400 text-sm">Send USDT to your BEP-20 wallet</p>
-                      </div>
+              <div className="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300">
+                <div className="p-6">
+                  <div className="flex items-center mb-6">
+                    <div className="p-2 rounded-lg bg-gradient-to-br from-purple-100 to-indigo-100 border border-purple-200 mr-3">
+                      <TrendingDown size={20} className="text-purple-700" />
                     </div>
-                    
-                    <form onSubmit={handleWithdraw} className="space-y-4">
+                    <div>
+                      <h3 className="text-gray-900 text-lg font-medium">Withdraw Funds</h3>
+                      <p className="text-gray-600 text-sm">Send USDT to your BEP-20 wallet</p>
+                    </div>
+                  </div>
+                  
+                  <form onSubmit={handleWithdraw} className="space-y-4">
                       <div>
-                        <label className="block text-sm font-medium text-slate-300 mb-2">Amount (USDT)</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Amount (USDT)</label>
                         <input 
                           type="number"
                           value={withdrawAmount}
@@ -400,52 +397,52 @@ export default function WithdrawPage() {
                           min={MIN_WITHDRAWAL}
                           max={Math.min(MAX_WITHDRAWAL, parseFloat(availableBalance))}
                           required
-                          className={`w-full p-4 bg-[#171C26] border rounded-lg text-white placeholder-slate-400 focus:ring-2 focus:ring-[#7C4DFF]/20 transition-all ${
-                            amountError ? 'border-red-500 focus:border-red-500' : 'border-[#232B3A] focus:border-[#7C4DFF]'
+                          className={`w-full p-4 bg-white border rounded-lg text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-purple-500/20 transition-all ${
+                            amountError ? 'border-red-500 focus:border-red-500' : 'border-gray-200 focus:border-purple-500'
                           }`}
                         />
                         {amountError ? (
-                          <p className="text-red-400 text-xs mt-1">{amountError}</p>
+                          <p className="text-red-600 text-xs mt-1">{amountError}</p>
                         ) : (
-                          <p className="text-slate-400 text-xs mt-1">
+                          <p className="text-gray-500 text-xs mt-1">
                             Available: ${availableBalance} USDT | Min: ${MIN_WITHDRAWAL} | Max: ${MAX_WITHDRAWAL}
                           </p>
                         )}
                       </div>
                       
                       <div>
-                        <label className="block text-sm font-medium text-slate-300 mb-2">Wallet Address (BEP-20)</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Wallet Address (BEP-20)</label>
                         <input 
                           type="text"
                           value={withdrawAddress}
                           onChange={(e) => setWithdrawAddress(e.target.value)}
                           placeholder="0x..."
                           required
-                          className="w-full p-4 bg-[#171C26] border border-[#232B3A] rounded-lg text-white placeholder-slate-400 focus:border-[#7C4DFF] focus:ring-2 focus:ring-[#7C4DFF]/20 transition-all"
+                          className="w-full p-4 bg-white border border-gray-200 rounded-lg text-gray-900 placeholder-gray-500 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all"
                         />
-                        <p className="text-xs text-slate-400 mt-1">Only BEP-20 addresses are supported</p>
+                        <p className="text-xs text-gray-500 mt-1">Only BEP-20 addresses are supported</p>
                       </div>
                       
                       <div>
-                        <label className="block text-sm font-medium text-slate-300 mb-2">Memo (Optional)</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Memo (Optional)</label>
                         <input 
                           type="text"
                           value={withdrawMemo}
                           onChange={(e) => setWithdrawMemo(e.target.value)}
                           placeholder="Withdrawal memo"
-                          className="w-full p-4 bg-[#171C26] border border-[#232B3A] rounded-lg text-white placeholder-slate-400 focus:border-[#7C4DFF] focus:ring-2 focus:ring-[#7C4DFF]/20 transition-all"
+                          className="w-full p-4 bg-white border border-gray-200 rounded-lg text-gray-900 placeholder-gray-500 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all"
                         />
                       </div>
                       
                       {/* Withdrawal Code Section */}
                       <div className="space-y-3">
                         <div className="flex items-center justify-between">
-                          <label className="block text-sm font-medium text-slate-300">Withdrawal Code</label>
+                          <label className="block text-sm font-medium text-gray-700">Withdrawal Code</label>
                           <button 
                             type="button"
                             onClick={handleGenerateOTP}
                             disabled={isGeneratingOTP || !withdrawAmount || !withdrawAddress || !!amountError}
-                            className="px-4 py-2 bg-gradient-to-r from-[#7C4DFF] to-[#6C63FF] text-white text-sm font-medium rounded-lg hover:from-[#6C63FF] hover:to-[#7C4DFF] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+                            className="px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-sm font-medium rounded-lg hover:from-indigo-600 hover:to-purple-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
                           >
                             {isGeneratingOTP ? (
                               <>
@@ -464,8 +461,8 @@ export default function WithdrawPage() {
                         {otpMessage && (
                           <div className={`p-3 rounded-lg border ${
                             otpMessage.includes('successfully') || otpMessage.includes('verified') 
-                              ? 'bg-green-500/10 border-green-500/30 text-green-400' 
-                              : 'bg-red-500/10 border-red-500/30 text-red-400'
+                              ? 'bg-green-50 border-green-200 text-green-700' 
+                              : 'bg-red-50 border-red-200 text-red-700'
                           }`}>
                             <span className="text-sm">{otpMessage}</span>
                           </div>
@@ -473,7 +470,7 @@ export default function WithdrawPage() {
                         
                         {otpSent && (
                           <div className="space-y-2">
-                            <label className="block text-sm font-medium text-slate-300">Enter 6-digit code</label>
+                            <label className="block text-sm font-medium text-gray-700">Enter 6-digit code</label>
                             <OTPInput 
                               length={6}
                               onComplete={handleOTPComplete}
@@ -486,11 +483,11 @@ export default function WithdrawPage() {
                       <button 
                         type="submit" 
                         disabled={isLoading || !withdrawAmount || !withdrawAddress || !otpVerified || !!amountError}
-                        className="w-full px-5 py-3 bg-gradient-to-r from-[#7C4DFF] to-[#6C63FF] text-slate-900 font-medium rounded-lg hover:from-[#6C63FF] hover:to-[#7C4DFF] transition-all text-sm shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+                        className="w-full px-5 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-medium rounded-lg hover:from-indigo-600 hover:to-purple-600 transition-all text-sm shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
                       >
                         {isLoading ? (
                           <>
-                            <div className="w-4 h-4 border-2 border-slate-900 border-t-transparent rounded-full animate-spin"></div>
+                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                             <span>Processing...</span>
                           </>
                         ) : (
@@ -501,7 +498,6 @@ export default function WithdrawPage() {
                         )}
                       </button>
                     </form>
-                  </div>
                 </div>
               </div>
             </div>
@@ -509,56 +505,53 @@ export default function WithdrawPage() {
             {/* Withdrawal History */}
             <div className="space-y-6">
               {/* Quick Stats */}
-              <div className="bg-gradient-to-br from-[#141922]/80 to-[#11151C]/80 backdrop-blur-sm border border-[#232B3A] rounded-xl shadow-lg shadow-black/30 overflow-hidden hover:border-[#7C4DFF]/30 transition-all duration-300">
-                <div className="p-1">
-                  <div className="bg-gradient-to-br from-[#7C4DFF]/10 to-[#6C63FF]/5 p-6 rounded-lg">
-                    <div className="flex items-center mb-4">
-                      <div className="p-2 rounded-lg bg-gradient-to-br from-[#7C4DFF]/30 to-[#6C63FF]/20 border border-[#7C4DFF]/30 mr-3">
-                        <DollarSign size={20} className="text-[#9C6CFF]" />
-                      </div>
-                      <div>
-                        <h3 className="text-slate-300 text-lg font-medium">Withdrawal Stats</h3>
-                        <p className="text-slate-400 text-sm">Your withdrawal activity</p>
-                      </div>
+              <div className="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300">
+                <div className="p-6">
+                  <div className="flex items-center mb-4">
+                    <div className="p-2 rounded-lg bg-gradient-to-br from-purple-100 to-indigo-100 border border-purple-200 mr-3">
+                      <DollarSign size={20} className="text-purple-700" />
                     </div>
-                    
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="text-center p-4 bg-[#171C26] rounded-lg border border-[#232B3A]">
-                        <p className="text-slate-400 text-sm mb-1">This Month</p>
-                        <p className="text-xl font-bold text-[#9C6CFF]">$350.00</p>
-                      </div>
-                      <div className="text-center p-4 bg-[#171C26] rounded-lg border border-[#232B3A]">
-                        <p className="text-slate-400 text-sm mb-1">Total Withdrawals</p>
-                        <p className="text-xl font-bold text-green-400">$1,250.00</p>
-                      </div>
+                    <div>
+                      <h3 className="text-gray-900 text-lg font-medium">Withdrawal Stats</h3>
+                      <p className="text-gray-600 text-sm">Your withdrawal activity</p>
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="text-center p-4 bg-gray-50 rounded-lg border border-gray-200">
+                      <p className="text-gray-600 text-sm mb-1">This Month</p>
+                      <p className="text-xl font-bold text-purple-700">$350.00</p>
+                    </div>
+                    <div className="text-center p-4 bg-gray-50 rounded-lg border border-gray-200">
+                      <p className="text-gray-600 text-sm mb-1">Total Withdrawals</p>
+                      <p className="text-xl font-bold text-green-600">$1,250.00</p>
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* Withdrawal History */}
-              <div className="bg-gradient-to-br from-[#141922]/80 to-[#11151C]/80 backdrop-blur-sm border border-[#232B3A] rounded-xl shadow-lg shadow-black/30 overflow-hidden hover:border-green-500/30 transition-all duration-300">
-                <div className="p-1">
-                  <div className="bg-gradient-to-br from-green-500/10 to-emerald-600/5 p-6 rounded-lg">
-                    <div className="flex items-center mb-6">
-                      <div className="p-2 rounded-lg bg-gradient-to-br from-green-400/30 to-emerald-500/20 border border-green-400/30 mr-3">
-                        <Clock size={20} className="text-green-400" />
-                      </div>
-                      <div>
-                        <h3 className="text-slate-300 text-lg font-medium">Withdrawal History</h3>
-                        <p className="text-slate-400 text-sm">Recent withdrawal transactions</p>
-                      </div>
+              <div className="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300">
+                <div className="p-6">
+                  <div className="flex items-center mb-6">
+                    <div className="p-2 rounded-lg bg-gradient-to-br from-purple-100 to-indigo-100 border border-purple-200 mr-3">
+                      <Clock size={20} className="text-purple-700" />
                     </div>
+                    <div>
+                      <h3 className="text-gray-900 text-lg font-medium">Withdrawal History</h3>
+                      <p className="text-gray-600 text-sm">Recent withdrawal transactions</p>
+                    </div>
+                  </div>
                     
                     <div className="space-y-4 max-h-96 overflow-y-auto">
                       {withdrawalHistory.map((withdrawal) => (
-                        <div key={withdrawal.id} className="bg-[#171C26] rounded-lg p-4 border border-[#232B3A]">
+                        <div key={withdrawal.id} className="bg-white rounded-lg p-4 border border-gray-200 shadow-sm">
                           <div className="flex items-center justify-between mb-3">
                             <div className="flex items-center space-x-3">
                               {getStatusIcon(withdrawal.status)}
                               <div>
-                                <p className="text-white font-medium">{withdrawal.amount} USDT</p>
-                                <p className="text-slate-400 text-sm">{withdrawal.date}</p>
+                                <p className="text-gray-900 font-medium">{withdrawal.amount} USDT</p>
+                                <p className="text-gray-600 text-sm">{withdrawal.date}</p>
                               </div>
                             </div>
                             <span className={`text-sm font-medium ${getStatusColor(withdrawal.status)}`}>
@@ -568,14 +561,14 @@ export default function WithdrawPage() {
                           
                           <div className="space-y-2">
                             <div className="flex items-center justify-between text-sm">
-                              <span className="text-slate-400">Address:</span>
+                              <span className="text-gray-600">Address:</span>
                               <div className="flex items-center space-x-2">
-                                <code className="text-[#9C6CFF] font-mono text-xs">
+                                <code className="text-purple-700 font-mono text-xs">
                                   {withdrawal.address.substring(0, 8)}...{withdrawal.address.substring(withdrawal.address.length - 6)}
                                 </code>
                                 <button 
                                   onClick={() => handleCopyAddress(withdrawal.address)}
-                                  className="text-slate-400 hover:text-[#9C6CFF] transition-colors"
+                                  className="text-gray-400 hover:text-purple-600 transition-colors"
                                 >
                                   {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
                                 </button>
@@ -584,19 +577,19 @@ export default function WithdrawPage() {
                             
                             {withdrawal.memo && (
                               <div className="flex items-center justify-between text-sm">
-                                <span className="text-slate-400">Memo:</span>
-                                <span className="text-slate-300">{withdrawal.memo}</span>
+                                <span className="text-gray-600">Memo:</span>
+                                <span className="text-gray-700">{withdrawal.memo}</span>
                               </div>
                             )}
                             
                             {withdrawal.txHash && (
                               <div className="flex items-center justify-between text-sm">
-                                <span className="text-slate-400">Transaction:</span>
+                                <span className="text-gray-600">Transaction:</span>
                                 <a 
                                   href={`https://bscscan.com/tx/${withdrawal.txHash}`}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="text-[#9C6CFF] hover:text-[#B79CFF] transition-colors flex items-center space-x-1"
+                                  className="text-purple-700 hover:text-purple-800 transition-colors flex items-center space-x-1"
                                 >
                                   <span className="text-xs">View</span>
                                   <ExternalLink className="w-3 h-3" />
@@ -607,7 +600,6 @@ export default function WithdrawPage() {
                         </div>
                       ))}
                     </div>
-                  </div>
                 </div>
               </div>
             </div>
@@ -615,24 +607,22 @@ export default function WithdrawPage() {
 
           {/* Security Notice */}
           <div className="mt-8">
-            <div className="bg-gradient-to-br from-[#141922]/80 to-[#11151C]/80 backdrop-blur-sm border border-[#7C4DFF]/30 rounded-xl shadow-lg shadow-black/30 overflow-hidden">
-              <div className="p-1">
-                <div className="bg-gradient-to-br from-[#7C4DFF]/10 to-[#6C63FF]/5 p-6 rounded-lg">
-                  <div className="flex items-start space-x-4">
-                    <div className="p-2 rounded-lg bg-gradient-to-br from-[#7C4DFF]/30 to-[#6C63FF]/20 border border-[#7C4DFF]/30 flex-shrink-0">
-                      <AlertTriangle className="w-5 h-5 text-[#9C6CFF]" />
-                    </div>
-                    <div>
-                      <h4 className="text-lg font-semibold text-white mb-2">Withdrawal Security</h4>
-                      <ul className="text-slate-300 text-sm space-y-1">
-                        <li>• Minimum withdrawal: ${MIN_WITHDRAWAL} USDT</li>
-                        <li>• Maximum withdrawal: ${MAX_WITHDRAWAL} USDT per day</li>
-                        <li>• Withdrawals are processed within 24 hours</li>
-                        <li>• Double-check your wallet address before confirming</li>
-                        <li>• Only BEP-20 addresses are supported</li>
-                        <li>• Withdrawal code is required for security verification</li>
-                      </ul>
-                    </div>
+            <div className="bg-white border border-gray-200 rounded-xl shadow-sm">
+              <div className="p-6">
+                <div className="flex items-start space-x-4">
+                  <div className="p-2 rounded-lg bg-gradient-to-br from-purple-100 to-indigo-100 border border-purple-200 flex-shrink-0">
+                    <AlertTriangle className="w-5 h-5 text-purple-700" />
+                  </div>
+                  <div>
+                    <h4 className="text-lg font-semibold text-gray-900 mb-2">Withdrawal Security</h4>
+                    <ul className="text-gray-700 text-sm space-y-1">
+                      <li>• Minimum withdrawal: ${MIN_WITHDRAWAL} USDT</li>
+                      <li>• Maximum withdrawal: ${MAX_WITHDRAWAL} USDT per day</li>
+                      <li>• Withdrawals are processed within 24 hours</li>
+                      <li>• Double-check your wallet address before confirming</li>
+                      <li>• Only BEP-20 addresses are supported</li>
+                      <li>• Withdrawal code is required for security verification</li>
+                    </ul>
                   </div>
                 </div>
               </div>
