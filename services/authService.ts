@@ -164,6 +164,48 @@ class AuthService {
         // Continue and let a background job repair wallets if needed.
       }
 
+      // Create initial investment_details record for the new user
+      try {
+        const { error: investmentError } = await supabase
+          .rpc('update_investment_details', {
+            p_user_id: user.id,
+            p_total_investment: 0,
+            p_active_investment: 0,
+            p_expired_investment: 0,
+            p_referral_income: 0,
+            p_rank_income: 0,
+            p_self_income: 0
+          });
+        
+        if (investmentError) {
+          console.error('❌ Failed creating investment details for new user:', investmentError);
+          // Continue and let a background job repair investment details if needed.
+        } else {
+          console.log('✅ Created initial investment details for user:', user.id);
+        }
+      } catch (investmentErr: any) {
+        console.error('❌ Failed creating investment details for new user:', investmentErr?.message || investmentErr);
+        // Continue and let a background job repair investment details if needed.
+      }
+
+      // Create initial platform wallet for the new user
+      try {
+        const { error: walletError } = await supabase
+          .rpc('get_or_create_wallet', {
+            p_user_id: user.id
+          });
+        
+        if (walletError) {
+          console.error('❌ Failed creating platform wallet for new user:', walletError);
+          // Continue and let a background job repair platform wallet if needed.
+        } else {
+          console.log('✅ Created initial platform wallet for user:', user.id);
+        }
+      } catch (walletErr: any) {
+        console.error('❌ Failed creating platform wallet for new user:', walletErr?.message || walletErr);
+        // Continue and let a background job repair platform wallet if needed.
+      }
+
       return user;
     } catch (error) {
       console.error('❌ Error creating user:', error);

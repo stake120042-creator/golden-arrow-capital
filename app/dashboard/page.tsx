@@ -45,25 +45,45 @@ export default function Dashboard() {
     rank_income: number;
     self_income: number;
   } | null>(null);
+  const [walletBalance, setWalletBalance] = useState<{
+    deposit_balance: number;
+    income_balance: number;
+    total_deposited: number;
+    total_withdrawn: number;
+  } | null>(null);
   const authToken = useMemo(() => (typeof window !== 'undefined' ? localStorage.getItem('authToken') : null), []);
 
   useEffect(() => {
-    const fetchMetrics = async () => {
+    const fetchData = async () => {
       try {
-        const res = await fetch('/api/dashboard/metrics', {
+        // Fetch metrics
+        const metricsRes = await fetch('/api/dashboard/metrics', {
           headers: {
             Authorization: `Bearer ${authToken || ''}`,
           },
           cache: 'no-store',
         });
-        if (!res.ok) return;
-        const json = await res.json();
-        setMetrics(json?.data || null);
-      } catch (_) {
-        // ignore
+        if (metricsRes.ok) {
+          const metricsJson = await metricsRes.json();
+          setMetrics(metricsJson?.data || null);
+        }
+
+        // Fetch wallet balance
+        const walletRes = await fetch('/api/wallet/balance', {
+          headers: {
+            Authorization: `Bearer ${authToken || ''}`,
+          },
+          cache: 'no-store',
+        });
+        if (walletRes.ok) {
+          const walletJson = await walletRes.json();
+          setWalletBalance(walletJson?.data || null);
+        }
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error);
       }
     };
-    if (authToken) fetchMetrics();
+    if (authToken) fetchData();
   }, [authToken]);
 
   
@@ -224,7 +244,8 @@ export default function Dashboard() {
                       </div>
                     </div>
                     <div className="text-center">
-                      <p className="text-2xl font-bold text-gray-900 mb-4">$452.19</p>
+                      <p className="text-2xl font-bold text-gray-900 mb-4">$
+                      {walletBalance ? Number(walletBalance.deposit_balance).toLocaleString(undefined, { maximumFractionDigits: 2 }) : '0.00'}</p>
                       <div className="flex flex-wrap gap-2 justify-center">
                         <Link href="/dashboard/deposit" className="inline-flex items-center px-3 py-2 text-white font-medium rounded-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105 text-sm" style={{background: 'linear-gradient(90deg,#8b5cf6,#7c3aed)'}}>
                           <ArrowUp size={14} className="mr-1" />
@@ -262,7 +283,9 @@ export default function Dashboard() {
                       </div>
                     </div>
                     <div className="text-center">
-                      <p className="text-2xl font-bold text-gray-900 mb-3">$512.12</p>
+                                             <p className="text-2xl font-bold text-gray-900 mb-3">$
+                         {walletBalance ? Number(walletBalance.income_balance).toLocaleString(undefined, { maximumFractionDigits: 2 }) : '0.00'}
+                       </p>
                       <div className="flex flex-wrap gap-2 justify-center">
                         <Link href="/dashboard/withdraw" className="inline-flex items-center px-3 py-2 text-white font-medium rounded-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105 text-sm" style={{background:'linear-gradient(90deg,#7c3aed,#8b5cf6)'}}>
                           <ArrowDownToLine size={14} className="mr-1" />

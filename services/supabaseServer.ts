@@ -19,8 +19,6 @@ export const supabaseServer = createClient(
   serviceKey || 'placeholder-service-key'
 );
 
-console.log('🔍 Supabase server configuration:', supabaseServer);
-
 export default supabaseServer;
 
 
