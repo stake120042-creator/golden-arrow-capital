@@ -55,12 +55,9 @@ export async function GET(request: NextRequest) {
 
     console.log('📊 Direct members:', { data: directMembers, error: directError });
 
-    // Check all descendants
+    // Check all descendants using raw SQL for ltree
     const { data: allDescendants, error: descendantsError } = await supabaseServer
-      .from('users')
-      .select('id, username, is_active, business_value, path')
-      .ltree('path', users[0].path || '')
-      .neq('id', testUserId);
+      .rpc('get_user_descendants', { user_path: users[0].path || '' });
 
     console.log('📊 All descendants:', { data: allDescendants, error: descendantsError });
 

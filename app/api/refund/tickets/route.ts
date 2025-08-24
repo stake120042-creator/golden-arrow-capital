@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 // Dummy data for existing refund tickets
-let refundTickets = [
+const refundTickets = [
   {
     id: 'REF001',
     transactionId: 'TXN001',
@@ -92,7 +92,7 @@ export async function POST(request: NextRequest) {
       createdAt: new Date().toISOString().split('T')[0],
       updatedAt: new Date().toISOString().split('T')[0],
       reason,
-      walletAddress: address,
+      adminResponse: 'Your refund request has been submitted and is under review.',
       userId
     };
 

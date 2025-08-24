@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    const currentBalance = parseFloat(walletBalance.deposit_balance || '0');
+    const currentBalance = parseFloat(String(walletBalance.deposit_balance || '0'));
     let newBalance: number;
 
     if (operation === 'deduct') {
