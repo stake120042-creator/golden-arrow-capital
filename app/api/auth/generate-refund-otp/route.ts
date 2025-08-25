@@ -14,17 +14,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!refundData || !refundData.amount || !refundData.address) {
+    if (!refundData || !refundData.address || !refundData.reason) {
       return NextResponse.json(
-        { success: false, message: 'Refund amount and wallet address are required' },
-        { status: 400 }
-      );
-    }
-
-    const amount = parseFloat(refundData.amount);
-    if (isNaN(amount) || amount <= 0) {
-      return NextResponse.json(
-        { success: false, message: 'Please enter a valid amount' },
+        { success: false, message: 'Wallet address and refund reason are required' },
         { status: 400 }
       );
     }

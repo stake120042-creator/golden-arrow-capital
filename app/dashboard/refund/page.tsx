@@ -13,7 +13,6 @@ export default function RefundPage() {
   const { logout, user } = useAuth();
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
 
-  const [refundAmount, setRefundAmount] = useState('');
   const [walletAddress, setWalletAddress] = useState('');
   const [refundReason, setRefundReason] = useState('');
 
@@ -24,7 +23,6 @@ export default function RefundPage() {
   const [otpSent, setOtpSent] = useState(false);
   const [otpVerified, setOtpVerified] = useState(false);
   const [otpMessage, setOtpMessage] = useState('');
-  const [amountError, setAmountError] = useState('');
   const [availableBalance, setAvailableBalance] = useState<string>('512.12');
   const [earnedBalance, setEarnedBalance] = useState<string>('0.00');
 
@@ -32,30 +30,7 @@ export default function RefundPage() {
   const handleCloseSidebar = () => setShowMobileSidebar(false);
   const handleLogout = () => logout();
 
-  const validateRefundAmount = (amount: string): boolean => {
-    const numAmount = parseFloat(amount);
-    if (isNaN(numAmount) || numAmount <= 0) {
-      setAmountError('Please enter a valid amount');
-      return false;
-    }
-    const availableBalanceNum = parseFloat(availableBalance);
-    if (numAmount > availableBalanceNum) {
-      setAmountError(`Insufficient balance. Available: $${availableBalance} USDT`);
-      return false;
-    }
-    setAmountError('');
-    return true;
-  };
 
-  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setRefundAmount(value);
-    if (value) {
-      validateRefundAmount(value);
-    } else {
-      setAmountError('');
-    }
-  };
 
   const handleGenerateOTP = async () => {
     try {
@@ -63,12 +38,12 @@ export default function RefundPage() {
         setOtpMessage('User email not found. Please relogin.');
         return;
       }
-      if (!refundAmount || !validateRefundAmount(refundAmount)) {
-        setOtpMessage('Please fix the amount validation errors');
-        return;
-      }
       if (!walletAddress.trim()) {
         setOtpMessage('Please enter your wallet address');
+        return;
+      }
+      if (!refundReason.trim()) {
+        setOtpMessage('Please provide a reason for refund');
         return;
       }
       setIsGeneratingOTP(true);
@@ -79,7 +54,7 @@ export default function RefundPage() {
         body: JSON.stringify({
           email: user.email,
           firstName: user.firstName,
-          refundData: { amount: refundAmount, address: walletAddress }
+          refundData: { address: walletAddress, reason: refundReason }
         })
       });
       const data = await res.json();
@@ -136,10 +111,6 @@ export default function RefundPage() {
       alert('Please verify the OTP before submitting your refund request.');
       return;
     }
-    if (!refundAmount || parseFloat(refundAmount) <= 0) {
-      alert('Please enter a valid refund amount.');
-      return;
-    }
     if (!walletAddress.trim()) {
       alert('Please enter your wallet address.');
       return;
@@ -152,14 +123,13 @@ export default function RefundPage() {
     setLoading(true);
     try {
       const newTicket = await RefundService.createRefundTicket({
-        amount: refundAmount,
+        amount: '0', // Will be determined by admin
         address: walletAddress,
         reason: refundReason,
         userId: user?.id || 'user123'
       });
 
       if (newTicket) {
-        setRefundAmount('');
         setWalletAddress('');
         setRefundReason('');
         setOtp('');
@@ -273,37 +243,16 @@ export default function RefundPage() {
               </div>
               
               <form onSubmit={handleSubmitRefund} className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-gray-700 text-sm font-medium mb-2">Refund Amount (USDT)</label>
-                    <input
-                      type="number"
-                      inputMode="decimal"
-                      step="0.01"
-                      min={0}
-                      value={refundAmount}
-                      onChange={handleAmountChange}
-                      className={`w-full p-4 bg-white border rounded-lg text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-purple-500/20 transition-all ${amountError ? 'border-red-500 focus:border-red-500' : 'border-gray-200 focus:border-purple-500'}`}
-                      placeholder="0.0"
-                      required
-                    />
-                    {amountError ? (
-                      <p className="text-red-600 text-xs mt-1">{amountError}</p>
-                    ) : (
-                      <p className="text-gray-500 text-xs mt-1">Available: ${availableBalance} USDT</p>
-                    )}
-                  </div>
-                  <div>
-                    <label className="block text-gray-700 text-sm font-medium mb-2">Wallet Address</label>
-                    <input
-                      type="text"
-                      value={walletAddress}
-                      onChange={(e) => setWalletAddress(e.target.value)}
-                      className="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-gray-900 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-colors"
-                      placeholder="Enter your USDT wallet address"
-                      required
-                    />
-                  </div>
+                <div>
+                  <label className="block text-gray-700 text-sm font-medium mb-2">Wallet Address</label>
+                  <input
+                    type="text"
+                    value={walletAddress}
+                    onChange={(e) => setWalletAddress(e.target.value)}
+                    className="w-full bg-white border border-gray-200 rounded-lg px-4 py-3 text-gray-900 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-colors"
+                    placeholder="Enter your USDT wallet address"
+                    required
+                  />
                 </div>
 
                 <div>
@@ -325,7 +274,7 @@ export default function RefundPage() {
                     <button 
                       type="button"
                       onClick={handleGenerateOTP}
-                      disabled={isGeneratingOTP || !refundAmount || !walletAddress || !!amountError}
+                      disabled={isGeneratingOTP || !walletAddress || !refundReason}
                       className="px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-sm font-medium rounded-lg hover:from-indigo-600 hover:to-purple-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
                     >
                       {isGeneratingOTP ? (
@@ -367,7 +316,7 @@ export default function RefundPage() {
                 <div className="flex">
                   <button
                     type="submit"
-                    disabled={loading || !refundAmount || !walletAddress || !otpVerified || !!amountError}
+                    disabled={loading || !walletAddress || !otpVerified}
                     className="w-full px-5 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-medium rounded-lg hover:from-indigo-600 hover:to-purple-600 transition-all text-sm shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
                   >
                     {loading ? (

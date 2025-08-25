@@ -76,17 +76,15 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
-    // Update platform wallet balance using a database function
-    // We'll use the process_wallet_transaction function for consistency
-    const { data: result, error: updateError } = await supabaseServer
-      .rpc('process_wallet_transaction', {
-        p_user_id: userId,
-        p_transaction_type: operation === 'deduct' ? 'investment' : 'refund',
-        p_amount: amount,
-        p_wallet_type: 'deposit',
-        p_transaction_hash: `manual_${Date.now()}`,
-        p_description: operation === 'deduct' ? 'Investment deduction' : 'Investment refund'
-      });
+    // Update platform wallet balance directly
+    const { data: updateResult, error: updateError } = await supabaseServer
+      .from('platform_wallet')
+      .update({
+        deposit_balance: newBalance,
+        updated_at: new Date().toISOString()
+      })
+      .eq('user_id', userId)
+      .select();
 
     if (updateError) {
       console.error('Error updating platform wallet balance:', updateError);
@@ -95,6 +93,34 @@ export async function POST(request: NextRequest) {
         message: 'Failed to update platform wallet balance',
         error: updateError.message 
       }, { status: 500 });
+    }
+
+    // Record the transaction
+    const transactionData = {
+      user_id: userId,
+      transaction_type: operation === 'deduct' ? 'investment' : 'refund',
+      amount: amount,
+      balance_before: currentBalance,
+      balance_after: newBalance,
+      wallet_type: 'deposit',
+      transaction_hash: `wallet_${operation}_${Date.now()}`,
+      status: 'completed',
+      description: operation === 'deduct' ? 'Investment deduction' : 'Investment refund'
+    };
+
+    console.log('Recording wallet transaction:', transactionData);
+
+    const { data: transactionResult, error: transactionError } = await supabaseServer
+      .from('wallet_transactions')
+      .insert(transactionData)
+      .select();
+
+    if (transactionError) {
+      console.error('Error recording transaction:', transactionError);
+      console.error('Transaction data that failed:', transactionData);
+      // Don't fail the entire request if transaction recording fails
+    } else {
+      console.log('Wallet transaction recorded successfully:', transactionResult);
     }
 
     return NextResponse.json({ 

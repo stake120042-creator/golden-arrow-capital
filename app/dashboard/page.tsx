@@ -156,7 +156,7 @@ export default function Dashboard() {
   };
 
   const handleCopyReferralLink = () => {
-    const referralLink = `goldenarrowcapital.io/ref/${user?.username || 'user'}`;
+    const referralLink = `goldenarrowcapital.org/ref/${user?.username || 'user'}`;
     navigator.clipboard.writeText(referralLink);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -210,7 +210,7 @@ export default function Dashboard() {
                   
                   <div className="flex flex-wrap md:flex-nowrap gap-3 items-center w-full md:w-auto">
                     <div className="flex-grow bg-white rounded-lg px-4 py-3 border border-gray-200 overflow-hidden overflow-x-auto">
-                      <span className="text-gray-700 font-mono">goldenarrowcapital.com/ref/{user?.username || 'user'}</span>
+                      <span className="text-gray-700 font-mono">goldenarrowcapital.org/ref/{user?.username || 'user'}</span>
                     </div>
                     <button 
                       className="px-4 py-2.5 text-white font-medium rounded-lg transition-colors flex items-center whitespace-nowrap shadow-md"
@@ -293,10 +293,6 @@ export default function Dashboard() {
                           <ArrowDownToLine size={14} className="mr-1" />
                           Withdraw
                         </Link>
-                        <Link href="/dashboard/refund" className="inline-flex items-center px-3 py-2 bg-gradient-to-r from-purple-500 to-indigo-600 text-white font-medium rounded-lg hover:from-purple-400 hover:to-indigo-500 transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105 text-sm">
-                          <RotateCcw size={14} className="mr-1" />
-                          Refund
-                        </Link>
                       </div>
                     </div>
                   </div>
@@ -350,6 +346,12 @@ export default function Dashboard() {
                     <p className="text-2xl font-bold text-gray-900">
                       ${metrics ? Number(metrics.active_investment).toLocaleString(undefined, { maximumFractionDigits: 2 }) : '0.00'}
                     </p>
+                  </div>
+                  <div className="flex justify-center">
+                    <Link href="/dashboard/refund" className="inline-flex items-center px-3 py-2 bg-gradient-to-r from-purple-500 to-indigo-600 text-white font-medium rounded-lg hover:from-purple-400 hover:to-indigo-500 transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105 text-sm">
+                      <RotateCcw size={14} className="mr-1" />
+                      Refund
+                    </Link>
                   </div>
 
                 </div>

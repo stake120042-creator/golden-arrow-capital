@@ -87,7 +87,7 @@ const investmentPlans: InvestmentPlan[] = [
     id: 'platinum',
     name: 'Platinum Package',
     minAmount: 10001,
-    maxAmount: 100000,
+    maxAmount: 100000000,
     dailyReturn: 0.6,
     description: 'Maximum returns for high-value investors',
     features: [
@@ -165,7 +165,7 @@ export default function InvestPage() {
 
   const handlePlanSelect = (plan: InvestmentPlan) => {
     setSelectedPlan(plan);
-    setInvestmentAmount(plan.minAmount.toString());
+    setInvestmentAmount(''); // Clear the amount so user can enter their own
     setErrorMsg('');
     setSuccessMsg('');
     setShowPlanDropdown(false);

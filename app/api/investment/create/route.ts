@@ -70,6 +70,19 @@ export async function POST(request: NextRequest) {
       }, { status: 500 });
     }
 
+
+
+    // Update user's is_active status to true when they make their first investment
+    const { error: userUpdateError } = await supabaseServer
+      .from('users')
+      .update({ is_active: true })
+      .eq('id', userId);
+
+    if (userUpdateError) {
+      console.error('Error updating user active status:', userUpdateError);
+      // Don't fail the entire request if user update fails, but log it
+    }
+
     return NextResponse.json({ 
       success: true, 
       message: 'Investment created successfully',
