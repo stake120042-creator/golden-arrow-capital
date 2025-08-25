@@ -15,8 +15,7 @@ export async function POST(request: NextRequest) {
       hasSupabaseKey: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
       hasGmailUser: !!process.env.GMAIL_SMTP_USER,
       hasGmailPass: !!process.env.GMAIL_SMTP_PASS,
-      emailSendStrict: process.env.EMAIL_SEND_STRICT,
-      otpUseMemory: process.env.OTP_USE_MEMORY
+      emailSendStrict: process.env.EMAIL_SEND_STRICT
     });
     
     // Validation
