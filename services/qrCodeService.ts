@@ -42,10 +42,6 @@ export class QRCodeService {
       const qrCodeDataURL = await QRCode.toDataURL(qrData, {
         width: 300,
         margin: 2,
-        color: {
-          dark: '#FFD700', // Gold color
-          light: '#000000' // Black background
-        },
         errorCorrectionLevel: 'H'
       });
 

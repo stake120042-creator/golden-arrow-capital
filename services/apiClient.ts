@@ -15,6 +15,17 @@ async function apiRequest<T>(endpoint: string, method: string, data?: any): Prom
     credentials: 'include', // Include cookies for sessions
   };
 
+  // Add authorization header if token exists
+  if (typeof window !== 'undefined') {
+    const token = localStorage.getItem('authToken');
+    if (token) {
+      options.headers = {
+        ...options.headers,
+        'Authorization': `Bearer ${token}`
+      };
+    }
+  }
+
   if (data) {
     options.body = JSON.stringify(data);
   }
@@ -57,12 +68,32 @@ const apiClient = {
     
     updateProfile: (data: any): Promise<ApiResponse> =>
       apiRequest('/user/profile', 'PUT', data),
+    
+    requestProfileUpdateOTP: (data: any): Promise<ApiResponse> =>
+      apiRequest('/user/profile', 'POST', data),
   },
 
   wallet: {
     getOrCreate: (userId: string): Promise<any> =>
       apiRequest('/wallet/get-or-create', 'POST', { userId }),
+    getBalance: (): Promise<any> =>
+      apiRequest('/wallet/balance', 'GET'),
+    updateBalance: (amount: number, operation: 'deduct' | 'add' = 'deduct'): Promise<any> =>
+      apiRequest('/wallet/update-platform-balance', 'POST', { amount, operation }),
+  },
+
+  investment: {
+    create: (packageId: number, amount: number): Promise<any> =>
+      apiRequest('/investment/create', 'POST', { package_id: packageId, amount }),
+    update: (data: any): Promise<any> =>
+      apiRequest('/investment/update', 'POST', data),
+    updateSummary: (): Promise<any> =>
+      apiRequest('/investment/update-summary', 'POST'),
+    getUserInvestments: (): Promise<any> =>
+      apiRequest('/investment/user', 'GET'),
   },
 };
 
+// Export both default and named export for flexibility
+export { apiClient };
 export default apiClient;

@@ -99,7 +99,7 @@ const OTPInput: React.FC<OTPInputProps> = ({
   };
 
   return (
-    <div className={`flex gap-2 sm:gap-3 md:gap-4 justify-center w-full ${className}`}>
+    <div className={`flex gap-3 justify-center w-full ${className}`}>
       {otp.map((digit, index) => (
         <div key={index} className="relative">
           <input
@@ -115,19 +115,16 @@ const OTPInput: React.FC<OTPInputProps> = ({
             onKeyDown={(e) => handleKeyDown(index, e)}
             onPaste={index === 0 ? handlePaste : undefined}
             disabled={disabled}
-            className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 text-center text-lg sm:text-xl md:text-2xl font-bold 
-                     bg-gradient-to-br from-slate-800/80 to-slate-900/80 backdrop-blur-sm
-                     border-2 border-slate-600/50 text-white
-                     focus:border-yellow-400 focus:ring-4 focus:ring-yellow-400/20 
+            className="w-12 h-12 sm:w-14 sm:h-14 text-center text-lg sm:text-xl font-bold 
+                     bg-white border-2 border-gray-300 text-gray-900
+                     focus:border-purple-500 focus:ring-4 focus:ring-purple-200 
                      focus:outline-none transition-all duration-300
                      disabled:opacity-50 disabled:cursor-not-allowed
-                     rounded-xl shadow-lg hover:shadow-xl
-                     placeholder:text-slate-500"
+                     rounded-lg shadow-sm hover:shadow-md
+                     placeholder:text-gray-400"
             aria-label={`OTP digit ${index + 1}`}
             placeholder="•"
           />
-          {/* Animated border effect */}
-          <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-yellow-400/20 to-amber-500/20 opacity-0 hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
         </div>
       ))}
     </div>

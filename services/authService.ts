@@ -1,6 +1,4 @@
 import { User } from '../types/user';
-import crypto from 'crypto';
-import bcrypt from 'bcryptjs';
 import { supabase } from '../config/database';
 import walletService from './walletService';
 
@@ -25,13 +23,25 @@ class AuthService {
     };
     
     // In production, use proper JWT with secret key
-    return Buffer.from(JSON.stringify(payload)).toString('base64');
+    const encoder = (globalThis as any).btoa as undefined | ((s: string) => string);
+    if (typeof encoder === 'function') {
+      return encoder(JSON.stringify(payload));
+    }
+    // Fallback: not secure, but avoids Node Buffer typings
+    return typeof JSON !== 'undefined' ? JSON.stringify(payload) : '';
   }
 
   // Verify token (simplified for demo)
   public verifyToken(token: string): { valid: boolean; user?: User } {
     try {
-      const payload = JSON.parse(Buffer.from(token, 'base64').toString());
+      let decoded: string = '';
+      const decoder = (globalThis as any).atob as undefined | ((s: string) => string);
+      if (typeof decoder === 'function') {
+        decoded = decoder(token);
+      } else {
+        decoded = token;
+      }
+      const payload = JSON.parse(decoded);
       
       if (payload.exp < Date.now()) {
         return { valid: false };
@@ -59,17 +69,35 @@ class AuthService {
   public async createUserAfterSignup(email: string, userData?: any): Promise<User> {
     try {
       // Validate Supabase configuration early to surface actionable error
-      if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+      const env: any = (typeof process !== 'undefined' ? (process as any).env : {});
+      if (!env.NEXT_PUBLIC_SUPABASE_URL || !env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
         throw new Error('Supabase is not configured. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.');
       }
 
       // Generate unique user ID and username
       const userId = this.generateUserId();
-      const username = this.generateUsername(email);
+      const username = userData.username;
       
       // Store password without hashing for now
       const passwordHash = userData?.password || 'defaultPass123!';
       
+      // Resolve parent_id from sponsor username if provided
+      let parentId: string | null = null;
+      if (userData?.sponsor) {
+        try {
+          const sponsorLookup = await supabase
+            .from('users')
+            .select('id')
+            .eq('username', String(userData.sponsor))
+            .single();
+          if (sponsorLookup.data?.id) {
+            parentId = sponsorLookup.data.id;
+          }
+        } catch (_) {
+          // Ignore lookup errors; proceed without parent linkage
+        }
+      }
+
       const userDataToStore = {
         id: userId,
         username: username,
@@ -79,6 +107,7 @@ class AuthService {
         last_name: userData?.lastName || '',
         sponsor: userData?.sponsor || '',
         is_verified: true,
+        parent_id: parentId,
       };
 
       // Insert user into Supabase
@@ -133,6 +162,48 @@ class AuthService {
       } catch (walletErr: any) {
         console.error('❌ Failed creating wallet address for new user:', walletErr?.message || walletErr);
         // Continue and let a background job repair wallets if needed.
+      }
+
+      // Create initial investment_details record for the new user
+      try {
+        const { error: investmentError } = await supabase
+          .rpc('update_investment_details', {
+            p_user_id: user.id,
+            p_total_investment: 0,
+            p_active_investment: 0,
+            p_expired_investment: 0,
+            p_referral_income: 0,
+            p_rank_income: 0,
+            p_self_income: 0
+          });
+        
+        if (investmentError) {
+          console.error('❌ Failed creating investment details for new user:', investmentError);
+          // Continue and let a background job repair investment details if needed.
+        } else {
+          console.log('✅ Created initial investment details for user:', user.id);
+        }
+      } catch (investmentErr: any) {
+        console.error('❌ Failed creating investment details for new user:', investmentErr?.message || investmentErr);
+        // Continue and let a background job repair investment details if needed.
+      }
+
+      // Create initial platform wallet for the new user
+      try {
+        const { error: walletError } = await supabase
+          .rpc('get_or_create_wallet', {
+            p_user_id: user.id
+          });
+        
+        if (walletError) {
+          console.error('❌ Failed creating platform wallet for new user:', walletError);
+          // Continue and let a background job repair platform wallet if needed.
+        } else {
+          console.log('✅ Created initial platform wallet for user:', user.id);
+        }
+      } catch (walletErr: any) {
+        console.error('❌ Failed creating platform wallet for new user:', walletErr?.message || walletErr);
+        // Continue and let a background job repair platform wallet if needed.
       }
 
       return user;
@@ -225,13 +296,32 @@ class AuthService {
   }
 
   private generateUserId(): string {
-    return 'user_' + crypto.randomBytes(16).toString('hex');
+    return 'user_' + this.generateRandomHex(16);
   }
 
   private generateUsername(email: string): string {
     const emailPrefix = email.split('@')[0];
-    const randomSuffix = crypto.randomBytes(4).toString('hex');
+    const randomSuffix = this.generateRandomHex(4);
     return `${emailPrefix}_${randomSuffix}`;
+  }
+
+  private generateRandomHex(byteLength: number): string {
+    try {
+      const g = (globalThis as any).crypto;
+      if (g && typeof g.getRandomValues === 'function') {
+        const buf = new Uint8Array(byteLength);
+        g.getRandomValues(buf);
+        return Array.from(buf).map((b) => b.toString(16).padStart(2, '0')).join('');
+      }
+    } catch (_) {
+      // ignore
+    }
+    // Fallback
+    let out = '';
+    for (let i = 0; i < byteLength; i++) {
+      out += Math.floor(Math.random() * 256).toString(16).padStart(2, '0');
+    }
+    return out;
   }
 
 

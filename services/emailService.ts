@@ -94,7 +94,7 @@ class EmailService {
     this.initialized = true;
   }
 
-  private getOTPEmailTemplate(otp: string, type: 'signup' | 'login' | 'withdrawal', firstName?: string): EmailTemplate {
+  private getOTPEmailTemplate(otp: string, type: 'signup' | 'login' | 'withdrawal' | 'refund' | 'profile_update', firstName?: string): EmailTemplate {
     const name = firstName ? ` ${firstName}` : '';
     
     const templates = {
@@ -280,6 +280,132 @@ Security Reminder:
 - Never share this code with anyone
 - Our team will never ask for this code
 - Double-check the withdrawal address before confirming
+- Contact support if you notice any suspicious activity
+
+Stay secure,
+The Golden Arrow Capital Security Team
+
+© 2025 Golden Arrow Capital. All rights reserved.
+        `
+      },
+      refund: {
+        subject: 'Golden Arrow Capital - Refund Verification Code',
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #0f172a; color: #ffffff;">
+            <div style="text-align: center; margin-bottom: 30px;">
+              <div style="background: linear-gradient(135deg, #fbbf24, #f59e0b); padding: 20px; border-radius: 10px; display: inline-block;">
+                <h1 style="margin: 0; color: #0f172a; font-size: 24px;">Golden Arrow Capital</h1>
+              </div>
+            </div>
+            <div style="background-color: #1e293b; padding: 30px; border-radius: 10px; border: 1px solid #fbbf24;">
+              <h2 style="color: #fbbf24; margin-top: 0;">Refund Request Verification</h2>
+              <p style="color: #cbd5e1; line-height: 1.6;">
+                Hello${name}! A refund request has been initiated from your Golden Arrow Capital account. Please verify this request using the code below:
+              </p>
+              <div style="text-align: center; margin: 30px 0;">
+                <div style="background: linear-gradient(135deg, #fbbf24, #f59e0b); padding: 20px; border-radius: 10px; display: inline-block; font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #0f172a;">
+                  ${otp}
+                </div>
+              </div>
+              <p style="color: #cbd5e1; line-height: 1.6;">
+                This verification code will expire in <strong style="color: #fbbf24;">10 minutes</strong>. If you didn't initiate this refund, please contact our support team immediately.
+              </p>
+              <div style="border-top: 1px solid #374151; margin-top: 30px; padding-top: 20px;">
+                <p style="color: #64748b; font-size: 14px; margin: 0;">
+                  Stay secure,<br>
+                  The Golden Arrow Capital Team
+                </p>
+              </div>
+            </div>
+            <div style="text-align: center; margin-top: 20px;">
+              <p style="color: #64748b; font-size: 12px;">
+                © 2025 Golden Arrow Capital. All rights reserved.<br>
+                This is an automated message, please do not reply to this email.
+              </p>
+            </div>
+          </div>
+        `,
+        text: `
+Golden Arrow Capital - Refund Verification Code
+
+Hello${name}! A refund request has been initiated from your account. Please verify this request using this code:
+
+${otp}
+
+This code will expire in 10 minutes. If you didn't initiate this refund, please contact our support team immediately.
+
+Stay secure,
+The Golden Arrow Capital Team
+
+© 2025 Golden Arrow Capital. All rights reserved.
+        `
+      },
+      profile_update: {
+        subject: 'Golden Arrow Capital - Profile Update Verification',
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #0f172a; color: #ffffff;">
+            <div style="text-align: center; margin-bottom: 30px;">
+              <div style="background: linear-gradient(135deg, #fbbf24, #f59e0b); padding: 20px; border-radius: 10px; display: inline-block;">
+                <h1 style="margin: 0; color: #0f172a; font-size: 24px;">Golden Arrow Capital</h1>
+              </div>
+            </div>
+            
+            <div style="background-color: #1e293b; padding: 30px; border-radius: 10px; border: 1px solid #fbbf24;">
+              <h2 style="color: #fbbf24; margin-top: 0;">Profile Update Verification</h2>
+              
+              <p style="color: #cbd5e1; line-height: 1.6;">
+                Hello${name}! A request to update your Golden Arrow Capital profile has been initiated. For your security, please verify this action using the code below:
+              </p>
+              
+              <div style="text-align: center; margin: 30px 0;">
+                <div style="background: linear-gradient(135deg, #fbbf24, #f59e0b); padding: 20px; border-radius: 10px; display: inline-block; font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #0f172a;">
+                  ${otp}
+                </div>
+              </div>
+              
+              <p style="color: #cbd5e1; line-height: 1.6;">
+                This verification code will expire in <strong style="color: #fbbf24;">10 minutes</strong>. If you didn't request this profile update, please contact our support team immediately and secure your account.
+              </p>
+              
+              <div style="background-color: #374151; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #fbbf24;">
+                <h3 style="color: #fbbf24; margin-top: 0;">Security Reminder</h3>
+                <ul style="color: #cbd5e1; line-height: 1.8; margin: 0; padding-left: 20px;">
+                  <li>Never share this code with anyone</li>
+                  <li>Our team will never ask for this code</li>
+                  <li>Keep your profile information secure</li>
+                  <li>Contact support if you notice any suspicious activity</li>
+                </ul>
+              </div>
+              
+              <div style="border-top: 1px solid #374151; margin-top: 30px; padding-top: 20px;">
+                <p style="color: #64748b; font-size: 14px; margin: 0;">
+                  Stay secure,<br>
+                  The Golden Arrow Capital Security Team
+                </p>
+              </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 20px;">
+              <p style="color: #64748b; font-size: 12px;">
+                © 2025 Golden Arrow Capital. All rights reserved.<br>
+                This is an automated security message, please do not reply to this email.
+              </p>
+            </div>
+          </div>
+        `,
+        text: `
+Golden Arrow Capital - Profile Update Verification
+
+Hello${name}! A request to update your profile has been initiated. For your security, please verify this action using this code:
+
+${otp}
+
+This code will expire in 10 minutes. If you didn't request this profile update, please contact our support team immediately.
+
+Security Reminder:
+- Never share this code with anyone
+- Our team will never ask for this code
+- Keep your profile information secure
 - Contact support if you notice any suspicious activity
 
 Stay secure,

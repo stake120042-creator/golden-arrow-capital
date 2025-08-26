@@ -6,17 +6,17 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { email, type, firstName } = body;
     
-    if (!email || !type || !['signup', 'login'].includes(type)) {
+    if (!email || !type || !['signup', 'login', 'profile_update'].includes(type)) {
       return NextResponse.json(
         {
           success: false,
-          message: 'Email and valid type (signup or login) are required'
+          message: 'Email and valid type (signup, login, or profile_update) are required'
         },
         { status: 400 }
       );
     }
 
-    const result = await otpService.resendOTP(email, type as 'signup' | 'login', firstName);
+    const result = await otpService.resendOTP(email, type as 'signup' | 'login' | 'profile_update', firstName);
     
     return NextResponse.json(
       result,

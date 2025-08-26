@@ -48,40 +48,17 @@ export default function WithdrawPage() {
   const [withdrawMemo, setWithdrawMemo] = useState<string>('');
   
   // Balance states
-  const [availableBalance, setAvailableBalance] = useState<string>('512.12');
-  const [pendingWithdrawals, setPendingWithdrawals] = useState<string>('0.00');
-  const [totalWithdrawn, setTotalWithdrawn] = useState<string>('1,250.00');
+  const [walletBalance, setWalletBalance] = useState<{
+    deposit_balance: number;
+    income_balance: number;
+    total_deposited: number;
+    total_withdrawn: number;
+  } | null>(null);
   
   // Withdrawal history
-  const [withdrawalHistory, setWithdrawalHistory] = useState([
-    {
-      id: '1',
-      amount: '100.00',
-      address: '0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6',
-      status: 'completed',
-      date: '2024-01-15',
-      txHash: '0x1234567890abcdef...',
-      memo: 'Withdrawal to main wallet'
-    },
-    {
-      id: '2',
-      amount: '50.00',
-      address: '0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6',
-      status: 'pending',
-      date: '2024-01-14',
-      txHash: '',
-      memo: 'Weekly withdrawal'
-    },
-    {
-      id: '3',
-      amount: '200.00',
-      address: '0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6',
-      status: 'completed',
-      date: '2024-01-10',
-      txHash: '0xabcdef1234567890...',
-      memo: 'Large withdrawal'
-    }
-  ]);
+  const [withdrawalHistory, setWithdrawalHistory] = useState<any[]>([]);
+  const [isLoadingWallet, setIsLoadingWallet] = useState(false);
+  const [isLoadingHistory, setIsLoadingHistory] = useState(false);
 
   const handleToggleSidebar = () => {
     setShowMobileSidebar(!showMobileSidebar);
@@ -101,6 +78,51 @@ export default function WithdrawPage() {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  // Fetch withdrawal data
+  useEffect(() => {
+    const fetchWithdrawalData = async () => {
+      const authToken = localStorage.getItem('authToken');
+      if (!authToken) return;
+
+      try {
+        // Fetch wallet balance (for available balance)
+        setIsLoadingWallet(true);
+        const walletRes = await fetch('/api/wallet/balance', {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+          cache: 'no-store',
+        });
+        if (walletRes.ok) {
+          const walletJson = await walletRes.json();
+          setWalletBalance(walletJson?.data || null);
+        }
+
+
+
+        // Fetch withdrawal history
+        setIsLoadingHistory(true);
+        const historyRes = await fetch('/api/withdrawal/history', {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+          cache: 'no-store',
+        });
+        if (historyRes.ok) {
+          const historyJson = await historyRes.json();
+          setWithdrawalHistory(historyJson?.data || []);
+        }
+      } catch (error) {
+        console.error('Error fetching withdrawal data:', error);
+      } finally {
+        setIsLoadingWallet(false);
+        setIsLoadingHistory(false);
+      }
+    };
+
+    fetchWithdrawalData();
+  }, []);
+
   const validateWithdrawalAmount = (amount: string): boolean => {
     const numAmount = parseFloat(amount);
     
@@ -119,9 +141,9 @@ export default function WithdrawPage() {
       return false;
     }
     
-    const availableBalanceNum = parseFloat(availableBalance);
+    const availableBalanceNum = walletBalance?.income_balance || 0;
     if (numAmount > availableBalanceNum) {
-      setAmountError(`Insufficient balance. Available: $${availableBalance} USDT`);
+      setAmountError(`Insufficient balance. Available: $${availableBalanceNum.toFixed(2)} USDT`);
       return false;
     }
     
@@ -240,69 +262,100 @@ export default function WithdrawPage() {
 
     setIsLoading(true);
     
-    // Simulate API call
-    setTimeout(() => {
-      // Add new withdrawal to history
-      const newWithdrawal = {
-        id: Date.now().toString(),
-        amount: withdrawAmount,
-        address: withdrawAddress,
-        status: 'pending',
-        date: new Date().toISOString().split('T')[0],
-        txHash: '',
-        memo: withdrawMemo || 'Manual withdrawal'
-      };
+    try {
+      const authToken = localStorage.getItem('authToken');
+      if (!authToken) {
+        setOtpMessage('Authentication required');
+        setIsLoading(false);
+        return;
+      }
+
+      const response = await fetch('/api/withdrawal/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${authToken}`,
+        },
+        body: JSON.stringify({
+          amount: withdrawAmount,
+          walletAddress: withdrawAddress,
+          description: withdrawMemo || 'Manual withdrawal'
+        }),
+      });
+
+      const result = await response.json();
       
-      setWithdrawalHistory([newWithdrawal, ...withdrawalHistory]);
-      
-      // Update balances
-      const currentBalance = parseFloat(availableBalance);
-      const withdrawValue = parseFloat(withdrawAmount);
-      setAvailableBalance((currentBalance - withdrawValue).toFixed(2));
-      setPendingWithdrawals((parseFloat(pendingWithdrawals) + withdrawValue).toFixed(2));
-      
-      // Reset form
-      setWithdrawAmount('');
-      setWithdrawAddress('');
-      setWithdrawMemo('');
-      setWithdrawalOTP('');
-      setOtpSent(false);
-      setOtpVerified(false);
-      setOtpMessage('');
-      setAmountError('');
-      
+      if (result.success) {
+        // Refresh wallet balance
+        const walletRes = await fetch('/api/wallet/balance', {
+          headers: { Authorization: `Bearer ${authToken}` },
+          cache: 'no-store',
+        });
+        if (walletRes.ok) {
+          const walletJson = await walletRes.json();
+          setWalletBalance(walletJson?.data || null);
+        }
+
+
+
+        // Refresh withdrawal history
+        const historyRes = await fetch('/api/withdrawal/history', {
+          headers: { Authorization: `Bearer ${authToken}` },
+          cache: 'no-store',
+        });
+        if (historyRes.ok) {
+          const historyJson = await historyRes.json();
+          setWithdrawalHistory(historyJson?.data || []);
+        }
+        
+        // Reset form
+        setWithdrawAmount('');
+        setWithdrawAddress('');
+        setWithdrawMemo('');
+        setWithdrawalOTP('');
+        setOtpSent(false);
+        setOtpVerified(false);
+        setOtpMessage('Withdrawal request created successfully!');
+        setAmountError('');
+      } else {
+        setOtpMessage(result.message || 'Failed to create withdrawal request');
+      }
+    } catch (error) {
+      console.error('Failed to create withdrawal:', error);
+      setOtpMessage('An error occurred while creating withdrawal request');
+    } finally {
       setIsLoading(false);
-    }, 2000);
+    }
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'completed':
-        return 'text-green-400';
+        return 'text-green-600';
       case 'pending':
-        return 'text-yellow-400';
+        return 'text-yellow-600';
       case 'failed':
-        return 'text-red-400';
+        return 'text-red-600';
       default:
-        return 'text-slate-400';
+        return 'text-gray-600';
     }
   };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'completed':
-        return <Check className="w-4 h-4 text-green-400" />;
+        return <Check className="w-4 h-4 text-green-600" />;
       case 'pending':
-        return <Clock className="w-4 h-4 text-yellow-400" />;
+        return <Clock className="w-4 h-4 text-yellow-600" />;
       case 'failed':
-        return <AlertTriangle className="w-4 h-4 text-red-400" />;
+        return <AlertTriangle className="w-4 h-4 text-red-600" />;
       default:
-        return <Clock className="w-4 h-4 text-slate-400" />;
+        return <Clock className="w-4 h-4 text-gray-600" />;
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+    <div className="min-h-screen bg-white">
       {/* Sidebar */}
       <Sidebar 
         onLogout={handleLogout} 
@@ -315,82 +368,71 @@ export default function WithdrawPage() {
         {/* Header */}
         <TopBar 
           onLogout={handleLogout} 
-          toggleSidebar={handleToggleSidebar} 
+          toggleSidebar={handleToggleSidebar}
+          currentPage="withdraw"
         />
         
         {/* Withdraw Content */}
         <div className="pt-24 px-4 md:px-6 pb-12 max-w-6xl mx-auto">
-          {/* Header */}
-          <div className="mb-8">
+          {/* Back Button */}
+          <div className="mb-6 md:mb-8">
             <Link 
               href="/dashboard"
-              className="inline-flex items-center text-yellow-400 hover:text-yellow-300 transition-colors mb-6"
+              className="inline-flex items-center text-purple-600 hover:text-purple-700 transition-colors mb-4 md:mb-6 text-sm md:text-base"
             >
-              <ArrowLeft className="w-5 h-5 mr-2" />
+              <ArrowLeft className="w-4 h-4 md:w-5 md:h-5 mr-2" />
               Back to Dashboard
             </Link>
-            
-            <div className="flex items-center space-x-4 mb-4">
-              <div className="p-2 rounded-lg bg-gradient-to-br from-purple-400/30 to-indigo-500/20 border border-purple-400/30">
-                <ArrowUpRight size={24} className="text-purple-400" />
-              </div>
-              <div>
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-300 to-indigo-300 bg-clip-text text-transparent">
-                  Withdraw Funds
-                </h1>
-                <p className="text-slate-300">Withdraw your earnings to your wallet</p>
-              </div>
-            </div>
           </div>
 
           <div className="grid lg:grid-cols-2 gap-6">
             {/* Withdraw Form */}
             <div className="space-y-6">
               {/* Balance Overview */}
-              <div className="bg-gradient-to-br from-slate-800/70 to-slate-900/70 backdrop-blur-sm border border-slate-700/50 rounded-xl shadow-lg shadow-slate-900/20 overflow-hidden hover:border-purple-500/30 transition-all duration-300">
-                <div className="p-1">
-                  <div className="bg-gradient-to-br from-purple-500/10 to-indigo-600/5 p-6 rounded-lg">
-                    <div className="flex items-center mb-4">
-                      <div className="p-2 rounded-lg bg-gradient-to-br from-purple-400/30 to-indigo-500/20 border border-purple-400/30 mr-3">
-                        <Wallet size={20} className="text-purple-400" />
-                      </div>
-                      <div>
-                        <h3 className="text-slate-300 text-lg font-medium">Income Wallet Balance</h3>
-                        <p className="text-slate-400 text-sm">Available for withdrawal</p>
-                      </div>
+              <div className="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300">
+                <div className="p-6">
+                  <div className="flex items-center mb-4">
+                    <div className="p-2 rounded-lg bg-gradient-to-br from-purple-100 to-indigo-100 border border-purple-200 mr-3">
+                      <Wallet size={20} className="text-purple-700" />
                     </div>
-                    
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="text-center p-4 bg-slate-800/50 rounded-lg border border-slate-700/50">
-                        <p className="text-slate-400 text-sm mb-1">Available</p>
-                        <p className="text-2xl font-bold text-purple-400">${availableBalance}</p>
-                      </div>
-                      <div className="text-center p-4 bg-slate-800/50 rounded-lg border border-slate-700/50">
-                        <p className="text-slate-400 text-sm mb-1">Pending</p>
-                        <p className="text-2xl font-bold text-yellow-400">${pendingWithdrawals}</p>
-                      </div>
+                    <div>
+                      <h3 className="text-gray-900 text-lg font-medium">Income Wallet Balance</h3>
+                      <p className="text-gray-600 text-sm">Available for withdrawal</p>
                     </div>
+                  </div>
+                  
+                  <div className="text-center">
+                    <div className="text-center p-4 bg-gray-50 rounded-lg border border-gray-200">
+                      <p className="text-gray-600 text-sm mb-1">Available</p>
+                      {isLoadingWallet ? (
+                        <div className="w-8 h-8 border-2 border-purple-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+                      ) : (
+                        <p className="text-2xl font-bold text-purple-700">
+                          ${walletBalance?.income_balance?.toFixed(2) || '0.00'}
+                        </p>
+                      )}
+                    </div>
+
                   </div>
                 </div>
               </div>
 
               {/* Withdraw Form */}
-              <div className="bg-gradient-to-br from-slate-800/70 to-slate-900/70 backdrop-blur-sm border border-slate-700/50 rounded-xl shadow-lg shadow-slate-900/20 overflow-hidden hover:border-yellow-500/30 transition-all duration-300">
-                <div className="p-1">
-                  <div className="bg-gradient-to-br from-yellow-500/10 to-amber-600/5 p-6 rounded-lg">
-                    <div className="flex items-center mb-6">
-                      <div className="p-2 rounded-lg bg-gradient-to-br from-yellow-400/30 to-amber-500/20 border border-yellow-400/30 mr-3">
-                        <TrendingDown size={20} className="text-yellow-400" />
-                      </div>
-                      <div>
-                        <h3 className="text-slate-300 text-lg font-medium">Withdraw Funds</h3>
-                        <p className="text-slate-400 text-sm">Send USDT to your BEP-20 wallet</p>
-                      </div>
+              <div className="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300">
+                <div className="p-6">
+                  <div className="flex items-center mb-6">
+                    <div className="p-2 rounded-lg bg-gradient-to-br from-purple-100 to-indigo-100 border border-purple-200 mr-3">
+                      <TrendingDown size={20} className="text-purple-700" />
                     </div>
-                    
-                    <form onSubmit={handleWithdraw} className="space-y-4">
+                    <div>
+                      <h3 className="text-gray-900 text-lg font-medium">Withdraw Funds</h3>
+                      <p className="text-gray-600 text-sm">Send USDT to your BEP-20 wallet</p>
+                    </div>
+                  </div>
+                  
+                  <form onSubmit={handleWithdraw} className="space-y-4">
                       <div>
-                        <label className="block text-sm font-medium text-slate-300 mb-2">Amount (USDT)</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Amount (USDT)</label>
                         <input 
                           type="number"
                           value={withdrawAmount}
@@ -398,54 +440,54 @@ export default function WithdrawPage() {
                           placeholder="0.0"
                           step="0.001"
                           min={MIN_WITHDRAWAL}
-                          max={Math.min(MAX_WITHDRAWAL, parseFloat(availableBalance))}
+                          max={Math.min(MAX_WITHDRAWAL, walletBalance?.income_balance || 0)}
                           required
-                          className={`w-full p-4 bg-slate-800/50 border rounded-lg text-white placeholder-slate-400 focus:ring-2 focus:ring-yellow-400/20 transition-all ${
-                            amountError ? 'border-red-500 focus:border-red-500' : 'border-slate-700/50 focus:border-yellow-400'
+                          className={`w-full p-4 bg-white border rounded-lg text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-purple-500/20 transition-all ${
+                            amountError ? 'border-red-500 focus:border-red-500' : 'border-gray-200 focus:border-purple-500'
                           }`}
                         />
                         {amountError ? (
-                          <p className="text-red-400 text-xs mt-1">{amountError}</p>
+                          <p className="text-red-600 text-xs mt-1">{amountError}</p>
                         ) : (
-                          <p className="text-slate-400 text-xs mt-1">
-                            Available: ${availableBalance} USDT | Min: ${MIN_WITHDRAWAL} | Max: ${MAX_WITHDRAWAL}
+                          <p className="text-gray-500 text-xs mt-1">
+                            Available: ${walletBalance?.income_balance?.toFixed(2) || '0.00'} USDT | Min: ${MIN_WITHDRAWAL} | Max: ${MAX_WITHDRAWAL}
                           </p>
                         )}
                       </div>
                       
                       <div>
-                        <label className="block text-sm font-medium text-slate-300 mb-2">Wallet Address (BEP-20)</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Wallet Address (BEP-20)</label>
                         <input 
                           type="text"
                           value={withdrawAddress}
                           onChange={(e) => setWithdrawAddress(e.target.value)}
                           placeholder="0x..."
                           required
-                          className="w-full p-4 bg-slate-800/50 border border-slate-700/50 rounded-lg text-white placeholder-slate-400 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 transition-all"
+                          className="w-full p-4 bg-white border border-gray-200 rounded-lg text-gray-900 placeholder-gray-500 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all"
                         />
-                        <p className="text-xs text-slate-400 mt-1">Only BEP-20 addresses are supported</p>
+                        <p className="text-xs text-gray-500 mt-1">Only BEP-20 addresses are supported</p>
                       </div>
                       
                       <div>
-                        <label className="block text-sm font-medium text-slate-300 mb-2">Memo (Optional)</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Memo (Optional)</label>
                         <input 
                           type="text"
                           value={withdrawMemo}
                           onChange={(e) => setWithdrawMemo(e.target.value)}
                           placeholder="Withdrawal memo"
-                          className="w-full p-4 bg-slate-800/50 border border-slate-700/50 rounded-lg text-white placeholder-slate-400 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 transition-all"
+                          className="w-full p-4 bg-white border border-gray-200 rounded-lg text-gray-900 placeholder-gray-500 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all"
                         />
                       </div>
                       
                       {/* Withdrawal Code Section */}
                       <div className="space-y-3">
                         <div className="flex items-center justify-between">
-                          <label className="block text-sm font-medium text-slate-300">Withdrawal Code</label>
+                          <label className="block text-sm font-medium text-gray-700">Withdrawal Code</label>
                           <button 
                             type="button"
                             onClick={handleGenerateOTP}
                             disabled={isGeneratingOTP || !withdrawAmount || !withdrawAddress || !!amountError}
-                            className="px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white text-sm font-medium rounded-lg hover:from-blue-400 hover:to-indigo-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+                            className="px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-sm font-medium rounded-lg hover:from-indigo-600 hover:to-purple-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
                           >
                             {isGeneratingOTP ? (
                               <>
@@ -464,8 +506,8 @@ export default function WithdrawPage() {
                         {otpMessage && (
                           <div className={`p-3 rounded-lg border ${
                             otpMessage.includes('successfully') || otpMessage.includes('verified') 
-                              ? 'bg-green-500/10 border-green-500/30 text-green-400' 
-                              : 'bg-red-500/10 border-red-500/30 text-red-400'
+                              ? 'bg-green-50 border-green-200 text-green-700' 
+                              : 'bg-red-50 border-red-200 text-red-700'
                           }`}>
                             <span className="text-sm">{otpMessage}</span>
                           </div>
@@ -473,7 +515,7 @@ export default function WithdrawPage() {
                         
                         {otpSent && (
                           <div className="space-y-2">
-                            <label className="block text-sm font-medium text-slate-300">Enter 6-digit code</label>
+                            <label className="block text-sm font-medium text-gray-700">Enter 6-digit code</label>
                             <OTPInput 
                               length={6}
                               onComplete={handleOTPComplete}
@@ -486,11 +528,11 @@ export default function WithdrawPage() {
                       <button 
                         type="submit" 
                         disabled={isLoading || !withdrawAmount || !withdrawAddress || !otpVerified || !!amountError}
-                        className="w-full px-5 py-3 bg-gradient-to-r from-yellow-400 to-amber-500 text-slate-900 font-medium rounded-lg hover:from-yellow-300 hover:to-amber-400 transition-all text-sm shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+                        className="w-full px-5 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-medium rounded-lg hover:from-indigo-600 hover:to-purple-600 transition-all text-sm shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
                       >
                         {isLoading ? (
                           <>
-                            <div className="w-4 h-4 border-2 border-slate-900 border-t-transparent rounded-full animate-spin"></div>
+                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                             <span>Processing...</span>
                           </>
                         ) : (
@@ -501,113 +543,101 @@ export default function WithdrawPage() {
                         )}
                       </button>
                     </form>
-                  </div>
                 </div>
               </div>
             </div>
 
             {/* Withdrawal History */}
             <div className="space-y-6">
-              {/* Quick Stats */}
-              <div className="bg-gradient-to-br from-slate-800/70 to-slate-900/70 backdrop-blur-sm border border-slate-700/50 rounded-xl shadow-lg shadow-slate-900/20 overflow-hidden hover:border-blue-500/30 transition-all duration-300">
-                <div className="p-1">
-                  <div className="bg-gradient-to-br from-blue-500/10 to-indigo-600/5 p-6 rounded-lg">
-                    <div className="flex items-center mb-4">
-                      <div className="p-2 rounded-lg bg-gradient-to-br from-blue-400/30 to-indigo-500/20 border border-blue-400/30 mr-3">
-                        <DollarSign size={20} className="text-blue-400" />
-                      </div>
-                      <div>
-                        <h3 className="text-slate-300 text-lg font-medium">Withdrawal Stats</h3>
-                        <p className="text-slate-400 text-sm">Your withdrawal activity</p>
-                      </div>
-                    </div>
-                    
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="text-center p-4 bg-slate-800/50 rounded-lg border border-slate-700/50">
-                        <p className="text-slate-400 text-sm mb-1">This Month</p>
-                        <p className="text-xl font-bold text-blue-400">$350.00</p>
-                      </div>
-                      <div className="text-center p-4 bg-slate-800/50 rounded-lg border border-slate-700/50">
-                        <p className="text-slate-400 text-sm mb-1">Total Withdrawals</p>
-                        <p className="text-xl font-bold text-green-400">$1,250.00</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+
 
               {/* Withdrawal History */}
-              <div className="bg-gradient-to-br from-slate-800/70 to-slate-900/70 backdrop-blur-sm border border-slate-700/50 rounded-xl shadow-lg shadow-slate-900/20 overflow-hidden hover:border-green-500/30 transition-all duration-300">
-                <div className="p-1">
-                  <div className="bg-gradient-to-br from-green-500/10 to-emerald-600/5 p-6 rounded-lg">
-                    <div className="flex items-center mb-6">
-                      <div className="p-2 rounded-lg bg-gradient-to-br from-green-400/30 to-emerald-500/20 border border-green-400/30 mr-3">
-                        <Clock size={20} className="text-green-400" />
-                      </div>
-                      <div>
-                        <h3 className="text-slate-300 text-lg font-medium">Withdrawal History</h3>
-                        <p className="text-slate-400 text-sm">Recent withdrawal transactions</p>
-                      </div>
+              <div className="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300">
+                <div className="p-6">
+                  <div className="flex items-center mb-6">
+                    <div className="p-2 rounded-lg bg-gradient-to-br from-purple-100 to-indigo-100 border border-purple-200 mr-3">
+                      <Clock size={20} className="text-purple-700" />
                     </div>
-                    
-                    <div className="space-y-4 max-h-96 overflow-y-auto">
-                      {withdrawalHistory.map((withdrawal) => (
-                        <div key={withdrawal.id} className="bg-slate-800/50 rounded-lg p-4 border border-slate-700/50">
-                          <div className="flex items-center justify-between mb-3">
-                            <div className="flex items-center space-x-3">
-                              {getStatusIcon(withdrawal.status)}
-                              <div>
-                                <p className="text-white font-medium">{withdrawal.amount} USDT</p>
-                                <p className="text-slate-400 text-sm">{withdrawal.date}</p>
-                              </div>
-                            </div>
-                            <span className={`text-sm font-medium ${getStatusColor(withdrawal.status)}`}>
-                              {withdrawal.status.charAt(0).toUpperCase() + withdrawal.status.slice(1)}
-                            </span>
-                          </div>
-                          
-                          <div className="space-y-2">
-                            <div className="flex items-center justify-between text-sm">
-                              <span className="text-slate-400">Address:</span>
-                              <div className="flex items-center space-x-2">
-                                <code className="text-yellow-400 font-mono text-xs">
-                                  {withdrawal.address.substring(0, 8)}...{withdrawal.address.substring(withdrawal.address.length - 6)}
-                                </code>
-                                <button 
-                                  onClick={() => handleCopyAddress(withdrawal.address)}
-                                  className="text-slate-400 hover:text-yellow-400 transition-colors"
-                                >
-                                  {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
-                                </button>
-                              </div>
-                            </div>
-                            
-                            {withdrawal.memo && (
-                              <div className="flex items-center justify-between text-sm">
-                                <span className="text-slate-400">Memo:</span>
-                                <span className="text-slate-300">{withdrawal.memo}</span>
-                              </div>
-                            )}
-                            
-                            {withdrawal.txHash && (
-                              <div className="flex items-center justify-between text-sm">
-                                <span className="text-slate-400">Transaction:</span>
-                                <a 
-                                  href={`https://bscscan.com/tx/${withdrawal.txHash}`}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="text-blue-400 hover:text-blue-300 transition-colors flex items-center space-x-1"
-                                >
-                                  <span className="text-xs">View</span>
-                                  <ExternalLink className="w-3 h-3" />
-                                </a>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      ))}
+                    <div>
+                      <h3 className="text-gray-900 text-lg font-medium">Withdrawal History</h3>
+                      <p className="text-gray-600 text-sm">Recent withdrawal transactions</p>
                     </div>
                   </div>
+                    
+                    <div className="space-y-4 max-h-96 overflow-y-auto">
+                      {isLoadingHistory ? (
+                        <div className="flex items-center justify-center py-8">
+                          <div className="w-8 h-8 border-2 border-purple-600 border-t-transparent rounded-full animate-spin"></div>
+                          <span className="ml-2 text-gray-600">Loading history...</span>
+                        </div>
+                      ) : withdrawalHistory.length === 0 ? (
+                        <div className="text-center py-8">
+                          <div className="text-gray-400 mb-2">
+                            <Clock className="w-12 h-12 mx-auto" />
+                          </div>
+                          <p className="text-gray-600">No withdrawal history yet</p>
+                          <p className="text-gray-500 text-sm">Your withdrawal transactions will appear here</p>
+                        </div>
+                      ) : (
+                        withdrawalHistory.map((withdrawal) => (
+                          <div key={withdrawal.id} className="bg-white rounded-lg p-4 border border-gray-200 shadow-sm">
+                            <div className="flex items-center justify-between mb-3">
+                              <div className="flex items-center space-x-3">
+                                {getStatusIcon(withdrawal.status)}
+                                <div>
+                                  <p className="text-gray-900 font-medium">{withdrawal.amount} USDT</p>
+                                  <p className="text-gray-600 text-sm">
+                                    {new Date(withdrawal.created_at).toLocaleDateString()}
+                                  </p>
+                                </div>
+                              </div>
+                              <span className={`text-sm font-medium ${getStatusColor(withdrawal.status)}`}>
+                                {withdrawal.status.charAt(0).toUpperCase() + withdrawal.status.slice(1)}
+                              </span>
+                            </div>
+                            
+                            <div className="space-y-2">
+                              <div className="flex items-center justify-between text-sm">
+                                <span className="text-gray-600">Address:</span>
+                                <div className="flex items-center space-x-2">
+                                  <code className="text-purple-700 font-mono text-xs">
+                                    {withdrawal.wallet_address.substring(0, 8)}...{withdrawal.wallet_address.substring(withdrawal.wallet_address.length - 6)}
+                                  </code>
+                                  <button 
+                                    onClick={() => handleCopyAddress(withdrawal.wallet_address)}
+                                    className="text-gray-400 hover:text-purple-600 transition-colors"
+                                  >
+                                    {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+                                  </button>
+                                </div>
+                              </div>
+                              
+                              {withdrawal.description && (
+                                <div className="flex items-center justify-between text-sm">
+                                  <span className="text-gray-600">Memo:</span>
+                                  <span className="text-gray-700">{withdrawal.description}</span>
+                                </div>
+                              )}
+                              
+                              {withdrawal.transaction_hash && (
+                                <div className="flex items-center justify-between text-sm">
+                                  <span className="text-gray-600">Transaction:</span>
+                                  <a 
+                                    href={`https://bscscan.com/tx/${withdrawal.transaction_hash}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-purple-700 hover:text-purple-800 transition-colors flex items-center space-x-1"
+                                  >
+                                    <span className="text-xs">View</span>
+                                    <ExternalLink className="w-3 h-3" />
+                                  </a>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        ))
+                      )}
+                    </div>
                 </div>
               </div>
             </div>
@@ -615,24 +645,22 @@ export default function WithdrawPage() {
 
           {/* Security Notice */}
           <div className="mt-8">
-            <div className="bg-gradient-to-br from-slate-800/70 to-slate-900/70 backdrop-blur-sm border border-amber-500/30 rounded-xl shadow-lg shadow-slate-900/20 overflow-hidden">
-              <div className="p-1">
-                <div className="bg-gradient-to-br from-amber-500/10 to-orange-600/5 p-6 rounded-lg">
-                  <div className="flex items-start space-x-4">
-                    <div className="p-2 rounded-lg bg-gradient-to-br from-amber-400/30 to-orange-500/20 border border-amber-400/30 flex-shrink-0">
-                      <AlertTriangle className="w-5 h-5 text-amber-400" />
-                    </div>
-                    <div>
-                      <h4 className="text-lg font-semibold text-white mb-2">Withdrawal Security</h4>
-                      <ul className="text-slate-300 text-sm space-y-1">
-                        <li>• Minimum withdrawal: ${MIN_WITHDRAWAL} USDT</li>
-                        <li>• Maximum withdrawal: ${MAX_WITHDRAWAL} USDT per day</li>
-                        <li>• Withdrawals are processed within 24 hours</li>
-                        <li>• Double-check your wallet address before confirming</li>
-                        <li>• Only BEP-20 addresses are supported</li>
-                        <li>• Withdrawal code is required for security verification</li>
-                      </ul>
-                    </div>
+            <div className="bg-white border border-gray-200 rounded-xl shadow-sm">
+              <div className="p-6">
+                <div className="flex items-start space-x-4">
+                  <div className="p-2 rounded-lg bg-gradient-to-br from-purple-100 to-indigo-100 border border-purple-200 flex-shrink-0">
+                    <AlertTriangle className="w-5 h-5 text-purple-700" />
+                  </div>
+                  <div>
+                    <h4 className="text-lg font-semibold text-gray-900 mb-2">Withdrawal Security</h4>
+                    <ul className="text-gray-700 text-sm space-y-1">
+                      <li>• Minimum withdrawal: ${MIN_WITHDRAWAL} USDT</li>
+                      <li>• Maximum withdrawal: ${MAX_WITHDRAWAL} USDT per day</li>
+                      <li>• Withdrawals are processed within 24 hours</li>
+                      <li>• Double-check your wallet address before confirming</li>
+                      <li>• Only BEP-20 addresses are supported</li>
+                      <li>• Withdrawal code is required for security verification</li>
+                    </ul>
                   </div>
                 </div>
               </div>
