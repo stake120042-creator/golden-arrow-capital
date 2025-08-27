@@ -303,7 +303,8 @@ export default function LandingPage() {
         setErrorMessage(result.message);
       }
     } catch (error) {
-      setErrorMessage('An unexpected error occurred. Please try again.');
+      const message = error instanceof Error ? error.message : 'An unexpected error occurred. Please try again.';
+      setErrorMessage(message);
       console.error('Signup error:', error);
     } finally {
       setIsLoading(false);
@@ -330,7 +331,8 @@ export default function LandingPage() {
         setErrorMessage(result.message);
       }
     } catch (error) {
-      setErrorMessage('An unexpected error occurred. Please try again.');
+      const message = error instanceof Error ? error.message : 'An unexpected error occurred. Please try again.';
+      setErrorMessage(message);
       console.error('Login error:', error);
     } finally {
       setIsLoading(false);
@@ -357,7 +359,8 @@ export default function LandingPage() {
         setErrorMessage(result.message);
       }
     } catch (error) {
-      setErrorMessage('An unexpected error occurred. Please try again.');
+      const message = error instanceof Error ? error.message : 'An unexpected error occurred. Please try again.';
+      setErrorMessage(message);
       console.error('OTP verification error:', error);
     } finally {
       setIsLoading(false);
@@ -384,7 +387,8 @@ export default function LandingPage() {
         setErrorMessage(result.message);
       }
     } catch (error) {
-      setErrorMessage('An unexpected error occurred. Please try again.');
+      const message = error instanceof Error ? error.message : 'An unexpected error occurred. Please try again.';
+      setErrorMessage(message);
       console.error('Login OTP verification error:', error);
     } finally {
       setIsLoading(false);
@@ -407,7 +411,8 @@ export default function LandingPage() {
           setErrorMessage(result.message);
         }
       } catch (error) {
-        setErrorMessage('Failed to resend OTP. Please try again.');
+        const message = error instanceof Error ? error.message : 'Failed to resend OTP. Please try again.';
+        setErrorMessage(message);
         console.error('Resend OTP error:', error);
       } finally {
         setIsLoading(false);
