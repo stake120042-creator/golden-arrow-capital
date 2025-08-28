@@ -29,10 +29,11 @@ interface TeamMember {
   email: string;
   level: number;
   join_date: string;
-  status: 'active' | 'inactive';
-  business_value: number;
+  sponsor: string;
+  total_investment: number;
   direct_members: number;
   total_team_members: number;
+  status: 'active' | 'inactive';
 }
 
 const MyTeamPage: React.FC = () => {
@@ -92,8 +93,8 @@ const MyTeamPage: React.FC = () => {
           bValue = new Date(b.join_date);
           break;
         case 'business':
-          aValue = a.business_value;
-          bValue = b.business_value;
+          aValue = a.total_investment;
+          bValue = b.total_investment;
           break;
         case 'members':
           aValue = a.total_team_members;
@@ -234,7 +235,7 @@ const MyTeamPage: React.FC = () => {
                 <div>
                   <p className="text-sm font-medium text-gray-600">Total Business</p>
                   <p className="text-2xl font-bold text-gray-900">
-                    {formatCurrency(teamMembers.reduce((sum, m) => sum + m.business_value, 0))}
+                    {formatCurrency(teamMembers.reduce((sum, m) => sum + m.total_investment, 0))}
                   </p>
                 </div>
               </div>
@@ -324,7 +325,7 @@ const MyTeamPage: React.FC = () => {
                         Level
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Status
+                        Sponser
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Business Value
@@ -367,16 +368,13 @@ const MyTeamPage: React.FC = () => {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center">
-                            {getStatusIcon(member.status)}
-                            <span className={`ml-2 text-sm font-medium ${
-                              member.status === 'active' ? 'text-green-700' : 'text-red-700'
-                            }`}>
-                              {member.status.charAt(0).toUpperCase() + member.status.slice(1)}
+                            <span className="ml-2 text-sm font-medium">
+                              {member.sponsor.charAt(0).toUpperCase() + member.sponsor.slice(1)}
                             </span>
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">
-                          {formatCurrency(member.business_value)}
+                          {formatCurrency(member.total_investment)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                           {member.direct_members}

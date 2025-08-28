@@ -113,7 +113,7 @@ RETURNS TABLE (
     is_verified BOOLEAN,
     created_at TIMESTAMP,
     updated_at TIMESTAMP,
-    business_value NUMERIC,
+    total_investment NUMERIC,
     path LTREE,
     level INTEGER,
     join_date TIMESTAMP,
@@ -141,7 +141,7 @@ BEGIN
         u.is_verified,
         u.created_at, 
         u.updated_at, 
-        u.business_value, 
+        COALESCE(id.total_investment, 0) as total_investment, 
         u.path,
         GREATEST(p_level, 0) as level,
         u.created_at as join_date,
@@ -149,6 +149,7 @@ BEGIN
         (SELECT COUNT(*) FROM users d WHERE d.parent_id = u.id) as direct_members,
         (SELECT COUNT(*) FROM users t WHERE t.path <@ u.path AND nlevel(t.path) > nlevel(u.path)) as total_team_members
     FROM users u
+    LEFT JOIN investment_details id ON u.id = id.user_id
     WHERE u.path <@ base_path
       AND nlevel(u.path) = base_depth + GREATEST(p_level, 0);
 END;
@@ -169,16 +170,18 @@ BEGIN
         direct_business := 0; team_business := 0; RETURN NEXT; RETURN;
     END IF;
 
-    -- Direct business: immediate children only
-    SELECT COALESCE(SUM(u.business_value), 0)
+    -- Direct business: immediate children's total investment
+    SELECT COALESCE(SUM(id.total_investment), 0)
     INTO direct_business
     FROM users u
+    JOIN investment_details id ON u.id = id.user_id
     WHERE u.parent_id = p_user_id;
 
-    -- Team business: all descendants at depth > base (exclude self)
-    SELECT COALESCE(SUM(u.business_value), 0)
+    -- Team business: all descendants' total investment at depth > base (exclude self)
+    SELECT COALESCE(SUM(id.total_investment), 0)
     INTO team_business
     FROM users u
+    JOIN investment_details id ON u.id = id.user_id
     WHERE u.path <@ base_path AND nlevel(u.path) > base_depth;
 
     RETURN NEXT;
@@ -236,6 +239,7 @@ $$ LANGUAGE plpgsql STABLE;
 
 -- Investment Details table
 CREATE TABLE IF NOT EXISTS investment_details (
+
     id SERIAL PRIMARY KEY,
     user_id VARCHAR(255) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     total_investment NUMERIC DEFAULT 0,

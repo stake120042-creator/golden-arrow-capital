@@ -23,6 +23,7 @@ import {
   Eye,
   EyeOff
 } from 'lucide-react';
+import SyncButton from '@/components/SyncButton';
 
 export default function DepositPage() {
   const { logout, user } = useAuth();
@@ -219,7 +220,7 @@ export default function DepositPage() {
                     
                   </div>
                   
-                  <div className="flex space-x-4">
+                  <div className="flex space-x-4 mb-4">
                     <button 
                       onClick={() => handleDownloadQR(qrCodeDataUrl, 'deposit-qr-code.png')}
                       className="flex-1 px-5 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-medium rounded-lg hover:from-indigo-600 hover:to-purple-600 transition-all text-sm shadow-md flex items-center justify-center space-x-2"
@@ -235,6 +236,17 @@ export default function DepositPage() {
                       {copied ? <Check className="w-4 h-4 text-green-600" /> : <Copy className="w-4 h-4" />}
                       <span>{copied ? "Copied!" : "Copy Address"}</span>
                     </button>
+                  </div>
+                  
+                  {/* Sync Button */}
+                  <div className="border-t border-gray-200 pt-4">
+                    <div className="text-center mb-3">
+                      <p className="text-sm text-gray-600 mb-2">After making a deposit, click sync to update your balance</p>
+                    </div>
+                    <SyncButton 
+                      onSyncComplete={initializeDeposit}
+                      className="flex justify-center"
+                    />
                   </div>
               </div>
             </div>
